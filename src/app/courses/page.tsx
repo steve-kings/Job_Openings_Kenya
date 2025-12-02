@@ -134,19 +134,18 @@ export default async function CoursesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {courses.map((course: any) => (
                                 <div key={course.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all hover:-translate-y-2 group border border-gray-100">
-                                    <div className="relative h-48 overflow-hidden">
-                                        <img 
-                                            src={course.thumbnail_url || '/images/img2.jpg'}
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = 'none';
-                                                const fallback = document.createElement('div');
-                                                fallback.className = 'w-full h-full';
-                                                target.parentElement?.appendChild(fallback);
-                                            }} 
-                                            alt={course.title} 
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                                        />
+                                    <div className="relative h-48 overflow-hidden bg-gray-200">
+                                        {course.thumbnail_url ? (
+                                            <img 
+                                                src={course.thumbnail_url}
+                                                alt={course.title || 'Course'} 
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#C44536] to-[#F39C12]">
+                                                <span className="text-white text-4xl font-bold">YENA</span>
+                                            </div>
+                                        )}
                                         <div className="absolute top-4 right-4 bg-[#F39C12] text-white px-3 py-1 rounded-full text-sm font-semibold">
                                             FREE
                                         </div>
@@ -163,17 +162,17 @@ export default async function CoursesPage() {
                                         </div>
 
                                         <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#5D4037] transition-colors">
-                                            {course.title}
+                                            {course.title || 'Untitled Course'}
                                         </h3>
 
                                         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                                            {course.description}
+                                            {course.description || 'No description available'}
                                         </p>
 
                                         <div className="flex items-center justify-between text-sm text-gray-500 mb-4 pb-4 border-b">
                                             <div className="flex items-center gap-2">
                                                 <FontAwesomeIcon icon={faClock} className="text-[#F39C12]" />
-                                                <span>{course.duration}</span>
+                                                <span>{course.duration || 'TBD'}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <FontAwesomeIcon icon={faUsers} className="text-[#F39C12]" />
@@ -190,12 +189,16 @@ export default async function CoursesPage() {
                                                 <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
                                                 <span className="text-sm text-gray-600 ml-1">(5.0)</span>
                                             </div>
-                                            <Link 
-                                                href={`/courses/${course.slug}`} 
-                                                className="text-[#5D4037] font-semibold hover:text-[#F39C12] transition-colors"
-                                            >
-                                                View Details →
-                                            </Link>
+                                            {course.slug ? (
+                                                <Link 
+                                                    href={`/courses/${course.slug}`} 
+                                                    className="text-[#5D4037] font-semibold hover:text-[#F39C12] transition-colors"
+                                                >
+                                                    View Details →
+                                                </Link>
+                                            ) : (
+                                                <span className="text-gray-400 text-sm">Coming Soon</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
