@@ -1,0 +1,34 @@
+# YENA Images Folder
+
+Upload all your images here to replace Unsplash links.
+
+## How to Use:
+1. Upload your images to this folder (public/images/)
+2. Name them descriptively (e.g., team-brian.jpg, hero-banner.jpg)
+3. Reference them in code as: /images/your-image-name.jpg
+
+## Recommended Image Sizes:
+- Hero/Banner images: 1920x1080px
+- Team photos: 800x800px (square)
+- Blog images: 1200x630px
+- Course thumbnails: 800x600px
+- About page images: 1200x800px
+
+## Supported Formats:
+- JPG/JPEG (recommended for photos)
+- PNG (for images with transparency)
+- WebP (for better compression)
+
+## Example Usage in Code:
+```jsx
+<img src="/images/team-brian.jpg" alt="Brian Bright" />
+```
+
+## Current Unsplash Links to Replace:
+You can find Unsplash links in:
+- src/app/about/page.tsx (team photos, impact images)
+- src/app/jobs/page.tsx (job images)
+- src/app/blog/page.tsx (blog images)
+- src/components/HeroSlider.tsx (hero images)
+
+Simply upload your images here and update the src attributes!
