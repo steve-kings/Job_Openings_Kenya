@@ -4,25 +4,34 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faClock, faStar } from '@fortawesome/free-solid-svg-icons';
 import CoursesHeroSlider from '@/components/CoursesHeroSlider';
 
-export const revalidate = 3600; // Revalidate every hour
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function CoursesPage() {
-    const supabase = await createClient();
+    let courses = null;
+    let totalStudents = 0;
 
-    const { data: courses, error } = await supabase
-        .from('courses')
-        .select(`
-            *,
-            enrollments(count)
-        `)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false });
+    try {
+        const supabase = await createClient();
 
-    if (error) {
-        console.error('Error fetching courses:', error);
+        const { data, error } = await supabase
+            .from('courses')
+            .select(`
+                *,
+                enrollments(count)
+            `)
+            .eq('status', 'published')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching courses:', error);
+        } else {
+            courses = data;
+            totalStudents = courses?.reduce((sum, c) => sum + (c.enrollments?.[0]?.count || 0), 0) || 0;
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
     }
-
-    const totalStudents = courses?.reduce((sum, c) => sum + (c.enrollments?.[0]?.count || 0), 0) || 0;
 
     return (
         <div className="bg-white">
