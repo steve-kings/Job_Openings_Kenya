@@ -6,10 +6,10 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState([
-        { title: 'Total Opportunities', value: '...', change: 'Loading...', icon: Briefcase, color: 'text-primary' },
-        { title: 'Total Courses', value: '...', change: 'Loading...', icon: BookOpen, color: 'text-secondary' },
-        { title: 'Registered Users', value: '...', change: 'Loading...', icon: Users, color: 'text-accent' },
-        { title: 'Blog Posts', value: '...', change: 'Loading...', icon: BarChart3, color: 'text-success' },
+        { title: 'Total Opportunities', value: '...', change: 'Loading...', icon: Briefcase, color: 'text-[#C44536]', bg: 'from-[#C44536] to-[#8B3A3A]' },
+        { title: 'Total Courses', value: '...', change: 'Loading...', icon: BookOpen, color: 'text-[#F39C12]', bg: 'from-[#F39C12] to-[#C44536]' },
+        { title: 'Registered Users', value: '...', change: 'Loading...', icon: Users, color: 'text-[#10B981]', bg: 'from-[#10B981] to-[#059669]' },
+        { title: 'Blog Posts', value: '...', change: 'Loading...', icon: BarChart3, color: 'text-[#8B3A3A]', bg: 'from-[#8B3A3A] to-[#C44536]' },
     ]);
     const [recentOpportunities, setRecentOpportunities] = useState<any[]>([]);
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
@@ -28,10 +28,10 @@ export default function AdminDashboard() {
             ]);
 
             setStats([
-                { title: 'Total Opportunities', value: oppCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: Briefcase, color: 'text-primary' },
-                { title: 'Total Courses', value: courseCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: BookOpen, color: 'text-secondary' },
-                { title: 'Registered Users', value: userCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: Users, color: 'text-accent' },
-                { title: 'Blog Posts', value: postCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: BarChart3, color: 'text-success' },
+                { title: 'Total Opportunities', value: oppCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: Briefcase, color: 'text-[#C44536]', bg: 'from-[#C44536] to-[#8B3A3A]' },
+                { title: 'Total Courses', value: courseCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: BookOpen, color: 'text-[#F39C12]', bg: 'from-[#F39C12] to-[#C44536]' },
+                { title: 'Registered Users', value: userCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: Users, color: 'text-[#10B981]', bg: 'from-[#10B981] to-[#059669]' },
+                { title: 'Blog Posts', value: postCount.data?.[0]?.count?.toString() || '0', change: 'All time', icon: BarChart3, color: 'text-[#8B3A3A]', bg: 'from-[#8B3A3A] to-[#C44536]' },
             ]);
 
             // Fetch recent opportunities
@@ -72,9 +72,9 @@ export default function AdminDashboard() {
 
     return (
         <div>
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-primary mb-2">Dashboard Overview</h1>
-                <p className="text-gray-600">Welcome to the YENA Content Management System</p>
+            <div className="mb-8 bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white p-8 rounded-2xl shadow-xl">
+                <h1 className="text-4xl font-bold mb-2">Dashboard Overview</h1>
+                <p className="text-white/90 text-lg">Welcome to the YENA Content Management System</p>
             </div>
 
             {/* Stats Grid */}
@@ -82,15 +82,15 @@ export default function AdminDashboard() {
                 {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
-                        <div key={index} className="card bg-base-100 shadow-xl">
+                        <div key={index} className={`card bg-gradient-to-br ${stat.bg} text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1`}>
                             <div className="card-body">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-sm text-gray-500 mb-1">{stat.title}</p>
-                                        <p className="text-3xl font-bold">{stat.value}</p>
-                                        <p className="text-sm text-success mt-1">{stat.change}</p>
+                                        <p className="text-sm text-white/80 mb-1 font-semibold">{stat.title}</p>
+                                        <p className="text-4xl font-black">{stat.value}</p>
+                                        <p className="text-sm text-white/70 mt-1">{stat.change}</p>
                                     </div>
-                                    <Icon className={`${stat.color} w-10 h-10`} />
+                                    <Icon className="text-white/80 w-12 h-12" />
                                 </div>
                             </div>
                         </div>

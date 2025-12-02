@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faClock, faGraduationCap, faStar, faBookOpen, faChartLine } from '@fortawesome/free-solid-svg-icons';
-import CourseThumbnailFallback from '@/components/CourseThumbnailFallback';
+import { faUsers, faClock, faStar } from '@fortawesome/free-solid-svg-icons';
+import CoursesHeroSlider from '@/components/CoursesHeroSlider';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -26,57 +26,32 @@ export default async function CoursesPage() {
 
     return (
         <div className="bg-white">
-            {/* Hero Section */}
-            <div className="relative min-h-[600px] text-white overflow-hidden">
-                {/* Background Image */}
-                <div className="absolute inset-0">
-                    <img 
-                        src="/images/yena logo.jpeg" 
-                        alt="Students learning"
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#5D4037]/95 via-[#8D6E63]/90 to-[#5D4037]/80"></div>
-                </div>
-                
-                <div className="container mx-auto px-6 lg:px-12 relative z-10 py-20 lg:py-32">
-                    <div className="max-w-3xl">
-                        <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                            Best Education Platform For African Youth
-                        </h1>
-                        <p className="text-xl mb-8 text-white/90 leading-relaxed">
-                            Empower yourself with skills that matter. All courses are free and designed to prepare you for real opportunities across Africa.
-                        </p>
-                        <div className="flex flex-wrap gap-4">
-                            <Link href="#courses" className="btn bg-[#F39C12] text-white hover:bg-[#e08d0a] border-none btn-lg px-8 shadow-xl">
-                                Browse Courses
-                            </Link>
-                            <Link href="/about" className="btn btn-outline border-2 border-white text-white hover:bg-white hover:text-[#5D4037] btn-lg px-8">
-                                Learn More
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* Hero Slider */}
+            <CoursesHeroSlider />
 
             {/* Stats Section */}
-            <div className="bg-[#F39C12] py-8">
+            <div className="bg-gradient-to-r from-[#C44536] to-[#F39C12] py-12">
                 <div className="container mx-auto px-6 lg:px-12">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-                        <div>
-                            <div className="text-4xl font-bold mb-2">{courses?.length || 0}+</div>
-                            <div className="text-sm opacity-90">Total Courses</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center text-white">
+                        <div className="group">
+                            <div className="text-5xl font-black mb-2 group-hover:scale-110 transition-transform">{courses?.length || 0}+</div>
+                            <div className="text-base font-semibold opacity-90">Total Courses</div>
+                            <div className="text-xs opacity-75 mt-1">Available Now</div>
                         </div>
-                        <div>
-                            <div className="text-4xl font-bold mb-2">{totalStudents}+</div>
-                            <div className="text-sm opacity-90">Active Students</div>
+                        <div className="group">
+                            <div className="text-5xl font-black mb-2 group-hover:scale-110 transition-transform">{totalStudents}+</div>
+                            <div className="text-base font-semibold opacity-90">Active Students</div>
+                            <div className="text-xs opacity-75 mt-1">Learning Today</div>
                         </div>
-                        <div>
-                            <div className="text-4xl font-bold mb-2">100%</div>
-                            <div className="text-sm opacity-90">Free Access</div>
+                        <div className="group">
+                            <div className="text-5xl font-black mb-2 group-hover:scale-110 transition-transform">100%</div>
+                            <div className="text-base font-semibold opacity-90">Free Access</div>
+                            <div className="text-xs opacity-75 mt-1">No Hidden Fees</div>
                         </div>
-                        <div>
-                            <div className="text-4xl font-bold mb-2">24/7</div>
-                            <div className="text-sm opacity-90">Learning Support</div>
+                        <div className="group">
+                            <div className="text-5xl font-black mb-2 group-hover:scale-110 transition-transform">24/7</div>
+                            <div className="text-base font-semibold opacity-90">Learning Support</div>
+                            <div className="text-xs opacity-75 mt-1">Always Available</div>
                         </div>
                     </div>
                 </div>
@@ -85,36 +60,48 @@ export default async function CoursesPage() {
             {/* Why Choose Us Section */}
             <div className="py-20 bg-gray-50">
                 <div className="container mx-auto px-6 lg:px-12">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">Why We Offer For Growth Your Study</h2>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Why Learn With YENA?</h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             Quality education designed specifically for African youth to succeed in the global market
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="bg-gradient-to-br from-[#C44536] to-[#8B3A3A] text-white rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-2">
-                            <div className="text-5xl mb-4">
-                                <FontAwesomeIcon icon={faGraduationCap} />
+                        <div className="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+                            <div className="absolute inset-0">
+                                <img src="/images/img5.jpg" alt="Expert Instructors" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#C44536]/95 to-[#8B3A3A]/95 group-hover:from-[#C44536]/90 group-hover:to-[#8B3A3A]/90 transition-all"></div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-3">Expert Instructors</h3>
-                            <p className="text-white/90">Learn from industry professionals with years of real-world experience</p>
+                            <div className="relative p-8 text-white">
+                                <div className="w-16 h-1 bg-white mb-6"></div>
+                                <h3 className="text-3xl font-bold mb-4">Expert Instructors</h3>
+                                <p className="text-white/95 text-lg leading-relaxed">Learn from industry professionals with years of real-world experience and proven track records</p>
+                            </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-[#F39C12] to-[#C44536] text-white rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-2">
-                            <div className="text-5xl mb-4">
-                                <FontAwesomeIcon icon={faBookOpen} />
+                        <div className="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+                            <div className="absolute inset-0">
+                                <img src="/images/img6 (2).jpg" alt="Practical Learning" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#F39C12]/95 to-[#C44536]/95 group-hover:from-[#F39C12]/90 group-hover:to-[#C44536]/90 transition-all"></div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-3">Practical Learning</h3>
-                            <p className="text-white/90">Hands-on projects and real-world applications in every course</p>
+                            <div className="relative p-8 text-white">
+                                <div className="w-16 h-1 bg-white mb-6"></div>
+                                <h3 className="text-3xl font-bold mb-4">Practical Learning</h3>
+                                <p className="text-white/95 text-lg leading-relaxed">Hands-on projects and real-world applications in every course to build your portfolio</p>
+                            </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-[#10B981] to-[#059669] text-white rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-2">
-                            <div className="text-5xl mb-4">
-                                <FontAwesomeIcon icon={faChartLine} />
+                        <div className="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2">
+                            <div className="absolute inset-0">
+                                <img src="/images/img7.png" alt="Career Growth" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#10B981]/95 to-[#059669]/95 group-hover:from-[#10B981]/90 group-hover:to-[#059669]/90 transition-all"></div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-3">Career Growth</h3>
-                            <p className="text-white/90">Skills that directly connect to job opportunities across Africa</p>
+                            <div className="relative p-8 text-white">
+                                <div className="w-16 h-1 bg-white mb-6"></div>
+                                <h3 className="text-3xl font-bold mb-4">Career Growth</h3>
+                                <p className="text-white/95 text-lg leading-relaxed">Skills that directly connect to job opportunities and career advancement across Africa</p>
+                            </div>
                         </div>
                     </div>
                 </div>

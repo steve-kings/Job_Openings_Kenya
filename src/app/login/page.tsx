@@ -104,11 +104,20 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#C44536]">
+                    {/* Logo */}
+                    <div className="flex justify-center pt-8">
+                        <img 
+                            src="/images/yena logo.jpeg" 
+                            alt="YENA Logo" 
+                            className="h-20 w-auto object-contain"
+                        />
+                    </div>
+                    
                     {/* Header with Tabs */}
-                    <div className="bg-gradient-to-r from-[#5D4037] to-[#8D6E63] p-6">
+                    <div className="bg-gradient-to-r from-[#C44536] via-[#F39C12] to-[#8B3A3A] p-6 mt-4">
                         <h2 className="text-3xl font-bold text-white text-center mb-6">
                             Welcome to YENA
                         </h2>
@@ -121,7 +130,7 @@ export default function Login() {
                                 }}
                                 className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
                                     isLogin
-                                        ? 'bg-white text-[#5D4037]'
+                                        ? 'bg-white text-[#C44536]'
                                         : 'bg-white/20 text-white hover:bg-white/30'
                                 }`}
                             >
@@ -135,7 +144,7 @@ export default function Login() {
                                 }}
                                 className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
                                     !isLogin
-                                        ? 'bg-white text-[#5D4037]'
+                                        ? 'bg-white text-[#C44536]'
                                         : 'bg-white/20 text-white hover:bg-white/30'
                                 }`}
                             >
@@ -200,7 +209,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-primary w-full btn-lg"
+                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white hover:opacity-90 border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Logging in...' : 'Login'}
@@ -272,7 +281,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-primary w-full btn-lg"
+                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white hover:opacity-90 border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Creating account...' : 'Sign Up'}
@@ -286,7 +295,7 @@ export default function Login() {
                         {/* Google Login */}
                         <button
                             onClick={handleGoogleLogin}
-                            className="btn btn-outline w-full btn-lg gap-2"
+                            className="btn btn-outline border-2 border-[#C44536] text-[#C44536] hover:bg-[#C44536] hover:text-white w-full btn-lg gap-2"
                         >
                             <FontAwesomeIcon icon={faGoogle} className="text-xl" />
                             Continue with Google
@@ -299,7 +308,7 @@ export default function Login() {
                                     Don't have an account?{' '}
                                     <button
                                         onClick={() => setIsLogin(false)}
-                                        className="text-primary font-semibold hover:underline"
+                                        className="text-[#C44536] font-semibold hover:underline"
                                     >
                                         Sign up
                                     </button>
@@ -309,7 +318,7 @@ export default function Login() {
                                     Already have an account?{' '}
                                     <button
                                         onClick={() => setIsLogin(true)}
-                                        className="text-primary font-semibold hover:underline"
+                                        className="text-[#C44536] font-semibold hover:underline"
                                     >
                                         Login
                                     </button>
@@ -320,10 +329,10 @@ export default function Login() {
                 </div>
 
                 {/* Admin Credentials Info (for development) */}
-                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
-                    <p className="font-semibold text-yellow-800 mb-2">Admin Login:</p>
-                    <p className="text-yellow-700">Email: kingscreationagency635@gmail.com</p>
-                    <p className="text-yellow-700">Password: @kings635</p>
+                <div className="mt-4 p-4 bg-gradient-to-r from-[#F39C12]/10 to-[#C44536]/10 border-2 border-[#F39C12] rounded-lg text-sm">
+                    <p className="font-semibold text-[#C44536] mb-2">Admin Login:</p>
+                    <p className="text-gray-700">Email: kingscreationagency635@gmail.com</p>
+                    <p className="text-gray-700">Password: @kings635</p>
                 </div>
             </div>
         </div>
