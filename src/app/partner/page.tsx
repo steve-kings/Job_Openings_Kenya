@@ -47,7 +47,7 @@ export default function PartnerPage() {
                                 <label className="label">
                                     <span className="label-text font-semibold">Contact Name</span>
                                 </label>
-                                <input type="text" placeholder="John Doe" className="input input-bordered w-full" required />
+                                <input type="text" placeholder="e.g., Wanjiku Kamau" className="input input-bordered w-full" required />
                             </div>
                             <div className="form-control">
                                 <label className="label">

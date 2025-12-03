@@ -9,11 +9,11 @@ export default function AdminUsersPage() {
 
     // Mock Data
     const users = [
-        { id: 1, name: 'Jane Doe', email: 'jane@example.com', role: 'Student', coursesEnrolled: 3, progress: 65, joined: '2024-10-15', status: 'Active' },
-        { id: 2, name: 'John Smith', email: 'john@example.com', role: 'Student', coursesEnrolled: 2, progress: 80, joined: '2024-11-01', status: 'Active' },
-        { id: 3, name: 'Mary Johnson', email: 'mary@example.com', role: 'Student', coursesEnrolled: 4, progress: 45, joined: '2024-09-20', status: 'Active' },
-        { id: 4, name: 'David Brown', email: 'david@example.com', role: 'Admin', coursesEnrolled: 0, progress: 0, joined: '2024-08-10', status: 'Active' },
-        { id: 5, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'Student', coursesEnrolled: 1, progress: 20, joined: '2024-11-12', status: 'Inactive' },
+        { id: 1, name: 'Wanjiku Kamau', email: 'wanjiku@yena.org', role: 'Student', coursesEnrolled: 3, progress: 65, joined: '2024-10-15', status: 'Active' },
+        { id: 2, name: 'Ochieng Otieno', email: 'ochieng@yena.org', role: 'Student', coursesEnrolled: 2, progress: 80, joined: '2024-11-01', status: 'Active' },
+        { id: 3, name: 'Akinyi Odhiambo', email: 'akinyi@yena.org', role: 'Student', coursesEnrolled: 4, progress: 45, joined: '2024-09-20', status: 'Active' },
+        { id: 4, name: 'Kipchoge Mutai', email: 'kipchoge@yena.org', role: 'Admin', coursesEnrolled: 0, progress: 0, joined: '2024-08-10', status: 'Active' },
+        { id: 5, name: 'Njeri Mwangi', email: 'njeri@yena.org', role: 'Student', coursesEnrolled: 1, progress: 20, joined: '2024-11-12', status: 'Inactive' },
     ];
 
     const filteredUsers = users.filter(user => {

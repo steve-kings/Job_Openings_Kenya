@@ -228,7 +228,7 @@ export default function Login() {
                                         </span>
                                         <input
                                             type="text"
-                                            placeholder="John Doe"
+                                            placeholder="e.g., Wanjiku Kamau"
                                             className="input input-bordered w-full pl-10"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
@@ -328,12 +328,6 @@ export default function Login() {
                     </div>
                 </div>
 
-                {/* Admin Credentials Info (for development) */}
-                <div className="mt-4 p-4 bg-gradient-to-r from-[#F39C12]/10 to-[#C44536]/10 border-2 border-[#F39C12] rounded-lg text-sm">
-                    <p className="font-semibold text-[#C44536] mb-2">Admin Login:</p>
-                    <p className="text-gray-700">Email: kingscreationagency635@gmail.com</p>
-                    <p className="text-gray-700">Password: @kings635</p>
-                </div>
             </div>
         </div>
     );
