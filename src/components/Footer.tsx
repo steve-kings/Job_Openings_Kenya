@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, ExternalLink } from 'lucide-react';
+import FooterInstallButton from './FooterInstallButton';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -154,6 +155,17 @@ export default function Footer() {
                                 </div>
                             </li>
                         </ul>
+                    </div>
+                </div>
+
+                {/* Get the App Section */}
+                <div className="mt-12 pt-8 border-t border-white/10">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="text-center md:text-left">
+                            <h4 className="text-xl font-bold text-white mb-2">Get the YENA App</h4>
+                            <p className="text-gray-400 text-sm">Install our app for quick access to opportunities</p>
+                        </div>
+                        <FooterInstallButton />
                     </div>
                 </div>
             </div>
