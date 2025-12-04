@@ -3,6 +3,24 @@ import { createClient } from '@/lib/supabase/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faClock, faStar } from '@fortawesome/free-solid-svg-icons';
 import CoursesHeroSlider from '@/components/CoursesHeroSlider';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Learning - YENA | Free Courses for African Youth',
+    description: 'Access 100% free courses designed for African youth. Learn in-demand skills from expert instructors and earn certificates to boost your career.',
+    openGraph: {
+        title: 'YENA Learning - Free Courses for African Youth',
+        description: 'Access 100% free courses designed for African youth. Learn in-demand skills and earn certificates.',
+        images: ['/images/img3.jpg'],
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'YENA Learning - Free Courses',
+        description: 'Access 100% free courses designed for African youth.',
+        images: ['/images/img3.jpg'],
+    },
+};
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

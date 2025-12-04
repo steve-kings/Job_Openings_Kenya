@@ -1,6 +1,24 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Calendar, User, ArrowRight, BookOpen, TrendingUp } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Blog - YENA | Stories, Insights & Community Updates',
+    description: 'Read success stories from African youth, get career tips, and stay updated with the latest opportunities and community news from YENA.',
+    openGraph: {
+        title: 'YENA Blog - Stories, Insights & Community Updates',
+        description: 'Read success stories from African youth, get career tips, and stay updated with the latest opportunities.',
+        images: ['/images/img4.jpg'],
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'YENA Blog - Stories & Insights',
+        description: 'Read success stories from African youth and get career tips.',
+        images: ['/images/img4.jpg'],
+    },
+};
 
 export const revalidate = 3600; // Revalidate every hour
 

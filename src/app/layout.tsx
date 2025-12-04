@@ -11,7 +11,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "YENA - Youth Empowerment Network Africa",
+  metadataBase: new URL('https://youth-empowerment-and-networking-af.vercel.app'),
+  title: {
+    default: "YENA - Youth Empowerment Network Africa",
+    template: "%s | YENA"
+  },
   description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
   keywords: "YENA, Youth Empowerment, Africa, Education, Jobs, Scholarships, Grants, Training, Courses",
   authors: [{ name: "YENA Team" }],
@@ -24,16 +28,30 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "YENA - Youth Empowerment Network Africa",
-    description: "Bridging the gap between young Africans and life-changing opportunities",
-    images: ['/images/yena logo.jpeg'],
+    description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
+    images: [
+      {
+        url: '/images/yena logo.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'YENA - Youth Empowerment Network Africa',
+      }
+    ],
     type: 'website',
+    siteName: 'YENA',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: "YENA - Youth Empowerment Network Africa",
     description: "Bridging the gap between young Africans and life-changing opportunities",
     images: ['/images/yena logo.jpeg'],
-  }
+    creator: '@yena_africa',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

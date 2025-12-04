@@ -5,6 +5,24 @@ import JobsFilter from '@/components/JobsFilter';
 import JobsHeroSlider from '@/components/JobsHeroSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Opportunities - YENA | Jobs, Grants, Scholarships & Training',
+    description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs. Updated daily with new opportunities across Africa.',
+    openGraph: {
+        title: 'Opportunities - YENA | Jobs, Grants, Scholarships & Training',
+        description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs updated daily.',
+        images: ['/images/img2.jpg'],
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Opportunities - YENA',
+        description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs.',
+        images: ['/images/img2.jpg'],
+    },
+};
 
 export const revalidate = 3600; // Revalidate every hour
 

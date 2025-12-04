@@ -1,5 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb, faUsers, faHandshake, faTrophy, faRocket } from '@fortawesome/free-solid-svg-icons';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'About Us - YENA | Youth Empowerment Network Africa',
+    description: 'Learn about YENA - a Community Based Organization dedicated to bridging the gap between young Africans and life-changing opportunities through education and skills training.',
+    openGraph: {
+        title: 'About YENA - Youth Empowerment Network Africa',
+        description: 'Empowering Africa\'s youth through education, opportunities, and community support. Join 5,000+ youth across Africa.',
+        images: ['/images/img1.jpg'],
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'About YENA - Youth Empowerment Network Africa',
+        description: 'Empowering Africa\'s youth through education, opportunities, and community support.',
+        images: ['/images/img1.jpg'],
+    },
+};
 
 export default function About() {
     return (
