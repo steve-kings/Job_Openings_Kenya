@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -205,6 +206,11 @@ export default function Login() {
                                             required
                                         />
                                     </div>
+                                    <label className="label">
+                                        <Link href="/forgot-password" className="label-text-alt text-[#C44536] hover:text-[#F39C12] font-semibold transition-colors">
+                                            Forgot Password?
+                                        </Link>
+                                    </label>
                                 </div>
 
                                 <button

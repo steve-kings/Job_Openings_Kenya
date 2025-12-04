@@ -291,7 +291,7 @@ export default function About() {
                         <div className="text-center group">
                             <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
                                 <img 
-                                    src="/images/img3.jpg" 
+                                    src="/images/dennis.jpeg" 
                                     alt="Derick Shadiara - Treasurer"
                                     className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -305,7 +305,7 @@ export default function About() {
                         <div className="text-center group">
                             <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
                                 <img 
-                                    src="/images/img4.jpg" 
+                                    src="/images/steve.jpeg" 
                                     alt="Stephen King'ori - Organization Editor"
                                     className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
