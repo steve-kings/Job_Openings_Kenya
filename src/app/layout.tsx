@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PWAInstallButton from "@/components/PWAInstallButton";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -60,6 +61,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <PWAInstallButton />
       </body>
     </html>
   );
