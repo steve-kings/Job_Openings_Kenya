@@ -45,6 +45,12 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/images/yena logo.jpeg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/images/yena logo.jpeg" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#C44536" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="YENA" />
       </head>
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}
