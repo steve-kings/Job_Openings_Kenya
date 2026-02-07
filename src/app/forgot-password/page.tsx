@@ -80,7 +80,7 @@ export default function ForgotPassword() {
                                     >
                                         Try Another Email
                                     </button>
-                                    <Link href="/login" className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white border-none w-full">
+                                    <Link href="/login" className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] w-full">
                                         Back to Login
                                     </Link>
                                 </div>
@@ -117,7 +117,7 @@ export default function ForgotPassword() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white hover:opacity-90 border-none w-full btn-lg"
+                                    className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? (

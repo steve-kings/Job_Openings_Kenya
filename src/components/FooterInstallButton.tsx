@@ -81,7 +81,7 @@ export default function FooterInstallButton() {
   return (
     <button
       onClick={handleInstallClick}
-      className="btn bg-gradient-to-r from-[#F39C12] to-[#C44536] text-white border-none hover:opacity-90 gap-2 px-6"
+      className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] gap-2 px-6"
     >
       <Download size={20} />
       Install App

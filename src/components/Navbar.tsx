@@ -51,7 +51,7 @@ export default function Navbar() {
         { href: '/', label: 'Home' },
         { href: '/about', label: 'About' },
         { href: '/jobs', label: 'Opportunities' },
-        { href: '/courses', label: 'Learning' },
+        { href: 'https://kings-learn.vercel.app', label: 'Learning', external: true },
         { href: '/blog', label: 'Blog' },
         { href: '/contact', label: 'Contact' },
     ];
@@ -72,17 +72,29 @@ export default function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center gap-1">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                    isActive(link.href)
-                                        ? 'bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white'
-                                        : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
-                                }`}
-                            >
-                                {link.label}
-                            </Link>
+                            link.external ? (
+                                <a
+                                    key={link.href}
+                                    href={link.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]"
+                                >
+                                    {link.label}
+                                </a>
+                            ) : (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                        isActive(link.href)
+                                            ? 'bg-[#C44536] text-white'
+                                            : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
+                                    }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            )
                         ))}
                     </div>
 
@@ -95,7 +107,7 @@ export default function Navbar() {
                                     role="button"
                                     className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
-                                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-gradient-to-r from-[#C44536] to-[#F39C12] flex items-center justify-center text-white font-bold shadow-md">
+                                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-[#C44536] flex items-center justify-center text-white font-bold shadow-md">
                                         {profile?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                     <div className="hidden md:block text-left">
@@ -156,7 +168,7 @@ export default function Navbar() {
                         ) : (
                             <Link
                                 href="/login"
-                                className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white border-none hover:shadow-lg transition-shadow btn-sm lg:btn-md"
+                                className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] transition-colors btn-sm lg:btn-md"
                             >
                                 <User size={18} className="hidden sm:inline" />
                                 Login
@@ -182,18 +194,31 @@ export default function Navbar() {
                     <div className="lg:hidden py-4 border-t border-gray-200 animate-in slide-in-from-top">
                         <div className="flex flex-col gap-2">
                             {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                                        isActive(link.href)
-                                            ? 'bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white'
-                                            : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
-                                    }`}
-                                >
-                                    {link.label}
-                                </Link>
+                                link.external ? (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="px-4 py-3 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ) : (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                                            isActive(link.href)
+                                                ? 'bg-[#C44536] text-white'
+                                                : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
+                                        }`}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                )
                             ))}
                         </div>
                     </div>

@@ -169,7 +169,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={formStatus === 'loading'}
-                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white border-none hover:shadow-lg w-full btn-lg disabled:opacity-50"
+                                    className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] w-full btn-lg disabled:opacity-50"
                                 >
                                     {formStatus === 'loading' ? (
                                         <>

@@ -199,9 +199,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <Link href="/courses" className="btn bg-[#F39C12] text-white hover:bg-[#e08d0a] border-none btn-lg px-8">
-                Browse Courses
-              </Link>
+              <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none btn-lg px-8">
+                Browse Courses →
+              </a>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function EditPartnerPage() {
     const params = useParams();
@@ -12,7 +13,6 @@ export default function EditPartnerPage() {
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -21,8 +21,6 @@ export default function EditPartnerPage() {
     });
 
     const [logoUrl, setLogoUrl] = useState('');
-    const [logoFile, setLogoFile] = useState<File | null>(null);
-    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     useEffect(() => {
         fetchPartner();
@@ -44,7 +42,6 @@ export default function EditPartnerPage() {
                 website_url: data.website_url || ''
             });
             setLogoUrl(data.logo_url);
-            setLogoPreview(data.logo_url);
         } catch (error) {
             console.error('Error fetching partner:', error);
         } finally {
@@ -52,46 +49,22 @@ export default function EditPartnerPage() {
         }
     };
 
-    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setLogoFile(file);
-            setLogoPreview(URL.createObjectURL(file));
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!logoUrl) {
+            alert('Please upload a logo.');
+            return;
+        }
+
         setSaving(true);
 
         try {
-            let finalLogoUrl = logoUrl;
-
-            if (logoFile) {
-                setUploading(true);
-                const fileExt = logoFile.name.split('.').pop();
-                const fileName = `${Math.random()}.${fileExt}`;
-                const filePath = `${fileName}`;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('partners')
-                    .upload(filePath, logoFile);
-
-                if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('partners')
-                    .getPublicUrl(filePath);
-
-                finalLogoUrl = publicUrl;
-                setUploading(false);
-            }
-
             const { error } = await supabase
                 .from('partners')
                 .update({
                     ...formData,
-                    logo_url: finalLogoUrl,
+                    logo_url: logoUrl,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', params.id);
@@ -105,7 +78,6 @@ export default function EditPartnerPage() {
             alert(`Error updating partner: ${error.message}`);
         } finally {
             setSaving(false);
-            setUploading(false);
         }
     };
 
@@ -153,26 +125,16 @@ export default function EditPartnerPage() {
                         ></textarea>
                     </div>
 
-                    <div className="form-control">
-                        <label className="label font-medium">Logo</label>
-                        <div className="flex items-center gap-4">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="file-input file-input-bordered w-full"
-                                onChange={handleLogoChange}
-                            />
-                        </div>
-                        {logoPreview && (
-                            <div className="mt-4 p-4 border rounded-lg bg-base-200 flex justify-center">
-                                <img src={logoPreview} alt="Preview" className="h-20 object-contain" />
-                            </div>
-                        )}
-                    </div>
+                    <CloudinaryUpload
+                        onUploadComplete={(url) => setLogoUrl(url)}
+                        currentImage={logoUrl}
+                        folder="yena-partners"
+                        label="Partner Logo (Required)"
+                    />
 
                     <div className="divider"></div>
 
-                    <button type="submit" className="btn btn-primary w-full" disabled={saving || uploading}>
+                    <button type="submit" className="btn btn-primary w-full" disabled={saving}>
                         {saving ? 'Saving...' : 'Update Partner'}
                     </button>
                 </div>

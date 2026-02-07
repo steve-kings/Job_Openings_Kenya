@@ -140,7 +140,7 @@ export default function PWAInstallButton() {
       {(showInstallButton || isIOS) && !showBanner && (
         <button
           onClick={handleInstallClick}
-          className="fixed bottom-20 right-4 z-50 btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white border-none shadow-xl hover:shadow-2xl gap-2 rounded-full px-4"
+          className="fixed bottom-20 right-4 z-50 btn bg-[#C44536] text-white border-none shadow-xl hover:bg-[#8B3A3A] gap-2 rounded-full px-4"
           title="Install YENA App"
         >
           <Smartphone size={20} />

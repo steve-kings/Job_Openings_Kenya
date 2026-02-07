@@ -69,10 +69,10 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/courses" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
+                                <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
                                     <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
                                     Learning
-                                </Link>
+                                </a>
                             </li>
                             <li>
                                 <Link href="/jobs" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">

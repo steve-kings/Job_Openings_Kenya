@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import Link from 'next/link';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function EditOpportunityPage() {
     const params = useParams();
@@ -25,6 +26,7 @@ export default function EditOpportunityPage() {
         status: 'active'
     });
 
+    const [thumbnailUrl, setThumbnailUrl] = useState('');
     const [requirements, setRequirements] = useState<string[]>(['']);
     const [responsibilities, setResponsibilities] = useState<string[]>(['']);
     const [benefits, setBenefits] = useState<string[]>(['']);
@@ -55,6 +57,7 @@ export default function EditOpportunityPage() {
                 status: data.status
             });
 
+            setThumbnailUrl(data.thumbnail_url || '');
             setRequirements(data.requirements && data.requirements.length > 0 ? data.requirements : ['']);
             setResponsibilities(data.responsibilities && data.responsibilities.length > 0 ? data.responsibilities : ['']);
             setBenefits(data.benefits && data.benefits.length > 0 ? data.benefits : ['']);
@@ -100,6 +103,7 @@ export default function EditOpportunityPage() {
                 .from('opportunities')
                 .update({
                     ...formData,
+                    thumbnail_url: thumbnailUrl || null,
                     requirements: cleanRequirements,
                     responsibilities: cleanResponsibilities,
                     benefits: cleanBenefits,
@@ -240,6 +244,22 @@ export default function EditOpportunityPage() {
                                 <option value="expired">Expired</option>
                             </select>
                         </div>
+                    </div>
+                </div>
+
+                {/* Thumbnail Upload */}
+                <div className="card bg-base-100 shadow-xl">
+                    <div className="card-body">
+                        <h3 className="card-title mb-4">Thumbnail Image</h3>
+                        <CloudinaryUpload
+                            onUploadComplete={(url) => setThumbnailUrl(url)}
+                            currentImage={thumbnailUrl}
+                            folder="yena-opportunities"
+                            label="Opportunity Thumbnail (Optional)"
+                        />
+                        <p className="text-xs text-gray-500 mt-2">
+                            Upload a thumbnail image for this opportunity. Leave empty to use default placeholder.
+                        </p>
                     </div>
                 </div>
 

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function EditBlogPostPage() {
     const params = useParams();
@@ -12,7 +13,6 @@ export default function EditBlogPostPage() {
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -24,10 +24,7 @@ export default function EditBlogPostPage() {
         status: 'draft'
     });
 
-    const [imageType, setImageType] = useState<'upload' | 'url'>('url');
     const [imageUrl, setImageUrl] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     useEffect(() => {
         fetchPost();
@@ -53,15 +50,6 @@ export default function EditBlogPostPage() {
                 status: data.status
             });
             setImageUrl(data.featured_image || '');
-            if (data.featured_image) {
-                setImagePreview(data.featured_image);
-                // Guess type based on URL structure (not perfect but good enough for UI toggle)
-                if (data.featured_image.includes('supabase')) {
-                    setImageType('upload');
-                } else {
-                    setImageType('url');
-                }
-            }
         } catch (error) {
             console.error('Error fetching post:', error);
         } finally {
@@ -78,48 +66,16 @@ export default function EditBlogPostPage() {
         });
     };
 
-    const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
 
         try {
-            let finalImageUrl = imageUrl;
-
-            if (imageType === 'upload' && imageFile) {
-                setUploading(true);
-                const fileExt = imageFile.name.split('.').pop();
-                const fileName = `${Math.random()}.${fileExt}`;
-                const filePath = `${fileName}`;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('blogs')
-                    .upload(filePath, imageFile);
-
-                if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('blogs')
-                    .getPublicUrl(filePath);
-
-                finalImageUrl = publicUrl;
-                setUploading(false);
-            } else if (imageType === 'url') {
-                finalImageUrl = imageUrl;
-            }
-
             const { error } = await supabase
                 .from('blog_posts')
                 .update({
                     ...formData,
-                    featured_image: finalImageUrl,
+                    featured_image: imageUrl || null,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', params.id);
@@ -133,7 +89,6 @@ export default function EditBlogPostPage() {
             alert('Error updating post. Please try again.');
         } finally {
             setSaving(false);
-            setUploading(false);
         }
     };
 
@@ -245,7 +200,7 @@ export default function EditBlogPostPage() {
 
                                 <div className="divider"></div>
 
-                                <button type="submit" className="btn btn-primary w-full" disabled={saving || uploading}>
+                                <button type="submit" className="btn btn-primary w-full" disabled={saving}>
                                     {saving ? 'Saving...' : 'Update Post'}
                                 </button>
                             </div>
@@ -255,57 +210,26 @@ export default function EditBlogPostPage() {
                             <div className="card-body">
                                 <h3 className="font-bold text-lg mb-4">Featured Image</h3>
 
-                                <div className="tabs tabs-boxed mb-4">
-                                    <a
-                                        className={`tab flex-1 ${imageType === 'upload' ? 'tab-active' : ''}`}
-                                        onClick={() => setImageType('upload')}
-                                    >
-                                        Upload
-                                    </a>
-                                    <a
-                                        className={`tab flex-1 ${imageType === 'url' ? 'tab-active' : ''}`}
-                                        onClick={() => setImageType('url')}
-                                    >
-                                        URL
-                                    </a>
-                                </div>
+                                <CloudinaryUpload
+                                    onUploadComplete={(url) => setImageUrl(url)}
+                                    currentImage={imageUrl}
+                                    folder="yena-blog"
+                                    label="Featured Image (Optional)"
+                                />
 
-                                {imageType === 'upload' ? (
-                                    <div className="form-control">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="file-input file-input-bordered w-full file-input-sm"
-                                            onChange={handleImageFileChange}
-                                        />
-                                        {imagePreview && (
-                                            <div className="mt-4 rounded-lg overflow-hidden border relative">
-                                                <img src={imagePreview} alt="Preview" className="w-full h-auto" />
-                                                <div className="absolute bottom-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded font-bold opacity-80">
-                                                    YENA
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="form-control">
-                                        <input
-                                            type="text"
-                                            className="input input-bordered w-full input-sm"
-                                            placeholder="/images/your-image.jpg or external URL"
-                                            value={imageUrl}
-                                            onChange={(e) => {
-                                                setImageUrl(e.target.value);
-                                                setImagePreview(e.target.value);
-                                            }}
-                                        />
-                                        {imagePreview && (
-                                            <div className="mt-4 rounded-lg overflow-hidden border relative">
-                                                <img src={imagePreview} alt="Preview" className="w-full h-auto" />
-                                            </div>
-                                        )}
+                                {!imageUrl && (
+                                    <div className="mt-4 rounded-lg overflow-hidden border relative bg-[#C44536] h-48 flex items-center justify-center">
+                                        <div className="text-center text-white">
+                                            <ImageIcon size={48} className="mx-auto mb-2 opacity-50" />
+                                            <p className="font-bold text-2xl">YENA</p>
+                                            <p className="text-sm opacity-75">Default placeholder will be used</p>
+                                        </div>
                                     </div>
                                 )}
+
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Upload an image or leave empty to use YENA branded placeholder.
+                                </p>
                             </div>
                         </div>
                     </div>

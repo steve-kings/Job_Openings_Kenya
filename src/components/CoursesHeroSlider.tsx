@@ -13,7 +13,7 @@ const slides = [
         image: "/images/img1.jpg",
         gradient: "from-[#C44536] to-[#8B3A3A]",
         cta: "Start Learning",
-        ctaLink: "#courses"
+        ctaLink: "https://kings-learn.vercel.app"
     },
     {
         id: 2,
@@ -23,7 +23,7 @@ const slides = [
         image: "/images/img2.jpg",
         gradient: "from-[#F39C12] to-[#C44536]",
         cta: "Explore Courses",
-        ctaLink: "#courses"
+        ctaLink: "https://kings-learn.vercel.app"
     },
     {
         id: 3,
@@ -33,7 +33,7 @@ const slides = [
         image: "/images/img3.jpg",
         gradient: "from-[#10B981] to-[#059669]",
         cta: "Get Started",
-        ctaLink: "#courses"
+        ctaLink: "https://kings-learn.vercel.app"
     },
     {
         id: 4,
@@ -43,7 +43,7 @@ const slides = [
         image: "/images/img4.jpg",
         gradient: "from-[#8B3A3A] to-[#C44536]",
         cta: "Join Now",
-        ctaLink: "#courses"
+        ctaLink: "https://kings-learn.vercel.app"
     }
 ];
 
@@ -142,15 +142,17 @@ export default function CoursesHeroSlider() {
 
                                     {/* CTA Buttons */}
                                     <div className="flex flex-wrap gap-4">
-                                        <Link
+                                        <a
                                             href={slide.ctaLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="btn bg-white text-gray-900 hover:bg-gray-100 border-none btn-lg px-10 shadow-2xl font-bold"
                                         >
                                             {slide.cta}
                                             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
-                                        </Link>
+                                        </a>
                                         <Link
                                             href="/about"
                                             className="btn btn-outline border-2 border-white text-white hover:bg-white hover:text-gray-900 btn-lg px-10"

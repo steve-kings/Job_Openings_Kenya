@@ -215,7 +215,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white hover:opacity-90 border-none w-full btn-lg"
+                                    className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Logging in...' : 'Login'}
@@ -287,7 +287,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-gradient-to-r from-[#C44536] to-[#F39C12] text-white hover:opacity-90 border-none w-full btn-lg"
+                                    className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Creating account...' : 'Sign Up'}
