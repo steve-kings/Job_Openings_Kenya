@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings, Home, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function AdminLayout({
     children,
@@ -10,6 +11,24 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Close mobile menu when route changes
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
+
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMobileMenuOpen]);
 
     const menuItems = [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -20,75 +39,163 @@ export default function AdminLayout({
     ];
 
     return (
-        <div className="drawer lg:drawer-open">
-            <input id="admin-drawer" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content flex flex-col">
-                {/* Navbar for mobile */}
-                <div className="navbar bg-[#C44536] text-white shadow-md lg:hidden">
-                    <div className="flex-none">
-                        <label htmlFor="admin-drawer" className="btn btn-square btn-ghost text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                        </label>
-                    </div>
-                    <div className="flex-1">
-                        <span className="text-xl font-bold">YENA Admin</span>
-                    </div>
-                </div>
-
-                {/* Page content */}
-                <div className="p-6 bg-base-200 min-h-screen">
-                    {children}
-                </div>
-            </div>
-
-            <div className="drawer-side">
-                <label htmlFor="admin-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                <div className="menu p-4 w-80 min-h-full bg-gray-900 text-white">
-                    {/* Sidebar content */}
-                    <div className="mb-8 text-center">
+        <div className="min-h-screen bg-gray-50">
+            {/* Mobile Header */}
+            <div className="lg:hidden sticky top-0 z-50 bg-[#C44536] text-white shadow-lg">
+                <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex items-center gap-3">
                         <img 
                             src="/images/yena logo.jpeg" 
                             alt="YENA Logo" 
-                            className="h-16 w-auto object-contain mx-auto mb-4"
+                            className="h-10 w-10 object-cover rounded-lg"
                         />
-                        <h1 className="text-2xl font-bold text-white mb-2">YENA Admin</h1>
-                        <p className="text-sm text-white/70">Content Management System</p>
+                        <div>
+                            <h1 className="text-lg font-bold">YENA Admin</h1>
+                            <p className="text-xs text-white/80">CMS Dashboard</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="btn btn-ghost btn-square text-white"
+                        aria-label="Toggle menu"
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Mobile Sidebar */}
+            <div className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+                isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}>
+                <div className="flex flex-col h-full p-6 overflow-y-auto">
+                    {/* Mobile Sidebar Header */}
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <img 
+                                src="/images/yena logo.jpeg" 
+                                alt="YENA Logo" 
+                                className="h-12 w-12 object-cover rounded-lg"
+                            />
+                            <div>
+                                <h2 className="text-xl font-bold">YENA Admin</h2>
+                                <p className="text-xs text-white/70">Content Management</p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="btn btn-ghost btn-sm btn-circle text-white"
+                        >
+                            <X size={20} />
+                        </button>
                     </div>
 
-                    <ul className="space-y-2">
+                    {/* Mobile Menu Items */}
+                    <nav className="flex-1 space-y-2">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
-                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'));
                             return (
-                                <li key={item.href}>
-                                    <Link
-                                        href={item.href}
-                                        className={`flex items-center gap-3 p-3 rounded-lg transition-all ${isActive
-                                            ? 'bg-[#C44536] text-white shadow-lg'
-                                            : 'hover:bg-white/10 text-white/90 hover:text-white'
-                                        }`}
-                                    >
-                                        <Icon size={20} />
-                                        <span className="font-medium">{item.name}</span>
-                                    </Link>
-                                </li>
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`flex items-center gap-3 p-4 rounded-xl transition-all ${
+                                        isActive
+                                            ? 'bg-[#C44536] text-white shadow-lg scale-105'
+                                            : 'hover:bg-white/10 text-white/90 hover:text-white active:scale-95'
+                                    }`}
+                                >
+                                    <Icon size={22} />
+                                    <span className="font-medium text-base">{item.name}</span>
+                                </Link>
                             );
                         })}
-                    </ul>
+                    </nav>
 
-                    <div className="divider before:bg-white/20 after:bg-white/20"></div>
-
-                    <Link href="/" className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#C44536]">
-                        ← Back to Website
-                    </Link>
-
-                    <div className="mt-auto pt-6">
+                    {/* Mobile Menu Footer */}
+                    <div className="space-y-3 pt-6 border-t border-white/20">
+                        <Link 
+                            href="/" 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#C44536] w-full gap-2"
+                        >
+                            <Home size={16} />
+                            Back to Website
+                        </Link>
                         <button className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
                             <LogOut size={16} />
                             Logout
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <div className="flex">
+                {/* Desktop Sidebar */}
+                <aside className="hidden lg:block w-72 bg-gray-900 text-white min-h-screen sticky top-0 h-screen overflow-y-auto">
+                    <div className="flex flex-col h-full p-6">
+                        {/* Desktop Sidebar Header */}
+                        <div className="mb-8 text-center">
+                            <img 
+                                src="/images/yena logo.jpeg" 
+                                alt="YENA Logo" 
+                                className="h-16 w-16 object-cover rounded-xl mx-auto mb-4 shadow-lg"
+                            />
+                            <h1 className="text-2xl font-bold text-white mb-1">YENA Admin</h1>
+                            <p className="text-sm text-white/70">Content Management System</p>
+                        </div>
+
+                        {/* Desktop Menu Items */}
+                        <nav className="flex-1 space-y-2">
+                            {menuItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'));
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                                            isActive
+                                                ? 'bg-[#C44536] text-white shadow-lg'
+                                                : 'hover:bg-white/10 text-white/90 hover:text-white'
+                                        }`}
+                                    >
+                                        <Icon size={20} />
+                                        <span className="font-medium">{item.name}</span>
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+
+                        {/* Desktop Menu Footer */}
+                        <div className="space-y-3 pt-6 border-t border-white/20">
+                            <Link href="/" className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#C44536] w-full gap-2">
+                                <Home size={16} />
+                                Back to Website
+                            </Link>
+                            <button className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
+                                <LogOut size={16} />
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                {/* Main Content */}
+                <main className="flex-1 min-h-screen">
+                    <div className="p-4 sm:p-6 lg:p-8 max-w-full overflow-x-hidden">
+                        {children}
+                    </div>
+                </main>
             </div>
         </div>
     );

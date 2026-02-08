@@ -159,23 +159,23 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
             {/* Header */}
-            <div className="bg-gradient-to-br from-[#C44536] via-[#C44536] to-[#8B3A3A] text-white p-8 rounded-2xl shadow-xl">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-4xl font-bold mb-2">Dashboard Overview</h1>
-                        <p className="text-white/90 text-lg">Welcome to the YENA Content Management System</p>
+            <div className="bg-gradient-to-br from-[#C44536] via-[#C44536] to-[#8B3A3A] text-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-xl">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Dashboard Overview</h1>
+                        <p className="text-white/90 text-sm sm:text-base lg:text-lg">Welcome to the YENA Content Management System</p>
                         <div className="flex items-center gap-2 mt-3 text-white/80">
-                            <Clock size={16} />
-                            <span className="text-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                            <Clock size={14} className="sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                         </div>
                     </div>
-                    <div className="hidden md:block">
+                    <div className="hidden sm:block">
                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <Eye className="text-white mb-2" size={32} />
-                            <p className="text-sm text-white/80">System Status</p>
-                            <p className="text-xl font-bold">All Good ✓</p>
+                            <Eye className="text-white mb-2" size={28} />
+                            <p className="text-xs text-white/80">System Status</p>
+                            <p className="text-lg font-bold">All Good ✓</p>
                         </div>
                     </div>
                 </div>
@@ -210,36 +210,41 @@ export default function AdminDashboard() {
 
             {/* Quick Actions */}
             <div className="card bg-white shadow-xl border-l-4 border-[#C44536]">
-                <div className="card-body">
-                    <h2 className="card-title text-2xl mb-4 flex items-center gap-2">
-                        <Plus className="text-[#C44536]" size={24} />
+                <div className="card-body p-4 sm:p-6">
+                    <h2 className="card-title text-lg sm:text-xl lg:text-2xl mb-4 flex items-center gap-2">
+                        <Plus className="text-[#C44536]" size={20} />
                         Quick Actions
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Link href="/admin/opportunities/create" className="btn btn-lg bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none">
-                            <Briefcase size={20} />
-                            Add Opportunity
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none gap-2">
+                            <Briefcase size={18} />
+                            <span className="hidden sm:inline">Add Opportunity</span>
+                            <span className="sm:hidden">Opportunity</span>
                         </Link>
-                        <Link href="/admin/blog/create" className="btn btn-lg bg-[#F39C12] hover:bg-[#D68910] text-white border-none">
-                            <FileText size={20} />
-                            Publish Post
+                        <Link href="/admin/blog/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#F39C12] hover:bg-[#D68910] text-white border-none gap-2">
+                            <FileText size={18} />
+                            <span className="hidden sm:inline">Publish Post</span>
+                            <span className="sm:hidden">Blog Post</span>
                         </Link>
-                        <Link href="/admin/partners/create" className="btn btn-lg bg-[#10B981] hover:bg-[#059669] text-white border-none">
-                            <BarChart3 size={20} />
-                            Add Partner
+                        <Link href="/admin/partners/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#10B981] hover:bg-[#059669] text-white border-none gap-2">
+                            <BarChart3 size={18} />
+                            <span className="hidden sm:inline">Add Partner</span>
+                            <span className="sm:hidden">Partner</span>
                         </Link>
-                        <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="btn btn-lg btn-outline border-2">
-                            🎓 Manage Courses
+                        <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="btn btn-sm sm:btn-md lg:btn-lg btn-outline border-2 gap-2">
+                            <span>🎓</span>
+                            <span className="hidden sm:inline">Manage Courses</span>
+                            <span className="sm:hidden">Courses</span>
                         </a>
                     </div>
                 </div>
             </div>
 
             {/* Recent Activity */}
-            <div className="grid lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Recent Opportunities */}
                 <div className="card bg-white shadow-xl">
-                    <div className="card-body">
+                    <div className="card-body p-4 sm:p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="card-title text-xl">Recent Opportunities</h2>
                             <Briefcase className="text-[#C44536]" size={20} />

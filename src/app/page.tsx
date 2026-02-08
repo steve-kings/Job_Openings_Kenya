@@ -3,8 +3,22 @@ import PartnersSection from "@/components/PartnersSection";
 import HeroSlider from "@/components/HeroSlider";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import { createClient } from '@/lib/supabase/server';
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+
+  // Fetch real stats from database
+  const { data: opportunities } = await supabase
+    .from('opportunities')
+    .select('type, status');
+
+  // Count by type
+  const jobsCount = opportunities?.filter(o => o.type === 'Job' && o.status === 'active').length || 0;
+  const grantsCount = opportunities?.filter(o => o.type === 'Grant' && o.status === 'active').length || 0;
+  const scholarshipsCount = opportunities?.filter(o => o.type === 'Scholarship' && o.status === 'active').length || 0;
+  const trainingsCount = opportunities?.filter(o => o.type === 'Training' && o.status === 'active').length || 0;
+
   return (
     <div className="flex flex-col bg-white">
       {/* Hero Slider */}
@@ -26,28 +40,28 @@ export default function Home() {
                 image: "/images/img1.jpg",
                 title: "Jobs",
                 desc: "Verified job opportunities for young professionals across Africa",
-                count: "1,200+",
+                count: jobsCount,
                 color: "from-[#C44536] to-[#8B3A3A]"
               },
               {
                 image: "/images/img2.jpg",
                 title: "Grants",
                 desc: "Funding opportunities for entrepreneurs and startups",
-                count: "200+",
+                count: grantsCount,
                 color: "from-[#10B981] to-[#059669]"
               },
               {
                 image: "/images/img3.jpg",
                 title: "Scholarships",
                 desc: "Educational opportunities to advance your career",
-                count: "500+",
+                count: scholarshipsCount,
                 color: "from-[#8B3A3A] to-[#C44536]"
               },
               {
                 image: "/images/img4.jpg",
                 title: "Trainings",
                 desc: "Entrepreneurship programs & online skill development",
-                count: "850+",
+                count: trainingsCount,
                 color: "from-[#F39C12] to-[#C44536]"
               }
             ].map((item, i) => (
@@ -66,7 +80,7 @@ export default function Home() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">{item.desc}</p>
                   <div className="text-sm font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent">
-                    {item.count} opportunities
+                    {item.count} {item.count === 1 ? 'opportunity' : 'opportunities'}
                   </div>
                 </div>
               </div>

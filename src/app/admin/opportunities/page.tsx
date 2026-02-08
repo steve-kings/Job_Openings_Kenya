@@ -91,70 +91,70 @@ export default function AdminOpportunitiesPage() {
     return (
         <div>
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Opportunities</h1>
-                    <p className="text-gray-600">Create, edit, and manage job postings, grants, scholarships, and trainings</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Opportunities</h1>
+                    <p className="text-sm sm:text-base text-gray-600">Create, edit, and manage job postings, grants, scholarships, and trainings</p>
                 </div>
-                <Link href="/admin/opportunities/create" className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none gap-2">
-                    <Plus size={20} />
+                <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none gap-2 w-full sm:w-auto">
+                    <Plus size={18} />
                     Add New Opportunity
                 </Link>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
                 <div className="card bg-white shadow-lg border-l-4 border-[#C44536]">
-                    <div className="card-body p-4">
+                    <div className="card-body p-3 sm:p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 font-medium">Total</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Total</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</p>
                             </div>
-                            <div className="p-3 bg-[#C44536] rounded-lg">
-                                <TrendingUp className="text-white" size={24} />
+                            <div className="p-2 sm:p-3 bg-[#C44536] rounded-lg">
+                                <TrendingUp className="text-white" size={20} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="card bg-white shadow-lg border-l-4 border-green-500">
-                    <div className="card-body p-4">
+                    <div className="card-body p-3 sm:p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 font-medium">Active</p>
-                                <p className="text-3xl font-bold text-green-600">{stats.active}</p>
+                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Active</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.active}</p>
                             </div>
-                            <div className="p-3 bg-green-500 rounded-lg">
-                                <CheckCircle className="text-white" size={24} />
+                            <div className="p-2 sm:p-3 bg-green-500 rounded-lg">
+                                <CheckCircle className="text-white" size={20} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="card bg-white shadow-lg border-l-4 border-red-500">
-                    <div className="card-body p-4">
+                    <div className="card-body p-3 sm:p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 font-medium">Expired</p>
-                                <p className="text-3xl font-bold text-red-600">{stats.expired}</p>
+                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Expired</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats.expired}</p>
                             </div>
-                            <div className="p-3 bg-red-500 rounded-lg">
-                                <AlertCircle className="text-white" size={24} />
+                            <div className="p-2 sm:p-3 bg-red-500 rounded-lg">
+                                <AlertCircle className="text-white" size={20} />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="card bg-white shadow-lg border-l-4 border-yellow-500">
-                    <div className="card-body p-4">
+                    <div className="card-body p-3 sm:p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 font-medium">Draft</p>
-                                <p className="text-3xl font-bold text-yellow-600">{stats.draft}</p>
+                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Draft</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{stats.draft}</p>
                             </div>
-                            <div className="p-3 bg-yellow-500 rounded-lg">
-                                <Clock className="text-white" size={24} />
+                            <div className="p-2 sm:p-3 bg-yellow-500 rounded-lg">
+                                <Clock className="text-white" size={20} />
                             </div>
                         </div>
                     </div>
@@ -163,65 +163,67 @@ export default function AdminOpportunitiesPage() {
 
             {/* Filters & Search */}
             <div className="card bg-white shadow-lg mb-6">
-                <div className="card-body">
-                    <div className="flex flex-col md:flex-row gap-4">
+                <div className="card-body p-4 sm:p-6">
+                    <div className="flex flex-col gap-3 sm:gap-4">
                         <div className="form-control flex-1">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="text"
-                                    placeholder="Search by title, company, or location..."
-                                    className="input input-bordered w-full pl-10"
+                                    placeholder="Search opportunities..."
+                                    className="input input-bordered input-sm sm:input-md w-full pl-10 text-sm"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                         </div>
-                        <select
-                            className="select select-bordered w-full md:w-48"
-                            value={filterType}
-                            onChange={(e) => setFilterType(e.target.value)}
-                        >
-                            <option>All Types</option>
-                            <option>Job</option>
-                            <option>Grant</option>
-                            <option>Scholarship</option>
-                            <option>Training</option>
-                        </select>
-                        <select
-                            className="select select-bordered w-full md:w-48"
-                            value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
-                        >
-                            <option>All Status</option>
-                            <option>Active</option>
-                            <option>Expired</option>
-                            <option>Draft</option>
-                        </select>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <select
+                                className="select select-bordered select-sm sm:select-md w-full sm:flex-1 text-sm"
+                                value={filterType}
+                                onChange={(e) => setFilterType(e.target.value)}
+                            >
+                                <option>All Types</option>
+                                <option>Job</option>
+                                <option>Grant</option>
+                                <option>Scholarship</option>
+                                <option>Training</option>
+                            </select>
+                            <select
+                                className="select select-bordered select-sm sm:select-md w-full sm:flex-1 text-sm"
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                            >
+                                <option>All Status</option>
+                                <option>Active</option>
+                                <option>Expired</option>
+                                <option>Draft</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Opportunities Table */}
             <div className="card bg-white shadow-xl">
-                <div className="card-body">
+                <div className="card-body p-0 sm:p-6">
                     {loading ? (
                         <div className="text-center py-12">
                             <span className="loading loading-spinner loading-lg text-[#C44536]"></span>
                             <p className="mt-4 text-gray-600">Loading opportunities...</p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="table">
+                        <div className="overflow-x-auto -mx-4 sm:mx-0">
+                            <table className="table table-xs sm:table-sm lg:table-md">
                                 <thead>
                                     <tr className="border-b-2">
                                         <th className="font-bold text-gray-700">Title</th>
-                                        <th className="font-bold text-gray-700">Type</th>
-                                        <th className="font-bold text-gray-700">Company</th>
-                                        <th className="font-bold text-gray-700">Location</th>
-                                        <th className="font-bold text-gray-700">Deadline</th>
+                                        <th className="font-bold text-gray-700 hidden sm:table-cell">Type</th>
+                                        <th className="font-bold text-gray-700 hidden md:table-cell">Company</th>
+                                        <th className="font-bold text-gray-700 hidden lg:table-cell">Location</th>
+                                        <th className="font-bold text-gray-700 hidden md:table-cell">Deadline</th>
                                         <th className="font-bold text-gray-700">Status</th>
-                                        <th className="font-bold text-gray-700">Views</th>
+                                        <th className="font-bold text-gray-700 hidden lg:table-cell">Views</th>
                                         <th className="font-bold text-gray-700">Actions</th>
                                     </tr>
                                 </thead>
@@ -232,16 +234,16 @@ export default function AdminOpportunitiesPage() {
                                         
                                         return (
                                             <tr key={opp.id} className="hover:bg-gray-50">
-                                                <td className="font-medium max-w-xs">
+                                                <td className="font-medium max-w-[150px] sm:max-w-xs">
                                                     <div className="flex flex-col">
-                                                        <span className="truncate" title={opp.title}>{opp.title}</span>
-                                                        <span className="text-xs text-gray-500">
-                                                            Created {new Date(opp.created_at).toLocaleDateString()}
+                                                        <span className="truncate text-xs sm:text-sm" title={opp.title}>{opp.title}</span>
+                                                        <span className="text-[10px] sm:text-xs text-gray-500 sm:hidden">
+                                                            {opp.type}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td>
-                                                    <span className={`badge badge-sm ${
+                                                <td className="hidden sm:table-cell">
+                                                    <span className={`badge badge-xs sm:badge-sm ${
                                                         opp.type === 'Job' ? 'bg-[#C44536] text-white border-none' :
                                                         opp.type === 'Grant' ? 'badge-success' :
                                                         opp.type === 'Scholarship' ? 'badge-info' :
@@ -250,33 +252,33 @@ export default function AdminOpportunitiesPage() {
                                                         {opp.type}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td className="hidden md:table-cell">
                                                     <div className="flex items-center gap-2">
-                                                        <Building2 size={14} className="text-gray-400" />
-                                                        <span className="text-sm">{opp.company}</span>
+                                                        <Building2 size={12} className="text-gray-400 hidden lg:block" />
+                                                        <span className="text-xs sm:text-sm truncate max-w-[100px]">{opp.company}</span>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <td className="hidden lg:table-cell">
                                                     <div className="flex items-center gap-2">
-                                                        <MapPin size={14} className="text-gray-400" />
-                                                        <span className="text-sm text-gray-600">{opp.location}</span>
+                                                        <MapPin size={12} className="text-gray-400" />
+                                                        <span className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px]">{opp.location}</span>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <td className="hidden md:table-cell">
                                                     <div className="flex flex-col">
-                                                        <div className="flex items-center gap-2">
-                                                            <Calendar size={14} className="text-gray-400" />
-                                                            <span className="text-sm">{new Date(opp.deadline).toLocaleDateString()}</span>
+                                                        <div className="flex items-center gap-1">
+                                                            <Calendar size={12} className="text-gray-400" />
+                                                            <span className="text-xs">{new Date(opp.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                                                         </div>
                                                         {status === 'Active' && daysUntilDeadline <= 7 && (
-                                                            <span className="text-xs text-orange-600 font-medium">
-                                                                {daysUntilDeadline} days left
+                                                            <span className="text-[10px] text-orange-600 font-medium">
+                                                                {daysUntilDeadline}d left
                                                             </span>
                                                         )}
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <span className={`badge badge-sm ${
+                                                    <span className={`badge badge-xs sm:badge-sm ${
                                                         status === 'Active' ? 'badge-success' :
                                                         status === 'Expired' ? 'badge-error' : 
                                                         'badge-warning'
@@ -284,27 +286,27 @@ export default function AdminOpportunitiesPage() {
                                                         {status}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td className="hidden lg:table-cell">
                                                     <div className="flex items-center gap-1 text-gray-600">
-                                                        <Eye size={14} />
-                                                        <span className="text-sm">{opp.views || 0}</span>
+                                                        <Eye size={12} />
+                                                        <span className="text-xs">{opp.views || 0}</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div className="flex gap-2">
+                                                    <div className="flex gap-1">
                                                         <Link 
                                                             href={`/admin/opportunities/${opp.id}`} 
-                                                            className="btn btn-ghost btn-xs hover:bg-blue-50 hover:text-blue-600" 
+                                                            className="btn btn-ghost btn-xs hover:bg-blue-50 hover:text-blue-600 p-1" 
                                                             title="Edit"
                                                         >
-                                                            <Edit size={16} />
+                                                            <Edit size={14} />
                                                         </Link>
                                                         <button
                                                             onClick={() => handleDelete(opp.id)}
-                                                            className="btn btn-ghost btn-xs hover:bg-red-50 hover:text-red-600"
+                                                            className="btn btn-ghost btn-xs hover:bg-red-50 hover:text-red-600 p-1"
                                                             title="Delete"
                                                         >
-                                                            <Trash2 size={16} />
+                                                            <Trash2 size={14} />
                                                         </button>
                                                     </div>
                                                 </td>

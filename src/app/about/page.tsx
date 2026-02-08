@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb, faUsers, faHandshake, faTrophy, faRocket } from '@fortawesome/free-solid-svg-icons';
 import type { Metadata } from 'next';
+import PartnersSection from '@/components/PartnersSection';
 
 export const metadata: Metadata = {
     title: 'About Us - YENA | Youth Empowerment Network Africa',
@@ -438,6 +439,9 @@ export default function About() {
                     </div>
                 </div>
             </div>
+
+            {/* Partners Section */}
+            <PartnersSection />
 
             {/* CTA Section */}
             <div className="py-20 bg-gradient-to-r from-gray-900 to-gray-800 text-white">

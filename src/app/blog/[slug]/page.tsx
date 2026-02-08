@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
 
-    const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yena.vercel.app'}/blog/${resolvedParams.slug}`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://youth-empowerment-and-networking-af.vercel.app';
+    const url = `${siteUrl}/blog/${resolvedParams.slug}`;
+    const fallbackImage = `${siteUrl}/images/yena logo.jpeg`;
+    const imageUrl = post.featured_image || fallbackImage;
     
     return {
         title: `${post.title} | YENA Blog`,
@@ -28,14 +31,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             description: post.excerpt || post.content.substring(0, 160),
             url: url,
             siteName: 'YENA - Youth Empowerment Network Africa',
-            images: post.featured_image ? [
+            images: [
                 {
-                    url: post.featured_image,
+                    url: imageUrl,
                     width: 1200,
                     height: 630,
                     alt: post.title,
                 }
-            ] : [],
+            ],
             locale: 'en_US',
             type: 'article',
             publishedTime: post.created_at,
@@ -45,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             card: 'summary_large_image',
             title: post.title,
             description: post.excerpt || post.content.substring(0, 160),
-            images: post.featured_image ? [post.featured_image] : [],
+            images: [imageUrl],
         },
     };
 }

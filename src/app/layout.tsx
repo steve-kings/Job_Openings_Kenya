@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
     images: [
       {
-        url: '/images/yena logo.jpeg',
+        url: 'https://youth-empowerment-and-networking-af.vercel.app/images/yena logo.jpeg',
         width: 1200,
         height: 630,
         alt: 'YENA - Youth Empowerment Network Africa',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "YENA - Youth Empowerment Network Africa",
     description: "Bridging the gap between young Africans and life-changing opportunities",
-    images: ['/images/yena logo.jpeg'],
+    images: ['https://youth-empowerment-and-networking-af.vercel.app/images/yena logo.jpeg'],
     creator: '@yena_africa',
   },
   robots: {

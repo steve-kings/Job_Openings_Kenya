@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         };
     }
 
-    const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yena.vercel.app'}/jobs/${resolvedParams.id}`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://youth-empowerment-and-networking-af.vercel.app';
+    const url = `${siteUrl}/jobs/${resolvedParams.id}`;
+    const fallbackImage = `${siteUrl}/images/yena logo.jpeg`;
+    const imageUrl = job.thumbnail_url || fallbackImage;
     
     return {
         title: `${job.title} - ${job.company} | YENA`,
@@ -28,14 +31,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             description: job.short_description || job.description.substring(0, 160),
             url: url,
             siteName: 'YENA - Youth Empowerment Network Africa',
-            images: job.thumbnail_url ? [
+            images: [
                 {
-                    url: job.thumbnail_url,
+                    url: imageUrl,
                     width: 1200,
                     height: 630,
                     alt: job.title,
                 }
-            ] : [],
+            ],
             locale: 'en_US',
             type: 'article',
         },
@@ -43,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             card: 'summary_large_image',
             title: job.title,
             description: job.short_description || job.description.substring(0, 160),
-            images: job.thumbnail_url ? [job.thumbnail_url] : [],
+            images: [imageUrl],
         },
     };
 }
