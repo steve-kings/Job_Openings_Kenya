@@ -33,12 +33,22 @@ export async function GET(request: Request) {
                     .single()
 
                 if (!profile) {
-                    // Create profile for OAuth user
+                    // Create profile for OAuth user with Google profile image
                     await supabase.from('profiles').insert({
                         id: data.user.id,
                         full_name: data.user.user_metadata.full_name || data.user.user_metadata.name || 'User',
+                        avatar_url: data.user.user_metadata.avatar_url || data.user.user_metadata.picture || null,
                         role: 'user'
                     })
+                } else {
+                    // Update existing profile with Google avatar if not set
+                    const googleAvatar = data.user.user_metadata.avatar_url || data.user.user_metadata.picture;
+                    if (googleAvatar) {
+                        await supabase
+                            .from('profiles')
+                            .update({ avatar_url: googleAvatar })
+                            .eq('id', data.user.id)
+                    }
                 }
 
                 // Check if user is admin

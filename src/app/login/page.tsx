@@ -168,6 +168,18 @@ export default function Login() {
                             </div>
                         )}
 
+                        {/* Google Login - Moved to Top */}
+                        <button
+                            onClick={handleGoogleLogin}
+                            className="btn btn-outline border-2 border-[#C44536] text-[#C44536] hover:bg-[#C44536] hover:text-white w-full btn-lg gap-2 mb-6"
+                        >
+                            <FontAwesomeIcon icon={faGoogle} className="text-xl" />
+                            Continue with Google
+                        </button>
+
+                        {/* Divider */}
+                        <div className="divider my-6">OR</div>
+
                         {/* Login Form */}
                         {isLogin ? (
                             <form onSubmit={handleEmailLogin} className="space-y-4">
@@ -295,18 +307,6 @@ export default function Login() {
                                 </button>
                             </form>
                         )}
-
-                        {/* Divider */}
-                        <div className="divider my-6">OR</div>
-
-                        {/* Google Login */}
-                        <button
-                            onClick={handleGoogleLogin}
-                            className="btn btn-outline border-2 border-[#C44536] text-[#C44536] hover:bg-[#C44536] hover:text-white w-full btn-lg gap-2"
-                        >
-                            <FontAwesomeIcon icon={faGoogle} className="text-xl" />
-                            Continue with Google
-                        </button>
 
                         {/* Footer Text */}
                         <p className="text-center text-sm text-gray-600 mt-6">
