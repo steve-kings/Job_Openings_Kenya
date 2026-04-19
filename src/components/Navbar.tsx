@@ -42,10 +42,16 @@ export default function Navbar() {
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
+        setMobileMenuOpen(false);
         router.push('/');
     };
 
     const isActive = (path: string) => pathname === path;
+
+    // Automatically close mobile menu when navigating to a new route
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [pathname]);
 
     const navLinks = [
         { href: '/', label: 'Home' },
