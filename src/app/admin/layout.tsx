@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings, Home, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings, Home, Menu, X, UserCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -40,6 +40,7 @@ export default function AdminLayout({
 
     const menuItems = [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+        { name: 'Members', href: '/admin/members', icon: UserCheck },
         { name: 'Opportunities', href: '/admin/opportunities', icon: Briefcase },
         { name: 'Blog Posts', href: '/admin/blog', icon: FileText },
         { name: 'Partners', href: '/admin/partners', icon: Users },
