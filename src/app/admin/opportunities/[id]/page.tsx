@@ -254,7 +254,7 @@ export default function EditOpportunityPage() {
                         <CloudinaryUpload
                             onUploadComplete={(url) => setThumbnailUrl(url)}
                             currentImage={thumbnailUrl}
-                            folder="yena-opportunities"
+                            folder="1000jobs-opportunities"
                             label="Opportunity Thumbnail (Optional)"
                         />
                         <p className="text-xs text-gray-500 mt-2">

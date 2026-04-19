@@ -62,7 +62,7 @@ export default function PWAInstallButton() {
     if (!deferredPrompt) {
       // If no deferred prompt, show iOS instructions or generic message
       if (isIOS) {
-        alert('To install YENA on iOS:\n\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"');
+        alert('To install 1000Jobs on iOS:\n\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"');
       }
       return;
     }
@@ -95,24 +95,24 @@ export default function PWAInstallButton() {
       {/* Floating Install Banner */}
       {showBanner && (showInstallButton || isIOS) && (
         <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-slide-up">
-          <div className="bg-gradient-to-r from-[#C44536] to-[#F39C12] rounded-2xl shadow-2xl p-4 text-white">
+          <div className="bg-gradient-to-r from-[#1976D2] to-[#4CAF50] rounded-2xl shadow-2xl p-4 text-white">
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
                 <img 
-                  src="/images/yena logo.jpeg" 
-                  alt="YENA" 
+                  src="/1000jobs_logo.jpeg" 
+                  alt="1000Jobs" 
                   className="w-10 h-10 rounded-lg object-cover"
                 />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg">Install YENA App</h3>
+                <h3 className="font-bold text-lg">Install 1000Jobs App</h3>
                 <p className="text-sm text-white/90 mb-3">
                   Get quick access to opportunities, courses & more!
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={handleInstallClick}
-                    className="btn btn-sm bg-white text-[#C44536] hover:bg-gray-100 border-none gap-1"
+                    className="btn btn-sm bg-white text-[#1976D2] hover:bg-gray-100 border-none gap-1"
                   >
                     <Download size={16} />
                     Install Now
@@ -140,8 +140,8 @@ export default function PWAInstallButton() {
       {(showInstallButton || isIOS) && !showBanner && (
         <button
           onClick={handleInstallClick}
-          className="fixed bottom-20 right-4 z-50 btn bg-[#C44536] text-white border-none shadow-xl hover:bg-[#8B3A3A] gap-2 rounded-full px-4"
-          title="Install YENA App"
+          className="fixed bottom-20 right-4 z-50 btn bg-[#1976D2] text-white border-none shadow-xl hover:bg-[#1565C0] gap-2 rounded-full px-4"
+          title="Install 1000Jobs App"
         >
           <Smartphone size={20} />
           <span className="hidden sm:inline">Install App</span>

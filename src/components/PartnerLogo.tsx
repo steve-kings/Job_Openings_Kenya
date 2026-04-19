@@ -17,7 +17,7 @@ export default function PartnerLogo({ src, alt, className = '' }: PartnerLogoPro
             alt={alt}
             className={className || "h-12 md:h-16 object-contain max-w-[150px]"}
             onError={() => {
-                setImgSrc('/images/yena logo.jpeg');
+                setImgSrc('/1000jobs_logo.jpeg');
             }}
         />
     );

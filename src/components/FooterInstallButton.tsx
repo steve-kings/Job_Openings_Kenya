@@ -49,7 +49,7 @@ export default function FooterInstallButton() {
 
   const handleInstallClick = async () => {
     if (isIOS) {
-      alert('To install YENA on iOS:\n\n1. Tap the Share button (square with arrow)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm');
+      alert('To install 1000Jobs on iOS:\n\n1. Tap the Share button (square with arrow)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm');
       return;
     }
 
@@ -67,7 +67,7 @@ export default function FooterInstallButton() {
 
   if (isStandalone) {
     return (
-      <div className="flex items-center gap-2 text-[#10B981]">
+      <div className="flex items-center gap-2 text-[#4CAF50]">
         <Smartphone size={20} />
         <span className="text-sm font-medium">App Installed ✓</span>
       </div>
@@ -81,7 +81,7 @@ export default function FooterInstallButton() {
   return (
     <button
       onClick={handleInstallClick}
-      className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] gap-2 px-6"
+      className="btn bg-[#1976D2] text-white border-none hover:bg-[#1565C0] gap-2 px-6"
     >
       <Download size={20} />
       Install App

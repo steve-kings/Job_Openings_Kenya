@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings, Home, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 export default function AdminLayout({
     children,
@@ -11,7 +12,14 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const router = useRouter();
+    const supabase = createClient();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push('/');
+    };
 
     // Close mobile menu when route changes
     useEffect(() => {
@@ -41,16 +49,16 @@ export default function AdminLayout({
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Mobile Header */}
-            <div className="lg:hidden sticky top-0 z-50 bg-[#C44536] text-white shadow-lg">
+            <div className="lg:hidden sticky top-0 z-50 bg-[#1976D2] text-white shadow-lg">
                 <div className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-3">
                         <img 
-                            src="/images/yena logo.jpeg" 
-                            alt="YENA Logo" 
+                            src="/1000jobs_logo.jpeg" 
+                            alt="1000Jobs Logo" 
                             className="h-10 w-10 object-cover rounded-lg"
                         />
                         <div>
-                            <h1 className="text-lg font-bold">YENA Admin</h1>
+                            <h1 className="text-lg font-bold">1000Jobs Admin</h1>
                             <p className="text-xs text-white/80">CMS Dashboard</p>
                         </div>
                     </div>
@@ -81,12 +89,12 @@ export default function AdminLayout({
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                             <img 
-                                src="/images/yena logo.jpeg" 
-                                alt="YENA Logo" 
+                                src="/1000jobs_logo.jpeg" 
+                                alt="1000Jobs Logo" 
                                 className="h-12 w-12 object-cover rounded-lg"
                             />
                             <div>
-                                <h2 className="text-xl font-bold">YENA Admin</h2>
+                                <h2 className="text-xl font-bold">1000Jobs Admin</h2>
                                 <p className="text-xs text-white/70">Content Management</p>
                             </div>
                         </div>
@@ -110,7 +118,7 @@ export default function AdminLayout({
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`flex items-center gap-3 p-4 rounded-xl transition-all ${
                                         isActive
-                                            ? 'bg-[#C44536] text-white shadow-lg scale-105'
+                                            ? 'bg-[#1976D2] text-white shadow-lg scale-105'
                                             : 'hover:bg-white/10 text-white/90 hover:text-white active:scale-95'
                                     }`}
                                 >
@@ -126,12 +134,12 @@ export default function AdminLayout({
                         <Link 
                             href="/" 
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#C44536] w-full gap-2"
+                            className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#1976D2] w-full gap-2"
                         >
                             <Home size={16} />
                             Back to Website
                         </Link>
-                        <button className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
+                        <button onClick={handleLogout} className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
                             <LogOut size={16} />
                             Logout
                         </button>
@@ -146,11 +154,11 @@ export default function AdminLayout({
                         {/* Desktop Sidebar Header */}
                         <div className="mb-8 text-center">
                             <img 
-                                src="/images/yena logo.jpeg" 
-                                alt="YENA Logo" 
+                                src="/1000jobs_logo.jpeg" 
+                                alt="1000Jobs Logo" 
                                 className="h-16 w-16 object-cover rounded-xl mx-auto mb-4 shadow-lg"
                             />
-                            <h1 className="text-2xl font-bold text-white mb-1">YENA Admin</h1>
+                            <h1 className="text-2xl font-bold text-white mb-1">1000Jobs Admin</h1>
                             <p className="text-sm text-white/70">Content Management System</p>
                         </div>
 
@@ -165,7 +173,7 @@ export default function AdminLayout({
                                         href={item.href}
                                         className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                                             isActive
-                                                ? 'bg-[#C44536] text-white shadow-lg'
+                                                ? 'bg-[#1976D2] text-white shadow-lg'
                                                 : 'hover:bg-white/10 text-white/90 hover:text-white'
                                         }`}
                                     >
@@ -178,11 +186,11 @@ export default function AdminLayout({
 
                         {/* Desktop Menu Footer */}
                         <div className="space-y-3 pt-6 border-t border-white/20">
-                            <Link href="/" className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#C44536] w-full gap-2">
+                            <Link href="/" className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#1976D2] w-full gap-2">
                                 <Home size={16} />
                                 Back to Website
                             </Link>
-                            <button className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
+                            <button onClick={handleLogout} className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
                                 <LogOut size={16} />
                                 Logout
                             </button>

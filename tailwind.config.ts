@@ -20,14 +20,14 @@ const config = {
   daisyui: {
     themes: [
       {
-        yena: {
-          "primary": "#C44536", // Terracotta Red (from logo)
-          "secondary": "#F39C12", // Orange (from logo)
-          "accent": "#8B3A3A", // Dark Red/Brown (from logo text)
-          "neutral": "#3E2723", // Dark Brown
-          "base-100": "#FFFFFF", // White
+        "jobs1000": {
+          "primary": "#1976D2",
+          "secondary": "#4CAF50",
+          "accent": "#1565C0",
+          "neutral": "#3E2723",
+          "base-100": "#FFFFFF",
           "info": "#3ABFF8",
-          "success": "#10B981", // Clean Green
+          "success": "#4CAF50",
           "warning": "#FBBD23",
           "error": "#F87272",
         },

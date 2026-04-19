@@ -128,7 +128,7 @@ export default function EditPartnerPage() {
                     <CloudinaryUpload
                         onUploadComplete={(url) => setLogoUrl(url)}
                         currentImage={logoUrl}
-                        folder="yena-partners"
+                        folder="1000jobs-partners"
                         label="Partner Logo (Required)"
                     />
 

@@ -7,10 +7,10 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState([
-        { title: 'Total Opportunities', value: '...', change: 'Loading...', icon: Briefcase, color: '#C44536', trend: '+0%' },
-        { title: 'Blog Posts', value: '...', change: 'Loading...', icon: FileText, color: '#F39C12', trend: '+0%' },
-        { title: 'Registered Users', value: '...', change: 'Loading...', icon: Users, color: '#10B981', trend: '+0%' },
-        { title: 'Partners', value: '...', change: 'Loading...', icon: BarChart3, color: '#8B3A3A', trend: '+0%' },
+        { title: 'Total Opportunities', value: '...', change: 'Loading...', icon: Briefcase, color: '#1976D2', trend: '+0%' },
+        { title: 'Blog Posts', value: '...', change: 'Loading...', icon: FileText, color: '#4CAF50', trend: '+0%' },
+        { title: 'Registered Users', value: '...', change: 'Loading...', icon: Users, color: '#4CAF50', trend: '+0%' },
+        { title: 'Partners', value: '...', change: 'Loading...', icon: BarChart3, color: '#1565C0', trend: '+0%' },
     ]);
     const [recentOpportunities, setRecentOpportunities] = useState<any[]>([]);
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
                     value: oppCount.data?.[0]?.count?.toString() || '0', 
                     change: `${activeOpp?.[0]?.count || 0} active`, 
                     icon: Briefcase, 
-                    color: '#C44536',
+                    color: '#1976D2',
                     trend: `${activePercent}%`
                 },
                 { 
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
                     value: postCount.data?.[0]?.count?.toString() || '0', 
                     change: `${publishedPosts?.[0]?.count || 0} published`, 
                     icon: FileText, 
-                    color: '#F39C12',
+                    color: '#4CAF50',
                     trend: `${publishedPercent}%`
                 },
                 { 
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
                     value: userCount.data?.[0]?.count?.toString() || '0', 
                     change: 'All time', 
                     icon: Users, 
-                    color: '#10B981',
+                    color: '#4CAF50',
                     trend: '100%'
                 },
                 { 
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
                     value: partnerCount.data?.[0]?.count?.toString() || '0', 
                     change: 'Active partnerships', 
                     icon: BarChart3, 
-                    color: '#8B3A3A',
+                    color: '#1565C0',
                     trend: '100%'
                 },
             ]);
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="text-center">
-                    <span className="loading loading-spinner loading-lg text-[#C44536]"></span>
+                    <span className="loading loading-spinner loading-lg text-[#1976D2]"></span>
                     <p className="mt-4 text-gray-600">Loading dashboard...</p>
                 </div>
             </div>
@@ -161,11 +161,11 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-6 sm:space-y-8">
             {/* Header */}
-            <div className="bg-gradient-to-br from-[#C44536] via-[#C44536] to-[#8B3A3A] text-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-xl">
+            <div className="bg-gradient-to-br from-[#1976D2] via-[#1976D2] to-[#1565C0] text-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-xl">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex-1">
                         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Dashboard Overview</h1>
-                        <p className="text-white/90 text-sm sm:text-base lg:text-lg">Welcome to the YENA Content Management System</p>
+                        <p className="text-white/90 text-sm sm:text-base lg:text-lg">Welcome to the 1000Jobs Content Management System</p>
                         <div className="flex items-center gap-2 mt-3 text-white/80">
                             <Clock size={14} className="sm:w-4 sm:h-4" />
                             <span className="text-xs sm:text-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -209,24 +209,24 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="card bg-white shadow-xl border-l-4 border-[#C44536]">
+            <div className="card bg-white shadow-xl border-l-4 border-[#1976D2]">
                 <div className="card-body p-4 sm:p-6">
                     <h2 className="card-title text-lg sm:text-xl lg:text-2xl mb-4 flex items-center gap-2">
-                        <Plus className="text-[#C44536]" size={20} />
+                        <Plus className="text-[#1976D2]" size={20} />
                         Quick Actions
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none gap-2">
+                        <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#1976D2] hover:bg-[#1565C0] text-white border-none gap-2">
                             <Briefcase size={18} />
                             <span className="hidden sm:inline">Add Opportunity</span>
                             <span className="sm:hidden">Opportunity</span>
                         </Link>
-                        <Link href="/admin/blog/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#F39C12] hover:bg-[#D68910] text-white border-none gap-2">
+                        <Link href="/admin/blog/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#4CAF50] hover:bg-[#D68910] text-white border-none gap-2">
                             <FileText size={18} />
                             <span className="hidden sm:inline">Publish Post</span>
                             <span className="sm:hidden">Blog Post</span>
                         </Link>
-                        <Link href="/admin/partners/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#10B981] hover:bg-[#059669] text-white border-none gap-2">
+                        <Link href="/admin/partners/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-2">
                             <BarChart3 size={18} />
                             <span className="hidden sm:inline">Add Partner</span>
                             <span className="sm:hidden">Partner</span>
@@ -247,7 +247,7 @@ export default function AdminDashboard() {
                     <div className="card-body p-4 sm:p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="card-title text-xl">Recent Opportunities</h2>
-                            <Briefcase className="text-[#C44536]" size={20} />
+                            <Briefcase className="text-[#1976D2]" size={20} />
                         </div>
                         <div className="space-y-3">
                             {recentOpportunities.length > 0 ? recentOpportunities.map((opp) => (
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
                                         <div className="flex-1 min-w-0">
                                             <p className="font-semibold text-gray-900 truncate">{opp.title}</p>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="badge badge-sm" style={{ backgroundColor: '#C44536', color: 'white' }}>{opp.type}</span>
+                                                <span className="badge badge-sm" style={{ backgroundColor: '#1976D2', color: 'white' }}>{opp.type}</span>
                                                 <span className={`badge badge-sm ${opp.status === 'active' ? 'badge-success' : 'badge-error'}`}>
                                                     {opp.status}
                                                 </span>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                             )}
                         </div>
                         <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/opportunities" className="btn btn-sm bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none">
+                            <Link href="/admin/opportunities" className="btn btn-sm bg-[#1976D2] hover:bg-[#1565C0] text-white border-none">
                                 View All →
                             </Link>
                         </div>
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                     <div className="card-body">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="card-title text-xl">Recent Blog Posts</h2>
-                            <FileText className="text-[#F39C12]" size={20} />
+                            <FileText className="text-[#4CAF50]" size={20} />
                         </div>
                         <div className="space-y-3">
                             {recentPosts.length > 0 ? recentPosts.map((post) => (
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
                                         <div className="flex-1 min-w-0">
                                             <p className="font-semibold text-gray-900 truncate">{post.title}</p>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="badge badge-sm" style={{ backgroundColor: '#F39C12', color: 'white' }}>{post.category}</span>
+                                                <span className="badge badge-sm" style={{ backgroundColor: '#4CAF50', color: 'white' }}>{post.category}</span>
                                                 <span className={`badge badge-sm ${post.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
                                                     {post.status}
                                                 </span>
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                             )}
                         </div>
                         <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/blog" className="btn btn-sm bg-[#F39C12] hover:bg-[#D68910] text-white border-none">
+                            <Link href="/admin/blog" className="btn btn-sm bg-[#4CAF50] hover:bg-[#D68910] text-white border-none">
                                 View All →
                             </Link>
                         </div>
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
                     <div className="card-body">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="card-title text-xl">New Users</h2>
-                            <Users className="text-[#10B981]" size={20} />
+                            <Users className="text-[#4CAF50]" size={20} />
                         </div>
                         <div className="space-y-3">
                             {recentUsers.length > 0 ? recentUsers.map((user) => (
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
                             )}
                         </div>
                         <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/users" className="btn btn-sm bg-[#10B981] hover:bg-[#059669] text-white border-none">
+                            <Link href="/admin/users" className="btn btn-sm bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none">
                                 View All →
                             </Link>
                         </div>

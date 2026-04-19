@@ -57,15 +57,15 @@ export default function Navbar() {
     ];
 
     return (
-        <nav className="sticky top-0 z-50 bg-white shadow-md border-b-2 border-[#C44536]">
+        <nav className="sticky top-0 z-50 bg-white shadow-md border-b-2 border-[#1976D2]">
             <div className="container mx-auto px-4 lg:px-8">
-                <div className="flex items-center justify-between h-16 lg:h-20">
+                <div className="flex items-center justify-between h-14 lg:h-16">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 group">
+                    <Link href="/" className="flex items-center gap-2 group">
                         <img 
-                            src="/images/yena logo.jpeg" 
-                            alt="YENA Logo" 
-                            className="h-12 lg:h-16 w-auto object-contain group-hover:scale-105 transition-transform"
+                            src="/1000jobs_logo.jpeg" 
+                            alt="1000Jobs Logo" 
+                            className="h-9 lg:h-11 w-auto object-contain group-hover:scale-105 transition-transform"
                         />
                     </Link>
 
@@ -78,7 +78,7 @@ export default function Navbar() {
                                     href={link.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="px-4 py-2 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]"
+                                    className="px-4 py-2 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#1976D2]/10 hover:text-[#1976D2]"
                                 >
                                     {link.label}
                                 </a>
@@ -88,8 +88,8 @@ export default function Navbar() {
                                     href={link.href}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                                         isActive(link.href)
-                                            ? 'bg-[#C44536] text-white'
-                                            : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
+                                            ? 'bg-[#1976D2] text-white'
+                                            : 'text-gray-700 hover:bg-[#1976D2]/10 hover:text-[#1976D2]'
                                     }`}
                                 >
                                     {link.label}
@@ -107,7 +107,7 @@ export default function Navbar() {
                                     role="button"
                                     className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
-                                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-[#C44536] flex items-center justify-center text-white font-bold shadow-md">
+                                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-[#1976D2] flex items-center justify-center text-white font-bold shadow-md">
                                         {profile?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                     <div className="hidden md:block text-left">
@@ -134,20 +134,20 @@ export default function Navbar() {
                                     </li>
                                     <div className="divider my-1"></div>
                                     <li>
-                                        <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 hover:bg-[#C44536]/10 hover:text-[#C44536]">
+                                        <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 hover:bg-[#1976D2]/10 hover:text-[#1976D2]">
                                             <LayoutDashboard size={18} />
                                             Dashboard
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 hover:bg-[#F39C12]/10 hover:text-[#F39C12]">
+                                        <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 hover:bg-[#4CAF50]/10 hover:text-[#4CAF50]">
                                             <Award size={18} />
                                             My Certificates
                                         </Link>
                                     </li>
                                     {profile?.role === 'admin' && (
                                         <li>
-                                            <Link href="/admin" className="flex items-center gap-3 px-4 py-2 hover:bg-[#8B3A3A]/10 hover:text-[#8B3A3A]">
+                                            <Link href="/admin" className="flex items-center gap-3 px-4 py-2 hover:bg-[#1565C0]/10 hover:text-[#1565C0]">
                                                 <Settings size={18} />
                                                 Admin Panel
                                             </Link>
@@ -168,7 +168,7 @@ export default function Navbar() {
                         ) : (
                             <Link
                                 href="/login"
-                                className="btn bg-[#C44536] text-white border-none hover:bg-[#8B3A3A] transition-colors btn-sm lg:btn-md"
+                                className="btn bg-[#1976D2] text-white border-none hover:bg-[#1565C0] transition-colors btn-sm lg:btn-md"
                             >
                                 <User size={18} className="hidden sm:inline" />
                                 Login
@@ -201,7 +201,7 @@ export default function Navbar() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="px-4 py-3 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]"
+                                        className="px-4 py-3 rounded-lg font-medium transition-all text-gray-700 hover:bg-[#1976D2]/10 hover:text-[#1976D2]"
                                     >
                                         {link.label}
                                     </a>
@@ -212,8 +212,8 @@ export default function Navbar() {
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={`px-4 py-3 rounded-lg font-medium transition-all ${
                                             isActive(link.href)
-                                                ? 'bg-[#C44536] text-white'
-                                                : 'text-gray-700 hover:bg-[#C44536]/10 hover:text-[#C44536]'
+                                                ? 'bg-[#1976D2] text-white'
+                                                : 'text-gray-700 hover:bg-[#1976D2]/10 hover:text-[#1976D2]'
                                         }`}
                                     >
                                         {link.label}

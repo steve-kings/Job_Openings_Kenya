@@ -90,7 +90,7 @@ export default function JobsHeroSlider() {
                             alt={s.title}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-[#8B3A3A]/90 to-[#C44536]/85"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-[#1565C0]/90 to-[#1976D2]/85"></div>
                     </div>
                 ))}
             </div>
@@ -101,7 +101,7 @@ export default function JobsHeroSlider() {
                     <div key={slide.id} className="animate-fadeIn">
                         <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white">
                             {slide.title}
-                            <span className="block text-[#F39C12] mt-2">{slide.highlight}</span>
+                            <span className="block text-[#4CAF50] mt-2">{slide.highlight}</span>
                         </h1>
                         <p className="text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
                             {slide.description}
@@ -109,7 +109,7 @@ export default function JobsHeroSlider() {
                         <div>
                             <a 
                                 href="#opportunities" 
-                                className="btn bg-[#F39C12] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
+                                className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
                             >
                                 {slide.cta1}
                             </a>
@@ -137,7 +137,7 @@ export default function JobsHeroSlider() {
                             onClick={() => goToSlide(index)}
                             className={`h-3 rounded-full transition-all ${
                                 index === currentSlide 
-                                    ? 'bg-[#F39C12] w-8' 
+                                    ? 'bg-[#4CAF50] w-8' 
                                     : 'bg-white/50 w-3 hover:bg-white/70'
                             }`}
                             aria-label={`Go to slide ${index + 1}`}

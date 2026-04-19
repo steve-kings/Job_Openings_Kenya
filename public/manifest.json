@@ -1,21 +1,21 @@
 {
-  "name": "YENA - Youth Empowerment Network Africa",
-  "short_name": "YENA",
+  "name": "1000Jobs - 1000Jobs",
+  "short_name": "1000Jobs",
   "description": "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#C44536",
+  "theme_color": "#1976D2",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/yena logo.jpeg",
+      "src": "/1000jobs_logo.jpeg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/yena logo.jpeg",
+      "src": "/1000jobs_logo.jpeg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"

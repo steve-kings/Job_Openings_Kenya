@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Image as ImageIcon, FileText, Edit3, Type, Settings, User, Save, Link2, Info } from 'lucide-react';
+import { ArrowLeft, FileText, Save, Link2, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -11,6 +11,7 @@ export default function CreateBlogPostPage() {
     const router = useRouter();
     const supabase = createClient();
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -18,11 +19,16 @@ export default function CreateBlogPostPage() {
         excerpt: '',
         content: '',
         category: 'Success Story',
-        author_name: 'YENA Team',
+        author_name: '1000Jobs Team',
         status: 'draft'
     });
 
     const [imageUrl, setImageUrl] = useState('');
+
+    const showToast = (type: 'success' | 'error', msg: string) => {
+        setToast({ type, msg });
+        setTimeout(() => setToast(null), 4000);
+    };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const title = e.target.value;
@@ -36,250 +42,184 @@ export default function CreateBlogPostPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-
         try {
-            const { error } = await supabase
-                .from('blog_posts')
-                .insert({
-                    ...formData,
-                    featured_image: imageUrl || null, // Use null if no URL provided
-                    published_at: formData.status === 'published' ? new Date().toISOString() : null
-                });
-
+            const { error } = await supabase.from('blog_posts').insert({
+                ...formData,
+                featured_image: imageUrl || null,
+                published_at: formData.status === 'published' ? new Date().toISOString() : null
+            });
             if (error) throw error;
-
-            router.push('/admin/blog');
-            router.refresh();
-        } catch (error) {
-            console.error('Error creating post:', error);
-            alert('Error creating post. Please try again.');
+            showToast('success', 'Post created successfully!');
+            setTimeout(() => { router.push('/admin/blog'); router.refresh(); }, 1500);
+        } catch (error: any) {
+            showToast('error', error?.message || 'Error creating post. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    const categories = ['Success Story', 'Career Insights', 'Organization News', 'How-To', 'Events', 'Opportunities'];
+
+    const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
+        <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+                {hint && <span className="text-xs text-gray-400">{hint}</span>}
+            </div>
+            {children}
+        </div>
+    );
+
     return (
-        <div className="max-w-6xl mx-auto pb-10">
+        <div className="max-w-6xl mx-auto pb-16">
+            {/* Toast */}
+            {toast && (
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold transition-all animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                    {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    {toast.msg}
+                </div>
+            )}
+
             {/* Header */}
             <div className="mb-8">
-                <Link href="/admin/blog" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#C44536] transition-colors mb-4">
-                    <ArrowLeft size={20} />
-                    <span className="font-medium">Back to Blog Posts</span>
+                <Link href="/admin/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1976D2] transition-colors text-sm mb-5 group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    Back to Blog Posts
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#F39C12]/10 rounded-xl">
-                        <FileText className="text-[#F39C12]" size={32} />
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4CAF50] to-[#388E3C] flex items-center justify-center shadow-lg">
+                        <FileText className="text-white" size={28} />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900">Create New Post</h1>
-                        <p className="text-gray-600 mt-1">Share stories and insights with the YENA community</p>
+                        <h1 className="text-3xl font-bold text-gray-900">Create New Post</h1>
+                        <p className="text-gray-500 text-sm mt-0.5">Share stories & insights with the 1000Jobs community</p>
                     </div>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit}>
                 <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Basic Info Card */}
-                        <div className="card bg-white shadow-xl border-l-4 border-[#F39C12]">
-                            <div className="card-body">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Edit3 size={20} className="text-[#F39C12]" />
-                                    Post Details
-                                </h3>
+                    {/* ── Left: Main Content ── */}
+                    <div className="lg:col-span-2 space-y-5">
 
-                                <div className="space-y-4">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">Title</span>
-                                            <span className="label-text-alt text-red-500">Required</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="input input-bordered text-lg font-medium focus:border-[#F39C12] focus:outline-none"
-                                            value={formData.title}
-                                            onChange={handleTitleChange}
-                                            placeholder="Enter an engaging post title..."
-                                        />
-                                    </div>
-
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">URL Slug</span>
-                                            <span className="label-text-alt text-gray-500">Auto-generated</span>
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                required
-                                                className="input input-bordered bg-gray-50 text-sm w-full pr-10"
-                                                value={formData.slug}
-                                                readOnly
-                                            />
-                                            <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                        </div>
-                                    </div>
-
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">Excerpt</span>
-                                            <span className="label-text-alt text-red-500">Required</span>
-                                        </label>
-                                        <textarea
-                                            required
-                                            className="textarea textarea-bordered h-24 focus:border-[#F39C12] focus:outline-none"
-                                            value={formData.excerpt}
-                                            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                                            placeholder="Write a compelling summary (150-200 characters)..."
-                                        ></textarea>
-                                        <label className="label">
-                                            <span className="label-text-alt text-gray-500">{formData.excerpt.length} characters</span>
-                                        </label>
-                                    </div>
+                        {/* Title & Slug */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Post Details</h3>
+                            <Field label="Title" required>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.title}
+                                    onChange={handleTitleChange}
+                                    placeholder="Enter an engaging post title..."
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-gray-900 font-medium text-lg transition-all"
+                                />
+                            </Field>
+                            <Field label="URL Slug" hint="Auto-generated">
+                                <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-100 bg-gray-50">
+                                    <Link2 size={15} className="text-gray-400 flex-shrink-0" />
+                                    <span className="text-sm text-gray-500 font-mono truncate">{formData.slug || 'your-post-slug-here'}</span>
                                 </div>
-                            </div>
+                            </Field>
+                            <Field label="Excerpt" required hint={`${formData.excerpt.length} chars`}>
+                                <textarea
+                                    required
+                                    value={formData.excerpt}
+                                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                                    placeholder="A compelling summary shown on listing cards (150–200 characters recommended)"
+                                    rows={3}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-sm text-gray-700 resize-none transition-all"
+                                />
+                            </Field>
                         </div>
 
-                        {/* Content Card */}
-                        <div className="card bg-white shadow-xl border-l-4 border-[#10B981]">
-                            <div className="card-body">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Type size={20} className="text-[#10B981]" />
-                                    Content
-                                </h3>
-
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold text-gray-700">Post Content (Markdown/HTML)</span>
-                                        <span className="label-text-alt text-red-500">Required</span>
-                                    </label>
-                                    <textarea
-                                        required
-                                        className="textarea textarea-bordered h-96 font-mono text-sm focus:border-[#10B981] focus:outline-none"
-                                        value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        placeholder="# Heading&#10;&#10;Write your content here using Markdown or HTML..."
-                                    ></textarea>
-                                    <label className="label">
-                                        <span className="label-text-alt text-gray-500">Supports Markdown and HTML formatting</span>
-                                    </label>
-                                </div>
+                        {/* Content */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Post Content</h3>
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-lg">Markdown & HTML supported</span>
                             </div>
+                            <textarea
+                                required
+                                value={formData.content}
+                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                placeholder={`# Your Heading\n\nWrite your full article content here...\n\n## Section Title\n\nMore content...`}
+                                rows={22}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-sm text-gray-700 font-mono resize-none transition-all"
+                            />
                         </div>
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-6">
-                        {/* Publishing Card */}
-                        <div className="card bg-white shadow-xl border-t-4 border-[#C44536]">
-                            <div className="card-body">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Settings size={18} className="text-[#C44536]" />
-                                    Publishing
-                                </h3>
+                    {/* ── Right: Sidebar ── */}
+                    <div className="space-y-5">
 
-                                <div className="space-y-4">
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">Status</span>
-                                        </label>
-                                        <select
-                                            className="select select-bordered w-full focus:border-[#C44536] focus:outline-none"
-                                            value={formData.status}
-                                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                        >
-                                            <option value="draft">📝 Draft</option>
-                                            <option value="published">✅ Published</option>
-                                        </select>
-                                    </div>
+                        {/* Publish card */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Publish</h3>
 
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">Category</span>
-                                        </label>
-                                        <select
-                                            className="select select-bordered w-full focus:border-[#C44536] focus:outline-none"
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        >
-                                            <option>Success Story</option>
-                                            <option>Career Insights</option>
-                                            <option>Organization News</option>
-                                            <option>How-To</option>
-                                            <option>Events</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="form-control">
-                                        <label className="label">
-                                            <span className="label-text font-semibold text-gray-700">Author Name</span>
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                className="input input-bordered w-full pl-10 focus:border-[#C44536] focus:outline-none"
-                                                value={formData.author_name}
-                                                onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                                            />
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="divider my-4"></div>
-
-                                <button 
-                                    type="submit" 
-                                    className="btn bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none w-full gap-2" 
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <>
-                                            <span className="loading loading-spinner loading-sm"></span>
-                                            Saving...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save size={18} />
-                                            Save Post
-                                        </>
-                                    )}
-                                </button>
+                            {/* Status toggle */}
+                            <div className="flex gap-2">
+                                {['draft', 'published'].map((s) => (
+                                    <button
+                                        key={s}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: s })}
+                                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${formData.status === s
+                                            ? s === 'published'
+                                                ? 'bg-[#4CAF50] text-white border-[#4CAF50] shadow'
+                                                : 'bg-gray-900 text-white border-gray-900 shadow'
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {s === 'published' ? '✅ Publish' : '📝 Draft'}
+                                    </button>
+                                ))}
                             </div>
+
+                            <Field label="Category" required>
+                                <select
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 bg-white transition-all"
+                                >
+                                    {categories.map(c => <option key={c}>{c}</option>)}
+                                </select>
+                            </Field>
+
+                            <Field label="Author Name">
+                                <input
+                                    type="text"
+                                    value={formData.author_name}
+                                    onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
+                                />
+                            </Field>
+
+                            <hr className="border-gray-100" />
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#1976D2]/30 transition-all disabled:opacity-60"
+                            >
+                                {loading ? (
+                                    <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Saving...</>
+                                ) : (
+                                    <><Save size={16} /> {formData.status === 'published' ? 'Publish Post' : 'Save Draft'}</>
+                                )}
+                            </button>
                         </div>
 
-                        {/* Featured Image Card */}
-                        <div className="card bg-white shadow-xl border-t-4 border-[#F39C12]">
-                            <div className="card-body">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <ImageIcon size={18} className="text-[#F39C12]" />
-                                    Featured Image
-                                </h3>
-
-                                <CloudinaryUpload
-                                    onUploadComplete={(url) => setImageUrl(url)}
-                                    currentImage={imageUrl}
-                                    folder="yena-blog"
-                                    label="Upload Image"
-                                />
-
-                                {!imageUrl && (
-                                    <div className="mt-4 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50 h-48 flex items-center justify-center">
-                                        <div className="text-center text-gray-500">
-                                            <ImageIcon size={48} className="mx-auto mb-2 opacity-30" />
-                                            <p className="font-semibold text-sm">No image uploaded</p>
-                                            <p className="text-xs mt-1">YENA placeholder will be used</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="alert alert-info mt-3 py-2">
-                                    <Info size={16} />
-                                    <span className="text-xs">Optional. Leave empty for default YENA branding.</span>
-                                </div>
-                            </div>
+                        {/* Featured Image */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Featured Image</h3>
+                            <CloudinaryUpload
+                                onUploadComplete={(url) => setImageUrl(url)}
+                                currentImage={imageUrl}
+                                folder="1000jobs-blog"
+                                label="Upload Image"
+                            />
+                            <p className="text-xs text-gray-400">Optional — default 1000Jobs branding used if empty.</p>
                         </div>
                     </div>
                 </div>

@@ -13,40 +13,40 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL('https://youth-empowerment-and-networking-af.vercel.app'),
   title: {
-    default: "YENA - Youth Empowerment Network Africa",
-    template: "%s | YENA"
+    default: "1000Jobs - 1000Jobs",
+    template: "%s | 1000Jobs"
   },
   description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
-  keywords: "YENA, Youth Empowerment, Africa, Education, Jobs, Scholarships, Grants, Training, Courses",
-  authors: [{ name: "YENA Team" }],
+  keywords: "1000Jobs, Youth Empowerment, Africa, Education, Jobs, Scholarships, Grants, Training, Courses",
+  authors: [{ name: "1000Jobs Team" }],
   icons: {
     icon: [
-      { url: '/images/yena logo.jpeg', sizes: 'any' },
-      { url: '/images/yena logo.jpeg', type: 'image/jpeg' }
+      { url: '/1000jobs_logo.jpeg', sizes: 'any' },
+      { url: '/1000jobs_logo.jpeg', type: 'image/jpeg' }
     ],
-    apple: '/images/yena logo.jpeg',
+    apple: '/1000jobs_logo.jpeg',
   },
   openGraph: {
-    title: "YENA - Youth Empowerment Network Africa",
+    title: "1000Jobs - 1000Jobs",
     description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
     images: [
       {
-        url: 'https://youth-empowerment-and-networking-af.vercel.app/images/yena logo.jpeg',
+        url: 'https://youth-empowerment-and-networking-af.vercel.app/1000jobs_logo.jpeg',
         width: 1200,
         height: 630,
-        alt: 'YENA - Youth Empowerment Network Africa',
+        alt: '1000Jobs - 1000Jobs',
       }
     ],
     type: 'website',
-    siteName: 'YENA',
+    siteName: '1000Jobs',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "YENA - Youth Empowerment Network Africa",
+    title: "1000Jobs - 1000Jobs",
     description: "Bridging the gap between young Africans and life-changing opportunities",
-    images: ['https://youth-empowerment-and-networking-af.vercel.app/images/yena logo.jpeg'],
-    creator: '@yena_africa',
+    images: ['https://youth-empowerment-and-networking-af.vercel.app/1000jobs_logo.jpeg'],
+    creator: '@1000jobs_africa',
   },
   robots: {
     index: true,
@@ -60,16 +60,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="yena">
+    <html lang="en" data-theme="1000jobs">
       <head>
-        <link rel="icon" href="/images/yena logo.jpeg" type="image/jpeg" />
-        <link rel="apple-touch-icon" href="/images/yena logo.jpeg" />
+        <link rel="icon" href="/1000jobs_logo.jpeg" type="image/jpeg" sizes="any" />
+        <link rel="shortcut icon" href="/1000jobs_logo.jpeg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/1000jobs_logo.jpeg" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#C44536" />
+        <meta name="theme-color" content="#1976D2" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="YENA" />
+        <meta name="apple-mobile-web-app-title" content="1000Jobs" />
       </head>
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}

@@ -6,7 +6,7 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-gradient-to-br from-gray-900 via-[#8B3A3A] to-gray-900 text-white mt-auto">
+        <footer className="bg-gradient-to-br from-gray-900 via-[#1565C0] to-gray-900 text-white mt-auto">
             {/* Main Footer Content */}
             <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
@@ -14,8 +14,8 @@ export default function Footer() {
                     <div className="space-y-4">
                         <div className="mb-4">
                             <img 
-                                src="/images/yena logo.jpeg" 
-                                alt="YENA Logo" 
+                                src="/1000jobs_logo.jpeg" 
+                                alt="1000Jobs Logo" 
                                 className="h-16 w-auto object-contain"
                             />
                         </div>
@@ -27,7 +27,7 @@ export default function Footer() {
                                 href="https://facebook.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#C44536] flex items-center justify-center transition-all hover:scale-110"
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#1976D2] flex items-center justify-center transition-all hover:scale-110"
                             >
                                 <Facebook size={18} />
                             </a>
@@ -35,7 +35,7 @@ export default function Footer() {
                                 href="https://twitter.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#F39C12] flex items-center justify-center transition-all hover:scale-110"
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#4CAF50] flex items-center justify-center transition-all hover:scale-110"
                             >
                                 <Twitter size={18} />
                             </a>
@@ -43,7 +43,7 @@ export default function Footer() {
                                 href="https://instagram.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#C44536] flex items-center justify-center transition-all hover:scale-110"
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#1976D2] flex items-center justify-center transition-all hover:scale-110"
                             >
                                 <Instagram size={18} />
                             </a>
@@ -51,7 +51,7 @@ export default function Footer() {
                                 href="https://linkedin.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#F39C12] flex items-center justify-center transition-all hover:scale-110"
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#4CAF50] flex items-center justify-center transition-all hover:scale-110"
                             >
                                 <Linkedin size={18} />
                             </a>
@@ -60,35 +60,35 @@ export default function Footer() {
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="text-lg font-bold mb-4 text-[#F39C12]">Quick Links</h4>
+                        <h4 className="text-lg font-bold mb-4 text-[#4CAF50]">Quick Links</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/about" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/about" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Learning
                                 </a>
                             </li>
                             <li>
-                                <Link href="/jobs" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/jobs" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Opportunities
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/blog" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/blog" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Blog
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/contact" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Contact
                                 </Link>
                             </li>
@@ -97,11 +97,11 @@ export default function Footer() {
 
                     {/* Resources */}
                     <div>
-                        <h4 className="text-lg font-bold mb-4 text-[#F39C12]">Resources</h4>
+                        <h4 className="text-lg font-bold mb-4 text-[#4CAF50]">Resources</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/dashboard" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/dashboard" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Dashboard
                                 </Link>
                             </li>
@@ -110,22 +110,22 @@ export default function Footer() {
                                     href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-300 hover:text-[#10B981] transition-colors flex items-center gap-2 group"
+                                    className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group"
                                 >
-                                    <span className="w-1 h-1 rounded-full bg-[#10B981] group-hover:w-2 transition-all"></span>
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     WhatsApp Channel
                                     <ExternalLink size={14} />
                                 </a>
                             </li>
                             <li>
-                                <Link href="/privacy" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/privacy" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Privacy Policy
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terms" className="text-gray-300 hover:text-[#F39C12] transition-colors flex items-center gap-2 group">
-                                    <span className="w-1 h-1 rounded-full bg-[#F39C12] group-hover:w-2 transition-all"></span>
+                                <Link href="/terms" className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-[#4CAF50] group-hover:w-2 transition-all"></span>
                                     Terms of Use
                                 </Link>
                             </li>
@@ -134,23 +134,23 @@ export default function Footer() {
 
                     {/* Contact Info */}
                     <div>
-                        <h4 className="text-lg font-bold mb-4 text-[#F39C12]">Get in Touch</h4>
+                        <h4 className="text-lg font-bold mb-4 text-[#4CAF50]">Get in Touch</h4>
                         <ul className="space-y-3">
                             <li className="flex items-start gap-3 text-gray-300">
-                                <Mail size={18} className="text-[#F39C12] mt-1 flex-shrink-0" />
+                                <Mail size={18} className="text-[#4CAF50] mt-1 flex-shrink-0" />
                                 <div>
                                     <p className="text-sm">Email</p>
-                                    <a href="mailto:info@yena.org" className="hover:text-[#F39C12] transition-colors">
-                                        info@yena.org
+                                    <a href="mailto:info@1000jobs.org" className="hover:text-[#4CAF50] transition-colors">
+                                        info@1000jobs.org
                                     </a>
                                 </div>
                             </li>
                             <li className="flex items-start gap-3 text-gray-300">
-                                <Phone size={18} className="text-[#F39C12] mt-1 flex-shrink-0" />
+                                <Phone size={18} className="text-[#4CAF50] mt-1 flex-shrink-0" />
                                 <div>
                                     <p className="text-sm">Phone</p>
-                                    <a href="tel:+254788419041" className="hover:text-[#F39C12] transition-colors">
-                                        +254 788 419 041
+                                    <a href="tel:+254752182132" className="hover:text-[#4CAF50] transition-colors">
+                                        +254 752 182 132
                                     </a>
                                 </div>
                             </li>
@@ -162,7 +162,7 @@ export default function Footer() {
                 <div className="mt-12 pt-8 border-t border-white/10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="text-center md:text-left">
-                            <h4 className="text-xl font-bold text-white mb-2">Get the YENA App</h4>
+                            <h4 className="text-xl font-bold text-white mb-2">Get the 1000Jobs App</h4>
                             <p className="text-gray-400 text-sm">Install our app for quick access to opportunities</p>
                         </div>
                         <FooterInstallButton />
@@ -175,7 +175,7 @@ export default function Footer() {
                 <div className="container mx-auto px-4 lg:px-8 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-gray-400 text-sm text-center md:text-left">
-                            © {currentYear} YENA - Youth Empowerment Network Africa. All rights reserved.
+                            © {currentYear} 1000Jobs - 1000Jobs. All rights reserved.
                         </p>
                         <div className="flex items-center gap-2 text-sm text-gray-400">
                             <span>Developed by</span>
@@ -183,16 +183,16 @@ export default function Footer() {
                                 href="https://kingscreation.co.ke" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-[#F39C12] hover:text-[#C44536] font-semibold transition-colors"
+                                className="text-[#4CAF50] hover:text-[#1976D2] font-semibold transition-colors"
                             >
                                 Kings Creation
                             </a>
                             <span className="text-gray-500">|</span>
                             <a 
-                                href="tel:+254788419041" 
-                                className="text-gray-400 hover:text-[#F39C12] transition-colors"
+                                href="tel:+254752182132" 
+                                className="text-gray-400 hover:text-[#4CAF50] transition-colors"
                             >
-                                +254 788 419 041
+                                +254 752 182 132
                             </a>
                         </div>
                     </div>

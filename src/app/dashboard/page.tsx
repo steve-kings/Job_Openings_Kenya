@@ -36,6 +36,11 @@ export default function DashboardPage() {
                 .eq('id', user.id)
                 .single();
             
+            if (profileData?.role === 'admin') {
+                router.push('/admin');
+                return;
+            }
+
             setProfile(profileData);
 
             // Fetch platform stats
@@ -66,7 +71,7 @@ export default function DashboardPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <span className="loading loading-spinner loading-lg text-[#C44536]"></span>
+                    <span className="loading loading-spinner loading-lg text-[#1976D2]"></span>
                     <p className="mt-4 text-gray-600">Loading your dashboard...</p>
                 </div>
             </div>
@@ -78,7 +83,7 @@ export default function DashboardPage() {
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-[#C44536] via-[#C44536] to-[#8B3A3A] text-white py-16">
+            <div className="bg-gradient-to-br from-[#1976D2] via-[#1976D2] to-[#1565C0] text-white py-16">
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="flex items-center justify-between">
                         <div>
@@ -113,7 +118,7 @@ export default function DashboardPage() {
             <div className="container mx-auto px-6 lg:px-12 py-12">
                 {/* Platform Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="card bg-white shadow-xl border-t-4 border-[#C44536]">
+                    <div className="card bg-white shadow-xl border-t-4 border-[#1976D2]">
                         <div className="card-body">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -124,14 +129,14 @@ export default function DashboardPage() {
                                         Available now
                                     </p>
                                 </div>
-                                <div className="p-4 bg-[#C44536]/10 rounded-xl">
-                                    <Briefcase className="text-[#C44536]" size={32} />
+                                <div className="p-4 bg-[#1976D2]/10 rounded-xl">
+                                    <Briefcase className="text-[#1976D2]" size={32} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="card bg-white shadow-xl border-t-4 border-[#F39C12]">
+                    <div className="card bg-white shadow-xl border-t-4 border-[#4CAF50]">
                         <div className="card-body">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -142,14 +147,14 @@ export default function DashboardPage() {
                                         Published
                                     </p>
                                 </div>
-                                <div className="p-4 bg-[#F39C12]/10 rounded-xl">
-                                    <FileText className="text-[#F39C12]" size={32} />
+                                <div className="p-4 bg-[#4CAF50]/10 rounded-xl">
+                                    <FileText className="text-[#4CAF50]" size={32} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="card bg-white shadow-xl border-t-4 border-[#10B981]">
+                    <div className="card bg-white shadow-xl border-t-4 border-[#4CAF50]">
                         <div className="card-body">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -160,8 +165,8 @@ export default function DashboardPage() {
                                         Active
                                     </p>
                                 </div>
-                                <div className="p-4 bg-[#10B981]/10 rounded-xl">
-                                    <Award className="text-[#10B981]" size={32} />
+                                <div className="p-4 bg-[#4CAF50]/10 rounded-xl">
+                                    <Award className="text-[#4CAF50]" size={32} />
                                 </div>
                             </div>
                         </div>
@@ -176,11 +181,11 @@ export default function DashboardPage() {
                             href="https://kings-learn.vercel.app"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#C44536]"
+                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#1976D2]"
                         >
                             <div className="card-body">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-4 bg-[#C44536] rounded-xl">
+                                    <div className="p-4 bg-[#1976D2] rounded-xl">
                                         <BookOpen className="text-white" size={32} />
                                     </div>
                                     <div className="flex-1">
@@ -194,11 +199,11 @@ export default function DashboardPage() {
 
                         <Link
                             href="/jobs"
-                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#F39C12]"
+                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#4CAF50]"
                         >
                             <div className="card-body">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-4 bg-[#F39C12] rounded-xl">
+                                    <div className="p-4 bg-[#4CAF50] rounded-xl">
                                         <Briefcase className="text-white" size={32} />
                                     </div>
                                     <div className="flex-1">
@@ -211,11 +216,11 @@ export default function DashboardPage() {
 
                         <Link
                             href="/blog"
-                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#10B981]"
+                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#4CAF50]"
                         >
                             <div className="card-body">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-4 bg-[#10B981] rounded-xl">
+                                    <div className="p-4 bg-[#4CAF50] rounded-xl">
                                         <FileText className="text-white" size={32} />
                                     </div>
                                     <div className="flex-1">
@@ -233,7 +238,7 @@ export default function DashboardPage() {
                     <div className="card-body">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="card-title text-2xl">Your Profile</h2>
-                            <div className="badge badge-lg bg-[#C44536] text-white border-none">
+                            <div className="badge badge-lg bg-[#1976D2] text-white border-none">
                                 {profile?.role || 'Student'}
                             </div>
                         </div>
@@ -287,7 +292,7 @@ export default function DashboardPage() {
                         <div className="flex gap-3">
                             <button 
                                 onClick={handleSignOut}
-                                className="btn btn-outline border-[#C44536] text-[#C44536] hover:bg-[#C44536] hover:text-white gap-2"
+                                className="btn btn-outline border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white gap-2"
                             >
                                 <LogOut size={18} />
                                 Sign Out

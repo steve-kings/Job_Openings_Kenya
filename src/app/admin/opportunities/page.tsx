@@ -96,7 +96,7 @@ export default function AdminOpportunitiesPage() {
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Opportunities</h1>
                     <p className="text-sm sm:text-base text-gray-600">Create, edit, and manage job postings, grants, scholarships, and trainings</p>
                 </div>
-                <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none gap-2 w-full sm:w-auto">
+                <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#1976D2] text-white hover:bg-[#1565C0] border-none gap-2 w-full sm:w-auto">
                     <Plus size={18} />
                     Add New Opportunity
                 </Link>
@@ -104,14 +104,14 @@ export default function AdminOpportunitiesPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="card bg-white shadow-lg border-l-4 border-[#C44536]">
+                <div className="card bg-white shadow-lg border-l-4 border-[#1976D2]">
                     <div className="card-body p-3 sm:p-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Total</p>
                                 <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</p>
                             </div>
-                            <div className="p-2 sm:p-3 bg-[#C44536] rounded-lg">
+                            <div className="p-2 sm:p-3 bg-[#1976D2] rounded-lg">
                                 <TrendingUp className="text-white" size={20} />
                             </div>
                         </div>
@@ -209,7 +209,7 @@ export default function AdminOpportunitiesPage() {
                 <div className="card-body p-0 sm:p-6">
                     {loading ? (
                         <div className="text-center py-12">
-                            <span className="loading loading-spinner loading-lg text-[#C44536]"></span>
+                            <span className="loading loading-spinner loading-lg text-[#1976D2]"></span>
                             <p className="mt-4 text-gray-600">Loading opportunities...</p>
                         </div>
                     ) : (
@@ -244,7 +244,7 @@ export default function AdminOpportunitiesPage() {
                                                 </td>
                                                 <td className="hidden sm:table-cell">
                                                     <span className={`badge badge-xs sm:badge-sm ${
-                                                        opp.type === 'Job' ? 'bg-[#C44536] text-white border-none' :
+                                                        opp.type === 'Job' ? 'bg-[#1976D2] text-white border-none' :
                                                         opp.type === 'Grant' ? 'badge-success' :
                                                         opp.type === 'Scholarship' ? 'badge-info' :
                                                         'badge-secondary'

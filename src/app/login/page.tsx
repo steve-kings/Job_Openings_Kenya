@@ -108,20 +108,20 @@ export default function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#C44536]">
+                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#1976D2]">
                     {/* Logo */}
                     <div className="flex justify-center pt-8">
                         <img 
-                            src="/images/yena logo.jpeg" 
-                            alt="YENA Logo" 
+                            src="/1000jobs_logo.jpeg" 
+                            alt="1000Jobs Logo" 
                             className="h-20 w-auto object-contain"
                         />
                     </div>
                     
                     {/* Header with Tabs */}
-                    <div className="bg-gradient-to-r from-[#C44536] via-[#F39C12] to-[#8B3A3A] p-6 mt-4">
+                    <div className="bg-gradient-to-r from-[#1976D2] via-[#4CAF50] to-[#1565C0] p-6 mt-4">
                         <h2 className="text-3xl font-bold text-white text-center mb-6">
-                            Welcome to YENA
+                            Welcome to 1000Jobs
                         </h2>
                         <div className="flex gap-2">
                             <button
@@ -132,7 +132,7 @@ export default function Login() {
                                 }}
                                 className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
                                     isLogin
-                                        ? 'bg-white text-[#C44536]'
+                                        ? 'bg-white text-[#1976D2]'
                                         : 'bg-white/20 text-white hover:bg-white/30'
                                 }`}
                             >
@@ -146,7 +146,7 @@ export default function Login() {
                                 }}
                                 className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
                                     !isLogin
-                                        ? 'bg-white text-[#C44536]'
+                                        ? 'bg-white text-[#1976D2]'
                                         : 'bg-white/20 text-white hover:bg-white/30'
                                 }`}
                             >
@@ -171,7 +171,7 @@ export default function Login() {
                         {/* Google Login - Moved to Top */}
                         <button
                             onClick={handleGoogleLogin}
-                            className="btn btn-outline border-2 border-[#C44536] text-[#C44536] hover:bg-[#C44536] hover:text-white w-full btn-lg gap-2 mb-6"
+                            className="btn btn-outline border-2 border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white w-full btn-lg gap-2 mb-6"
                         >
                             <FontAwesomeIcon icon={faGoogle} className="text-xl" />
                             Continue with Google
@@ -220,7 +220,7 @@ export default function Login() {
                                         />
                                     </div>
                                     <label className="label">
-                                        <Link href="/forgot-password" className="label-text-alt text-[#C44536] hover:text-[#F39C12] font-semibold transition-colors">
+                                        <Link href="/forgot-password" className="label-text-alt text-[#1976D2] hover:text-[#4CAF50] font-semibold transition-colors">
                                             Forgot Password?
                                         </Link>
                                     </label>
@@ -228,7 +228,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none w-full btn-lg"
+                                    className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Logging in...' : 'Login'}
@@ -300,7 +300,7 @@ export default function Login() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none w-full btn-lg"
+                                    className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? 'Creating account...' : 'Sign Up'}
@@ -315,7 +315,7 @@ export default function Login() {
                                     Don't have an account?{' '}
                                     <button
                                         onClick={() => setIsLogin(false)}
-                                        className="text-[#C44536] font-semibold hover:underline"
+                                        className="text-[#1976D2] font-semibold hover:underline"
                                     >
                                         Sign up
                                     </button>
@@ -325,7 +325,7 @@ export default function Login() {
                                     Already have an account?{' '}
                                     <button
                                         onClick={() => setIsLogin(true)}
-                                        className="text-[#C44536] font-semibold hover:underline"
+                                        className="text-[#1976D2] font-semibold hover:underline"
                                     >
                                         Login
                                     </button>

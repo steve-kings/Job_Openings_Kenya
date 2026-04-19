@@ -14,23 +14,23 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     if (!job) {
         return {
-            title: 'Opportunity Not Found | YENA',
+            title: 'Opportunity Not Found | 1000Jobs',
         };
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://youth-empowerment-and-networking-af.vercel.app';
     const url = `${siteUrl}/jobs/${resolvedParams.id}`;
-    const fallbackImage = `${siteUrl}/images/yena logo.jpeg`;
+    const fallbackImage = `${siteUrl}/1000jobs_logo.jpeg`;
     const imageUrl = job.thumbnail_url || fallbackImage;
     
     return {
-        title: `${job.title} - ${job.company} | YENA`,
+        title: `${job.title} - ${job.company} | 1000Jobs`,
         description: job.short_description || job.description.substring(0, 160),
         openGraph: {
             title: job.title,
             description: job.short_description || job.description.substring(0, 160),
             url: url,
-            siteName: 'YENA - Youth Empowerment Network Africa',
+            siteName: '1000Jobs - 1000Jobs',
             images: [
                 {
                     url: imageUrl,

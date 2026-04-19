@@ -9,36 +9,36 @@ import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 const slides = [
   {
     id: 1,
-    title: "A world where no",
-    highlight: "youth's future",
-    subtitle: "is torn apart by lack of opportunities.",
-    description: "Every day, thousands of young Africans miss out on life-changing opportunities due to lack of information and access. YENA changes that.",
+    title: "1000 JOB",
+    highlight: "OPPORTUNITIES",
+    subtitle: "Daily Verified Jobs • No Scams • 100% Free",
+    description: "Find Entry-Level & Graduate Jobs across Kenya, Africa & Remote. We provide clear application links, updated daily, and manually verified before posting.",
     image: "/images/img1.jpg",
-    stat: "5,000+",
-    statLabel: "Youth reached",
-    statSubLabel: "Across Africa"
+    stat: "1,000+",
+    statLabel: "Verified Jobs",
+    statSubLabel: "Daily Updates"
   },
   {
     id: 2,
-    title: "Get Daily Updates on",
-    highlight: "Youth Opportunities",
-    subtitle: "Across Africa ",
-    description: "Stay ahead with YENA! We share verified youth opportunities — jobs, grants, entrepreneurship programs & online trainings from all over Africa.",
+    title: "Clear Application",
+    highlight: "Links Provided",
+    subtitle: "Kenya | Africa | Remote",
+    description: "Stop wasting time on scams. We manually verify every opportunity before posting it, ensuring 100% free and genuine entry-level and graduate jobs.",
     image: "/images/img2.jpg",
-    stat: "1,200+",
-    statLabel: "Opportunities",
-    statSubLabel: "Posted Monthly"
+    stat: "100%",
+    statLabel: "Scam Free",
+    statSubLabel: "Manually Verified"
   },
   {
     id: 3,
-    title: "Empowering young Africans to",
-    highlight: "learn, earn & grow",
-    subtitle: "",
-    description: "Join thousands of African youth accessing verified opportunities daily. Your next big break is just one click away.",
+    title: "Empowering youth with",
+    highlight: "Daily Updates",
+    subtitle: "Your career starts here",
+    description: "Join thousands of African youth accessing verified opportunities daily. Everything is manually verified, scam-free, and always 100% free.",
     image: "/images/img3.jpg",
-    stat: "850+",
-    statLabel: "Students",
-    statSubLabel: "Enrolled in Courses"
+    stat: "24/7",
+    statLabel: "Daily Drops",
+    statSubLabel: "Fresh Opportunities"
   }
 ];
 
@@ -74,10 +74,10 @@ export default function HeroSlider() {
   const slide = slides[currentSlide];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 overflow-hidden flex items-center py-20 md:py-0">
+    <div className="relative min-h-screen bg-gradient-to-br from-[#0A58A6] via-[#1976D2] to-[#42A5F5] overflow-hidden flex items-center py-20 md:py-0">
       {/* Yellow Decorative Background Shapes */}
-      <div className="absolute top-0 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#F39C12] rounded-br-[50px] md:rounded-br-[100px] -translate-x-16 md:-translate-x-32 -translate-y-16 md:-translate-y-32 transition-all duration-1000"></div>
-      <div className="absolute bottom-0 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-[#F39C12] rounded-tl-[50px] md:rounded-tl-[100px] translate-x-16 md:translate-x-32 translate-y-16 md:translate-y-32 transition-all duration-1000"></div>
+      <div className="absolute top-0 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#4CAF50] rounded-br-[50px] md:rounded-br-[100px] -translate-x-16 md:-translate-x-32 -translate-y-16 md:-translate-y-32 transition-all duration-1000"></div>
+      <div className="absolute bottom-0 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-[#4CAF50] rounded-tl-[50px] md:rounded-tl-[100px] translate-x-16 md:translate-x-32 translate-y-16 md:translate-y-32 transition-all duration-1000"></div>
       
       {/* Main Content Container with White Card */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10 w-full">
@@ -98,7 +98,7 @@ export default function HeroSlider() {
                   {slide.title} <br/>
                   <span className="relative inline-block my-2">
                     <span className="relative z-10">{slide.highlight}</span>
-                    <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-4 bg-[#F39C12] -z-0"></span>
+                    <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-4 bg-[#4CAF50] -z-0"></span>
                   </span>
                   <br/>
                   <span className="block mt-2">{slide.subtitle}</span>
@@ -150,11 +150,11 @@ export default function HeroSlider() {
               {/* Decorative Paint Strokes - Hidden on mobile */}
               <div className="hidden md:block absolute top-16 left-8 w-24 h-16 bg-green-600 opacity-70 rounded-full blur-sm transform -rotate-12"></div>
               <div className="hidden md:block absolute top-32 left-4 w-32 h-12 bg-green-700 opacity-60 rounded-full blur-sm transform rotate-6"></div>
-              <div className="hidden md:block absolute bottom-32 right-8 w-28 h-20 bg-[#F39C12] opacity-80 rounded-full blur-sm transform rotate-12"></div>
+              <div className="hidden md:block absolute bottom-32 right-8 w-28 h-20 bg-[#4CAF50] opacity-80 rounded-full blur-sm transform rotate-12"></div>
               <div className="hidden md:block absolute bottom-20 right-4 w-36 h-16 bg-yellow-500 opacity-70 rounded-full blur-sm transform -rotate-6"></div>
 
               {/* Stats Badge - Animated */}
-              <div key={`stat-${slide.id}`} className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 md:bottom-8 md:right-8 bg-white rounded-xl md:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border-2 md:border-4 border-[#F39C12] animate-fadeIn">
+              <div key={`stat-${slide.id}`} className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 md:bottom-8 md:right-8 bg-white rounded-xl md:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border-2 md:border-4 border-[#4CAF50] animate-fadeIn">
                 <div className="text-center">
                   <div className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900">{slide.stat}</div>
                   <div className="text-xs sm:text-sm text-gray-600 font-medium mt-1">{slide.statLabel}</div>
@@ -183,7 +183,7 @@ export default function HeroSlider() {
                   onClick={() => goToSlide(index)}
                   className={`h-2.5 md:h-3 rounded-full transition-all ${
                     index === currentSlide 
-                      ? 'bg-[#F39C12] w-6 md:w-8' 
+                      ? 'bg-[#4CAF50] w-6 md:w-8' 
                       : 'bg-gray-300 hover:bg-gray-400 w-2.5 md:w-3'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}

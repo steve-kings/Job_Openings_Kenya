@@ -19,7 +19,7 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Opportunity Not Found</h2>
                     <p className="text-gray-600 mb-6">This opportunity may have been removed or expired.</p>
-                    <Link href="/jobs" className="btn bg-[#C44536] text-white hover:bg-[#8B3A3A] border-none">
+                    <Link href="/jobs" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none">
                         Browse All Opportunities
                     </Link>
                 </div>
@@ -30,10 +30,10 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
     const canView = !!user;
 
     const typeColors = {
-        'Job': { bg: 'bg-[#C44536]', border: 'border-[#C44536]', text: 'text-[#C44536]', gradient: 'from-[#C44536] to-[#8B3A3A]' },
-        'Grant': { bg: 'bg-[#10B981]', border: 'border-[#10B981]', text: 'text-[#10B981]', gradient: 'from-[#10B981] to-[#059669]' },
-        'Scholarship': { bg: 'bg-[#8B3A3A]', border: 'border-[#8B3A3A]', text: 'text-[#8B3A3A]', gradient: 'from-[#8B3A3A] to-[#5D4037]' },
-        'Training': { bg: 'bg-[#F39C12]', border: 'border-[#F39C12]', text: 'text-[#F39C12]', gradient: 'from-[#F39C12] to-[#e08d0a]' },
+        'Job': { bg: 'bg-[#1976D2]', border: 'border-[#1976D2]', text: 'text-[#1976D2]', gradient: 'from-[#1976D2] to-[#1565C0]' },
+        'Grant': { bg: 'bg-[#4CAF50]', border: 'border-[#4CAF50]', text: 'text-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#388E3C]' },
+        'Scholarship': { bg: 'bg-[#1565C0]', border: 'border-[#1565C0]', text: 'text-[#1565C0]', gradient: 'from-[#1565C0] to-[#5D4037]' },
+        'Training': { bg: 'bg-[#4CAF50]', border: 'border-[#4CAF50]', text: 'text-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#e08d0a]' },
     };
     const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
 
@@ -145,7 +145,7 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                         <ul className="space-y-3">
                                             {job.requirements.map((req: string, idx: number) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <CheckCircle className="text-[#10B981] shrink-0 mt-0.5" size={20} />
+                                                    <CheckCircle className="text-[#4CAF50] shrink-0 mt-0.5" size={20} />
                                                     <span className="text-gray-700">{req}</span>
                                                 </li>
                                             ))}
@@ -175,7 +175,7 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                         <ul className="space-y-3">
                                             {job.benefits.map((ben: string, idx: number) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <CheckCircle className="text-[#F39C12] shrink-0 mt-0.5" size={20} />
+                                                    <CheckCircle className="text-[#4CAF50] shrink-0 mt-0.5" size={20} />
                                                     <span className="text-gray-700">{ben}</span>
                                                 </li>
                                             ))}
@@ -247,7 +247,7 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                         <p className="font-semibold text-gray-900">
                                             {new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                         </p>
-                                        <p className={`text-sm ${daysLeft > 7 ? 'text-[#10B981]' : 'text-[#C44536]'} font-medium mt-1`}>
+                                        <p className={`text-sm ${daysLeft > 7 ? 'text-[#4CAF50]' : 'text-[#1976D2]'} font-medium mt-1`}>
                                             {daysLeft > 0 ? `${daysLeft} days remaining` : 'Deadline passed'}
                                         </p>
                                     </div>
@@ -314,7 +314,7 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                 </div>
                                 <button 
                                     onClick={handleCopyLink}
-                                    className={`btn btn-sm w-full border-none gap-2 ${copySuccess ? 'bg-[#10B981] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                                    className={`btn btn-sm w-full border-none gap-2 ${copySuccess ? 'bg-[#4CAF50] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                                 >
                                     <Share2 size={16} />
                                     {copySuccess ? 'Link Copied!' : 'Copy Link'}

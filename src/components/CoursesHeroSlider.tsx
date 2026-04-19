@@ -11,7 +11,7 @@ const slides = [
         subtitle: "With World-Class Skills",
         description: "Access 100% free courses designed specifically for African youth. Learn from industry experts and unlock opportunities across the continent.",
         image: "/images/img1.jpg",
-        gradient: "from-[#C44536] to-[#8B3A3A]",
+        gradient: "from-[#1976D2] to-[#1565C0]",
         cta: "Start Learning",
         ctaLink: "https://kings-learn.vercel.app"
     },
@@ -21,7 +21,7 @@ const slides = [
         subtitle: "Build Your Career",
         description: "From digital marketing to web development, gain practical skills that employers are actively seeking in today's job market.",
         image: "/images/img2.jpg",
-        gradient: "from-[#F39C12] to-[#C44536]",
+        gradient: "from-[#4CAF50] to-[#1976D2]",
         cta: "Explore Courses",
         ctaLink: "https://kings-learn.vercel.app"
     },
@@ -31,7 +31,7 @@ const slides = [
         subtitle: "Anytime, Anywhere",
         description: "Flexible learning designed for busy schedules. Access courses 24/7 and earn certificates recognized across Africa.",
         image: "/images/img3.jpg",
-        gradient: "from-[#10B981] to-[#059669]",
+        gradient: "from-[#4CAF50] to-[#388E3C]",
         cta: "Get Started",
         ctaLink: "https://kings-learn.vercel.app"
     },
@@ -41,7 +41,7 @@ const slides = [
         subtitle: "Growing Community",
         description: "Be part of a thriving community of learners. Connect, collaborate, and grow together with peers across Africa.",
         image: "/images/img4.jpg",
-        gradient: "from-[#8B3A3A] to-[#C44536]",
+        gradient: "from-[#1565C0] to-[#1976D2]",
         cta: "Join Now",
         ctaLink: "https://kings-learn.vercel.app"
     }

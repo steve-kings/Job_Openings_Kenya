@@ -3,14 +3,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Plus, X, Briefcase, Building2, MapPin, Calendar, Link2, FileText, Save, Image as ImageIcon, Info } from 'lucide-react';
+import { ArrowLeft, Plus, X, Briefcase, Save, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+
+const TYPES = ['Job', 'Grant', 'Scholarship', 'Training'];
+
+const TYPE_COLORS: Record<string, string> = {
+    Job: 'from-[#1976D2] to-[#1565C0]',
+    Grant: 'from-[#4CAF50] to-[#388E3C]',
+    Scholarship: 'from-[#7B1FA2] to-[#6A1B9A]',
+    Training: 'from-[#F57C00] to-[#E65100]',
+};
 
 export default function CreateOpportunityPage() {
     const router = useRouter();
     const supabase = createClient();
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -29,371 +39,268 @@ export default function CreateOpportunityPage() {
     const [responsibilities, setResponsibilities] = useState<string[]>(['']);
     const [benefits, setBenefits] = useState<string[]>(['']);
 
-    const handleArrayChange = (
-        index: number,
-        value: string,
-        setter: React.Dispatch<React.SetStateAction<string[]>>,
-        currentArray: string[]
-    ) => {
-        const newArray = [...currentArray];
-        newArray[index] = value;
-        setter(newArray);
+    const showToast = (type: 'success' | 'error', msg: string) => {
+        setToast({ type, msg });
+        setTimeout(() => setToast(null), 4000);
     };
 
-    const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, currentArray: string[]) => {
-        setter([...currentArray, '']);
+    const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+        setter([...arr, '']);
+
+    const updateItem = (i: number, val: string, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) => {
+        const next = [...arr]; next[i] = val; setter(next);
     };
 
-    const removeArrayItem = (index: number, setter: React.Dispatch<React.SetStateAction<string[]>>, currentArray: string[]) => {
-        const newArray = currentArray.filter((_, i) => i !== index);
-        setter(newArray);
-    };
+    const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+        setter(arr.filter((_, idx) => idx !== i));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-
         try {
-            // Filter out empty strings
-            const cleanRequirements = requirements.filter(r => r.trim() !== '');
-            const cleanResponsibilities = responsibilities.filter(r => r.trim() !== '');
-            const cleanBenefits = benefits.filter(r => r.trim() !== '');
-
-            const { error } = await supabase
-                .from('opportunities')
-                .insert({
-                    ...formData,
-                    thumbnail_url: thumbnailUrl || null,
-                    requirements: cleanRequirements,
-                    responsibilities: cleanResponsibilities,
-                    benefits: cleanBenefits
-                });
-
+            const { error } = await supabase.from('opportunities').insert({
+                ...formData,
+                thumbnail_url: thumbnailUrl || null,
+                requirements: requirements.filter(r => r.trim()),
+                responsibilities: responsibilities.filter(r => r.trim()),
+                benefits: benefits.filter(r => r.trim()),
+            });
             if (error) throw error;
-
-            router.push('/admin/opportunities');
-            router.refresh();
-        } catch (error) {
-            console.error('Error creating opportunity:', error);
-            alert('Error creating opportunity. Please try again.');
+            showToast('success', 'Opportunity created successfully!');
+            setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1500);
+        } catch (error: any) {
+            showToast('error', error?.message || 'Error creating opportunity. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
+        <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+                {hint && <span className="text-xs text-gray-400">{hint}</span>}
+            </div>
+            {children}
+        </div>
+    );
+
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 bg-white transition-all";
+
+    const ListEditor = ({
+        label, color, items, setter, placeholder
+    }: { label: string; color: string; items: string[]; setter: React.Dispatch<React.SetStateAction<string[]>>; placeholder: string }) => (
+        <div className="space-y-3">
+            <div className="flex items-center justify-between">
+                <h4 className="text-sm font-bold text-gray-700">{label}</h4>
+                <button
+                    type="button"
+                    onClick={() => addItem(setter, items)}
+                    className={`flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-1.5 rounded-lg bg-gradient-to-r ${color} hover:shadow-md transition-all`}
+                >
+                    <Plus size={13} /> Add
+                </button>
+            </div>
+            <div className="space-y-2">
+                {items.map((item, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                        <input
+                            type="text"
+                            value={item}
+                            onChange={(e) => updateItem(i, e.target.value, setter, items)}
+                            placeholder={placeholder}
+                            className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
+                        />
+                        {items.length > 1 && (
+                            <button type="button" onClick={() => removeItem(i, setter, items)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                                <X size={15} />
+                            </button>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const selectedColor = TYPE_COLORS[formData.type] || TYPE_COLORS['Job'];
+
     return (
-        <div className="max-w-6xl mx-auto pb-10">
+        <div className="max-w-6xl mx-auto pb-16">
+            {/* Toast */}
+            {toast && (
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                    {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    {toast.msg}
+                </div>
+            )}
+
             {/* Header */}
             <div className="mb-8">
-                <Link href="/admin/opportunities" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#C44536] transition-colors mb-4">
-                    <ArrowLeft size={20} />
-                    <span className="font-medium">Back to Opportunities</span>
+                <Link href="/admin/opportunities" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1976D2] transition-colors text-sm mb-5 group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    Back to Opportunities
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#C44536]/10 rounded-xl">
-                        <Briefcase className="text-[#C44536]" size={32} />
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${selectedColor} flex items-center justify-center shadow-lg transition-all`}>
+                        <Briefcase className="text-white" size={28} />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900">Add New Opportunity</h1>
-                        <p className="text-gray-600 mt-1">Create a new job, scholarship, grant, or training opportunity</p>
+                        <h1 className="text-3xl font-bold text-gray-900">Add New Opportunity</h1>
+                        <p className="text-gray-500 text-sm mt-0.5">Create a job, grant, scholarship, or training listing</p>
                     </div>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Basic Information */}
-                <div className="card bg-white shadow-xl border-l-4 border-[#C44536]">
-                    <div className="card-body">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <Briefcase size={20} className="text-[#C44536]" />
-                            Basic Information
-                        </h3>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Title</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="input input-bordered focus:border-[#C44536] focus:outline-none"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="e.g. Senior Frontend Developer"
-                                />
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Type</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <select
-                                    className="select select-bordered focus:border-[#C44536] focus:outline-none"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                >
-                                    <option>Job</option>
-                                    <option>Grant</option>
-                                    <option>Scholarship</option>
-                                    <option>Training</option>
-                                </select>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Company / Organization</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        required
-                                        className="input input-bordered w-full pl-10 focus:border-[#C44536] focus:outline-none"
-                                        value={formData.company}
-                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                        placeholder="e.g. Google, Microsoft"
-                                    />
-                                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                </div>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Location</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        required
-                                        className="input input-bordered w-full pl-10 focus:border-[#C44536] focus:outline-none"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        placeholder="e.g. Nairobi, Kenya (Remote)"
-                                    />
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                </div>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Application Deadline</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        required
-                                        className="input input-bordered w-full pl-10 focus:border-[#C44536] focus:outline-none"
-                                        value={formData.deadline}
-                                        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                                    />
-                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                </div>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold text-gray-700">Application Link (URL)</span>
-                                    <span className="label-text-alt text-red-500">Required</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="url"
-                                        required
-                                        className="input input-bordered w-full pl-10 focus:border-[#C44536] focus:outline-none"
-                                        value={formData.apply_url}
-                                        onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })}
-                                        placeholder="https://..."
-                                    />
-                                    <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-control mt-4">
-                            <label className="label">
-                                <span className="label-text font-semibold text-gray-700">Short Description</span>
-                                <span className="label-text-alt text-red-500">Required</span>
-                            </label>
-                            <textarea
-                                required
-                                className="textarea textarea-bordered h-20 focus:border-[#C44536] focus:outline-none"
-                                value={formData.short_description}
-                                onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                                placeholder="Brief summary for the card view (150-200 characters)..."
-                            ></textarea>
-                            <label className="label">
-                                <span className="label-text-alt text-gray-500">{formData.short_description.length} characters</span>
-                            </label>
-                        </div>
-
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-semibold text-gray-700">Full Description</span>
-                                <span className="label-text-alt text-red-500">Required</span>
-                            </label>
-                            <textarea
-                                required
-                                className="textarea textarea-bordered h-40 font-mono text-sm focus:border-[#C44536] focus:outline-none"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                placeholder="Detailed description (Markdown supported)..."
-                            ></textarea>
-                        </div>
-
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-semibold text-gray-700">Status</span>
-                            </label>
-                            <select
-                                className="select select-bordered w-full max-w-xs focus:border-[#C44536] focus:outline-none"
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                            >
-                                <option value="active">✅ Active</option>
-                                <option value="draft">📝 Draft</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Thumbnail Upload */}
-                <div className="card bg-white shadow-xl border-t-4 border-[#F39C12]">
-                    <div className="card-body">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <ImageIcon size={20} className="text-[#F39C12]" />
-                            Thumbnail Image
-                        </h3>
-                        <CloudinaryUpload
-                            onUploadComplete={(url) => setThumbnailUrl(url)}
-                            currentImage={thumbnailUrl}
-                            folder="yena-opportunities"
-                            label="Upload Thumbnail"
-                        />
-                        <div className="alert alert-info mt-3 py-2">
-                            <Info size={16} />
-                            <span className="text-xs">Optional. Leave empty to use default placeholder.</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Dynamic Lists */}
+            <form onSubmit={handleSubmit}>
                 <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Requirements */}
-                    <div className="card bg-white shadow-xl border-t-4 border-[#10B981]">
-                        <div className="card-body">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-bold text-lg text-gray-900">Requirements</h3>
-                                <button type="button" className="btn btn-sm bg-[#10B981] hover:bg-[#059669] text-white border-none gap-1" onClick={() => addArrayItem(setRequirements, requirements)}>
-                                    <Plus size={16} /> Add
-                                </button>
-                            </div>
-                            <div className="space-y-2">
-                                {requirements.map((req, idx) => (
-                                    <div key={idx} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            className="input input-bordered input-sm w-full focus:border-[#10B981] focus:outline-none"
-                                            value={req}
-                                            onChange={(e) => handleArrayChange(idx, e.target.value, setRequirements, requirements)}
-                                            placeholder="e.g. 3+ years of experience..."
-                                        />
-                                        {requirements.length > 1 && (
-                                            <button type="button" className="btn btn-ghost btn-sm text-error hover:bg-red-50" onClick={() => removeArrayItem(idx, setRequirements, requirements)}>
-                                                <X size={16} />
-                                            </button>
-                                        )}
-                                    </div>
+
+                    {/* ─── LEFT COLUMN ─── */}
+                    <div className="lg:col-span-2 space-y-5">
+
+                        {/* Type Selector */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Opportunity Type</h3>
+                            <div className="grid grid-cols-4 gap-3">
+                                {TYPES.map((t) => (
+                                    <button
+                                        key={t}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, type: t })}
+                                        className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${formData.type === t
+                                            ? `bg-gradient-to-r ${TYPE_COLORS[t]} text-white border-transparent shadow-md`
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {t === 'Job' && '💼'} {t === 'Grant' && '💰'} {t === 'Scholarship' && '🎓'} {t === 'Training' && '📚'} {t}
+                                    </button>
                                 ))}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Responsibilities */}
-                    <div className="card bg-white shadow-xl border-t-4 border-[#F39C12]">
-                        <div className="card-body">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-bold text-lg text-gray-900">Responsibilities</h3>
-                                <button type="button" className="btn btn-sm bg-[#F39C12] hover:bg-[#D68910] text-white border-none gap-1" onClick={() => addArrayItem(setResponsibilities, responsibilities)}>
-                                    <Plus size={16} /> Add
-                                </button>
+                        {/* Basic Info */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Basic Information</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <Field label="Title" required>
+                                    <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g. Senior Frontend Developer" className={inputCls} />
+                                </Field>
+                                <Field label="Company / Organization" required>
+                                    <input type="text" required value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
+                                </Field>
+                                <Field label="Location" required>
+                                    <input type="text" required value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
+                                </Field>
+                                <Field label="Application Deadline" required>
+                                    <input type="date" required value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
+                                </Field>
+                                <Field label="Application Link" required>
+                                    <input type="url" required value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={`${inputCls} md:col-span-2`} />
+                                </Field>
                             </div>
-                            <div className="space-y-2">
-                                {responsibilities.map((res, idx) => (
-                                    <div key={idx} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            className="input input-bordered input-sm w-full focus:border-[#F39C12] focus:outline-none"
-                                            value={res}
-                                            onChange={(e) => handleArrayChange(idx, e.target.value, setResponsibilities, responsibilities)}
-                                            placeholder="e.g. Lead the development team..."
-                                        />
-                                        {responsibilities.length > 1 && (
-                                            <button type="button" className="btn btn-ghost btn-sm text-error hover:bg-red-50" onClick={() => removeArrayItem(idx, setResponsibilities, responsibilities)}>
-                                                <X size={16} />
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                        </div>
+
+                        {/* Descriptions */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Description</h3>
+                            <Field label="Short Description" required hint={`${formData.short_description.length} chars`}>
+                                <textarea
+                                    required
+                                    value={formData.short_description}
+                                    onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                                    placeholder="Brief summary shown on listing cards (150–200 characters recommended)"
+                                    rows={3}
+                                    className={`${inputCls} resize-none`}
+                                />
+                            </Field>
+                            <Field label="Full Description" required hint="Markdown supported">
+                                <textarea
+                                    required
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    placeholder={`## About the Role\n\nWrite a detailed description here...\n\n## About the Organization\n\nMore info...`}
+                                    rows={10}
+                                    className={`${inputCls} resize-none font-mono`}
+                                />
+                            </Field>
+                        </div>
+
+                        {/* Dynamic Lists */}
+                        <div className="grid md:grid-cols-3 gap-5">
+                            {[
+                                { label: 'Requirements', color: 'from-[#1976D2] to-[#1565C0]', items: requirements, setter: setRequirements, placeholder: 'e.g. 3+ years of experience' },
+                                { label: 'Responsibilities', color: 'from-[#4CAF50] to-[#388E3C]', items: responsibilities, setter: setResponsibilities, placeholder: 'e.g. Lead the dev team' },
+                                { label: 'Benefits', color: 'from-[#7B1FA2] to-[#6A1B9A]', items: benefits, setter: setBenefits, placeholder: 'e.g. Health insurance' },
+                            ].map((list) => (
+                                <div key={list.label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                                    <ListEditor {...list} />
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Benefits */}
-                    <div className="card bg-white shadow-xl border-t-4 border-[#8B3A3A]">
-                        <div className="card-body">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-bold text-lg text-gray-900">Benefits</h3>
-                                <button type="button" className="btn btn-sm bg-[#8B3A3A] hover:bg-[#6B2A2A] text-white border-none gap-1" onClick={() => addArrayItem(setBenefits, benefits)}>
-                                    <Plus size={16} /> Add
-                                </button>
-                            </div>
-                            <div className="space-y-2">
-                                {benefits.map((ben, idx) => (
-                                    <div key={idx} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            className="input input-bordered input-sm w-full focus:border-[#8B3A3A] focus:outline-none"
-                                            value={ben}
-                                            onChange={(e) => handleArrayChange(idx, e.target.value, setBenefits, benefits)}
-                                            placeholder="e.g. Health insurance..."
-                                        />
-                                        {benefits.length > 1 && (
-                                            <button type="button" className="btn btn-ghost btn-sm text-error hover:bg-red-50" onClick={() => removeArrayItem(idx, setBenefits, benefits)}>
-                                                <X size={16} />
-                                            </button>
-                                        )}
-                                    </div>
+                    {/* ─── RIGHT SIDEBAR ─── */}
+                    <div className="space-y-5">
+
+                        {/* Publish */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Publish</h3>
+
+                            <div className="flex gap-2">
+                                {['active', 'draft'].map((s) => (
+                                    <button
+                                        key={s}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: s })}
+                                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${formData.status === s
+                                            ? s === 'active'
+                                                ? 'bg-[#4CAF50] text-white border-[#4CAF50] shadow'
+                                                : 'bg-gray-900 text-white border-gray-900 shadow'
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {s === 'active' ? '✅ Active' : '📝 Draft'}
+                                    </button>
                                 ))}
                             </div>
+
+                            <div className="p-3 bg-blue-50 rounded-xl text-xs text-blue-600 font-medium">
+                                {formData.status === 'active'
+                                    ? '🌍 This opportunity will be visible to all users immediately.'
+                                    : '👁 Saved as draft — not visible to users yet.'}
+                            </div>
+
+                            <hr className="border-gray-100" />
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3.5 rounded-xl bg-gradient-to-r ${selectedColor} text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-60`}
+                            >
+                                {loading ? (
+                                    <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Creating...</>
+                                ) : (
+                                    <><Save size={16} /> Create Opportunity</>
+                                )}
+                            </button>
+
+                            <Link href="/admin/opportunities" className="block text-center text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                                Cancel
+                            </Link>
+                        </div>
+
+                        {/* Thumbnail */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Thumbnail Image</h3>
+                            <CloudinaryUpload
+                                onUploadComplete={(url) => setThumbnailUrl(url)}
+                                currentImage={thumbnailUrl}
+                                folder="1000jobs-opportunities"
+                                label="Upload Thumbnail"
+                            />
+                            <p className="text-xs text-gray-400">Optional — default placeholder used if empty.</p>
                         </div>
                     </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end gap-4">
-                    <Link href="/admin/opportunities" className="btn btn-ghost">Cancel</Link>
-                    <button 
-                        type="submit" 
-                        className="btn bg-[#C44536] hover:bg-[#8B3A3A] text-white border-none w-48 gap-2" 
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <>
-                                <span className="loading loading-spinner loading-sm"></span>
-                                Creating...
-                            </>
-                        ) : (
-                            <>
-                                <Save size={18} />
-                                Create Opportunity
-                            </>
-                        )}
-                    </button>
                 </div>
             </form>
         </div>

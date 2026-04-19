@@ -14,23 +14,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     if (!post) {
         return {
-            title: 'Article Not Found | YENA',
+            title: 'Article Not Found | 1000Jobs',
         };
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://youth-empowerment-and-networking-af.vercel.app';
     const url = `${siteUrl}/blog/${resolvedParams.slug}`;
-    const fallbackImage = `${siteUrl}/images/yena logo.jpeg`;
+    const fallbackImage = `${siteUrl}/1000jobs_logo.jpeg`;
     const imageUrl = post.featured_image || fallbackImage;
     
     return {
-        title: `${post.title} | YENA Blog`,
+        title: `${post.title} | 1000Jobs Blog`,
         description: post.excerpt || post.content.substring(0, 160),
         openGraph: {
             title: post.title,
             description: post.excerpt || post.content.substring(0, 160),
             url: url,
-            siteName: 'YENA - Youth Empowerment Network Africa',
+            siteName: '1000Jobs - 1000Jobs',
             images: [
                 {
                     url: imageUrl,
@@ -65,9 +65,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Increment views
+    // Increment views (best-effort — won't break if function doesn't exist)
     if (post?.id) {
-        await supabase.rpc('increment_blog_views', { row_id: post.id });
+        try { await supabase.rpc('increment_blog_views', { row_id: post.id }); } catch {}
     }
 
     return <BlogPostClient post={post} user={user} slug={resolvedParams.slug} />;
