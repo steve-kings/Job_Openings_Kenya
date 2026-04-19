@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
+import { getBaseUrl } from "@/lib/utils/url";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -12,7 +13,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://youth-empowerment-and-networking-af.vercel.app'),
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: "1000Jobs - 1000Jobs",
     template: "%s | 1000Jobs"
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
     images: [
       {
-        url: 'https://youth-empowerment-and-networking-af.vercel.app/1000jobs_logo.jpeg',
+        url: `${getBaseUrl()}/1000jobs_logo.jpeg`,
         width: 1200,
         height: 630,
         alt: '1000Jobs - 1000Jobs',
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "1000Jobs - 1000Jobs",
     description: "Bridging the gap between young Africans and life-changing opportunities",
-    images: ['https://youth-empowerment-and-networking-af.vercel.app/1000jobs_logo.jpeg'],
+    images: [`${getBaseUrl()}/1000jobs_logo.jpeg`],
     creator: '@1000jobs_africa',
   },
   robots: {

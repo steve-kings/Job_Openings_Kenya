@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 import JobDetailClient from './JobDetailClient';
+import { getBaseUrl } from '@/lib/utils/url';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         };
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://youth-empowerment-and-networking-af.vercel.app';
+    const siteUrl = getBaseUrl();
     const url = `${siteUrl}/jobs/${resolvedParams.id}`;
     const fallbackImage = `${siteUrl}/1000jobs_logo.jpeg`;
     const imageUrl = job.thumbnail_url || fallbackImage;
