@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb, faUsers, faHandshake, faTrophy, faRocket } from '@fortawesome/free-solid-svg-icons';
 import type { Metadata } from 'next';
 import PartnersSection from '@/components/PartnersSection';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
     title: 'About Us - 1000Jobs | 1000Jobs',
@@ -20,7 +21,21 @@ export const metadata: Metadata = {
     },
 };
 
-export default function About() {
+export const revalidate = 3600;
+
+export default async function About() {
+    const supabase = await createClient();
+
+    const [
+        { count: userCount },
+        { count: opportunityCount },
+        { count: partnerCount }
+    ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('opportunities').select('*', { count: 'exact', head: true }),
+        supabase.from('partners').select('*', { count: 'exact', head: true })
+    ]);
+
     return (
         <div className="bg-white">
             {/* Hero Section - Who We Are */}
@@ -52,7 +67,7 @@ export default function About() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Our Impact at a Glance</h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Impact Card 1 */}
                         <div className="relative rounded-2xl overflow-hidden shadow-xl h-64 group">
                             <img 
@@ -62,8 +77,8 @@ export default function About() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#1976D2]/95 to-[#1976D2]/60 flex items-end p-6">
                                 <div className="text-white">
-                                    <h3 className="text-2xl font-bold mb-2">5,000+ Youth</h3>
-                                    <p className="text-white/90">Empowered across Africa with verified opportunities</p>
+                                    <h3 className="text-2xl font-bold mb-2">{userCount || 0}+ Youth</h3>
+                                    <p className="text-white/90">Registered on our platform across Africa</p>
                                 </div>
                             </div>
                         </div>
@@ -77,23 +92,23 @@ export default function About() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/95 to-[#4CAF50]/60 flex items-end p-6">
                                 <div className="text-white">
-                                    <h3 className="text-2xl font-bold mb-2">50+ Partners</h3>
+                                    <h3 className="text-2xl font-bold mb-2">{partnerCount || 0}+ Partners</h3>
                                     <p className="text-white/90">Building bridges with organizations across Africa</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Impact Card 3 */}
-                        <div className="relative rounded-2xl overflow-hidden shadow-xl h-64 group">
+                        <div className="relative rounded-2xl overflow-hidden shadow-xl h-64 group sm:col-span-2 lg:col-span-1">
                             <img 
                                 src="/images/img3.jpg" 
-                                alt="Training Programs"
+                                alt="Opportunities Shared"
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/95 to-[#4CAF50]/60 flex items-end p-6">
                                 <div className="text-white">
-                                    <h3 className="text-2xl font-bold mb-2">850+ Students</h3>
-                                    <p className="text-white/90">Trained in high-demand skills and entrepreneurship</p>
+                                    <h3 className="text-2xl font-bold mb-2">{opportunityCount || 0}+ Opportunities</h3>
+                                    <p className="text-white/90">Verified jobs, grants, and scholarships shared</p>
                                 </div>
                             </div>
                         </div>
@@ -244,150 +259,19 @@ export default function About() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center text-white">
                         <div>
-                            <div className="text-5xl font-bold mb-2">1 Million</div>
-                            <div className="text-xl">Youth Reached</div>
+                            <div className="text-5xl font-bold mb-2">{userCount || 0}</div>
+                            <div className="text-xl">Youth Registered</div>
                             <div className="text-sm text-white/80 mt-1">Across Africa</div>
                         </div>
                         <div>
-                            <div className="text-5xl font-bold mb-2">1 Million</div>
+                            <div className="text-5xl font-bold mb-2">{opportunityCount || 0}</div>
                             <div className="text-xl">Opportunities Shared</div>
                             <div className="text-sm text-white/80 mt-1">Since inception</div>
                         </div>
                         <div>
-                            <div className="text-5xl font-bold mb-2">$10 Billion</div>
-                            <div className="text-xl">Economic Impact</div>
-                            <div className="text-sm text-white/80 mt-1">Generated for youth</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Team Section */}
-            <div className="py-20 bg-gray-50">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                            The Team shaping the <span className="text-[#1976D2]">future of technology</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            in the continent
-                        </p>
-                        <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-                            We believe that talent is evenly distributed, but opportunity is not. Our mission is to fix that imbalance through dedicated leadership and innovative solutions.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-                        {/* Team Member 1 - Brian Bright */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img1.jpg" 
-                                    alt="Brian Bright - Chairperson"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1976D2]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Brian Bright</h3>
-                            <p className="text-[#1976D2] font-medium">Chairperson</p>
-                        </div>
-
-                        {/* Team Member 2 - Caroline Njambi */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img2.jpg" 
-                                    alt="Caroline Njambi - Vice Chair"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Caroline Njambi</h3>
-                            <p className="text-[#4CAF50] font-medium">Vice Chairperson</p>
-                        </div>
-
-                        {/* Team Member 3 - Derick Shadiara */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/dennis.jpeg" 
-                                    alt="Derick Shadiara - Treasurer"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Derick Shadiara</h3>
-                            <p className="text-[#4CAF50] font-medium">Treasurer</p>
-                        </div>
-
-                        {/* Team Member 4 - Stephen King'ori */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/steve.jpeg" 
-                                    alt="Stephen King'ori - Organization Editor"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1565C0]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Stephen King'ori</h3>
-                            <p className="text-[#1565C0] font-medium">Organization Editor</p>
-                        </div>
-
-                        {/* Team Member 5 - Franklyne Shikokoti */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img5.jpg" 
-                                    alt="Franklyne Shikokoti - Organizing Secretary"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1976D2]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Franklyne Shikokoti</h3>
-                            <p className="text-[#1976D2] font-medium">Organizing Secretary</p>
-                        </div>
-
-                        {/* Team Member 6 - Lydia Lahma */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img6 (2).jpg" 
-                                    alt="Lydia Lahma - Assistant Treasurer"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Lydia Lahma</h3>
-                            <p className="text-[#4CAF50] font-medium">Assistant Treasurer</p>
-                        </div>
-
-                        {/* Team Member 7 - Dennis Luttah */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img7.jpg" 
-                                    alt="Dennis Luttah - Organizing Secretary"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#4CAF50]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Dennis Luttah</h3>
-                            <p className="text-[#4CAF50] font-medium">Organizing Secretary</p>
-                        </div>
-
-                        {/* Team Member 8 - Mary Muema */}
-                        <div className="text-center group">
-                            <div className="relative mb-4 overflow-hidden rounded-2xl shadow-lg">
-                                <img 
-                                    src="/images/img8.jpg" 
-                                    alt="Mary Muema - Organizing Secretary"
-                                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1565C0]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-                            <h3 className="font-bold text-lg text-gray-900">Mary Muema</h3>
-                            <p className="text-[#1565C0] font-medium">Organizing Secretary</p>
+                            <div className="text-5xl font-bold mb-2">{partnerCount || 0}</div>
+                            <div className="text-xl">Active Partners</div>
+                            <div className="text-sm text-white/80 mt-1">Supporting our mission</div>
                         </div>
                     </div>
                 </div>
