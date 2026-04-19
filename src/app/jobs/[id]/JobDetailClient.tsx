@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy } from 'lucide-react';
 
 interface JobDetailClientProps {
     job: any;
@@ -12,6 +12,13 @@ interface JobDetailClientProps {
 
 export default function JobDetailClient({ job, user, opportunityId }: JobDetailClientProps) {
     const [copySuccess, setCopySuccess] = useState(false);
+    
+    // AI Cover Letter State
+    const [cvModalOpen, setCvModalOpen] = useState(false);
+    const [cvText, setCvText] = useState('');
+    const [coverLetter, setCoverLetter] = useState('');
+    const [generatingLetter, setGeneratingLetter] = useState(false);
+    const [letterCopied, setLetterCopied] = useState(false);
 
     if (!job) {
         return (
@@ -70,6 +77,36 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
     const handleLinkedInShare = () => {
         const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
         window.open(url, '_blank', 'width=600,height=400');
+    };
+
+    const handleGenerateCoverLetter = async () => {
+        if (!cvText.trim()) return;
+        setGeneratingLetter(true);
+        try {
+            const jobDetails = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}\nRequirements: ${job.requirements?.join(', ')}`;
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_cover_letter', cvText, jobDetails })
+            });
+            const data = await res.json();
+            if (data.coverLetter) {
+                setCoverLetter(data.coverLetter);
+            } else {
+                throw new Error(data.error || 'Failed');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to generate cover letter. Please try again.');
+        } finally {
+            setGeneratingLetter(false);
+        }
+    };
+
+    const copyLetter = () => {
+        navigator.clipboard.writeText(coverLetter);
+        setLetterCopied(true);
+        setTimeout(() => setLetterCopied(false), 2000);
     };
 
     return (
@@ -270,15 +307,26 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                     <p className="text-white/90 mb-6 text-sm">
                                         Don't miss this opportunity. Apply now before the deadline!
                                     </p>
-                                    <a 
-                                        href={job.apply_url} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="btn bg-white text-gray-900 hover:bg-gray-100 w-full border-none gap-2"
-                                    >
-                                        Apply Now
-                                        <ExternalLink size={18} />
-                                    </a>
+                                    
+                                    <div className="space-y-3">
+                                        <a 
+                                            href={job.apply_url} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="btn bg-white text-gray-900 hover:bg-gray-100 w-full border-none gap-2"
+                                        >
+                                            Apply Now
+                                            <ExternalLink size={18} />
+                                        </a>
+
+                                        <button 
+                                            onClick={() => setCvModalOpen(true)}
+                                            className="btn bg-gray-900/40 text-white hover:bg-gray-900/60 w-full border-none gap-2 backdrop-blur-sm"
+                                        >
+                                            <Sparkles size={18} className="text-yellow-300" />
+                                            AI Cover Letter
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
@@ -324,6 +372,79 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                     </div>
                 </div>
             </div>
+
+            {/* AI Cover Letter Generator Modal */}
+            {cvModalOpen && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                            <div className="flex items-center gap-3 text-[#1976D2]">
+                                <div className="w-10 h-10 rounded-xl bg-[#1976D2]/10 flex items-center justify-center">
+                                    <Sparkles size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">AI Cover Letter Generator</h3>
+                                    <p className="text-sm text-gray-500">Powered by 1000Jobs AI</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setCvModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                            {!coverLetter ? (
+                                <div className="space-y-4">
+                                    <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-sm text-blue-800 leading-relaxed">
+                                        Paste your CV or Resume text below. Our AI will analyze your skills and the requirements for <strong>{job.title}</strong> at <strong>{job.company}</strong> to generate a perfectly customized cover letter.
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Paste Your CV / Resume Text:</label>
+                                        <textarea
+                                            value={cvText}
+                                            onChange={(e) => setCvText(e.target.value)}
+                                            placeholder="Experience:\n- Software Developer at TechCorp (2020-2023)\n- Led a team of 5...\n\nEducation:\n- BSc Computer Science..."
+                                            className="w-full h-64 p-4 text-sm text-gray-700 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1976D2]/30 focus:border-[#1976D2] outline-none resize-none"
+                                        />
+                                    </div>
+                                    <button 
+                                        onClick={handleGenerateCoverLetter} 
+                                        disabled={generatingLetter || !cvText.trim()}
+                                        className="w-full py-4 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#1976D2]/30 transition-all disabled:opacity-50"
+                                    >
+                                        {generatingLetter ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                                        {generatingLetter ? "Writing your Cover Letter..." : "Generate Cover Letter"}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4 animate-in slide-in-from-bottom-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-bold text-gray-900">Your Tailored Cover Letter</h4>
+                                        <button 
+                                            onClick={copyLetter}
+                                            className={`btn btn-sm text-white border-none gap-1.5 ${letterCopied ? 'bg-[#4CAF50] hover:bg-[#388E3C]' : 'bg-[#1976D2] hover:bg-[#1565C0]'}`}
+                                        >
+                                            {letterCopied ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                            {letterCopied ? "Copied!" : "Copy Text"}
+                                        </button>
+                                    </div>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                                        {coverLetter}
+                                    </div>
+                                    <button 
+                                        onClick={() => setCoverLetter('')}
+                                        className="w-full py-3 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-50 transition-colors"
+                                    >
+                                        Start Over
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

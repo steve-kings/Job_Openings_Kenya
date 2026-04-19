@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Plus, X, Briefcase, Save, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Plus, X, Briefcase, Save, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -39,6 +39,9 @@ export default function CreateOpportunityPage() {
     const [responsibilities, setResponsibilities] = useState<string[]>(['']);
     const [benefits, setBenefits] = useState<string[]>(['']);
 
+    const [aiText, setAiText] = useState('');
+    const [extractingAi, setExtractingAi] = useState(false);
+
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
         setTimeout(() => setToast(null), 4000);
@@ -53,6 +56,51 @@ export default function CreateOpportunityPage() {
 
     const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
         setter(arr.filter((_, idx) => idx !== i));
+
+    const handleAIExtract = async () => {
+        if (!aiText.trim()) return;
+        setExtractingAi(true);
+        try {
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'extract_opportunity', text: aiText })
+            });
+            const data = await res.json();
+            
+            if (data.title) {
+                setFormData({
+                    ...formData,
+                    title: data.title || formData.title,
+                    type: data.type && TYPES.includes(data.type) ? data.type : formData.type,
+                    company: data.company || formData.company,
+                    location: data.location || formData.location,
+                    deadline: data.deadline || formData.deadline,
+                    apply_url: data.apply_url || formData.apply_url,
+                    short_description: data.short_description || formData.short_description,
+                    description: data.description || formData.description,
+                });
+                
+                if (data.requirements && Array.isArray(data.requirements) && data.requirements.length > 0) {
+                    setRequirements(data.requirements);
+                }
+                if (data.responsibilities && Array.isArray(data.responsibilities) && data.responsibilities.length > 0) {
+                    setResponsibilities(data.responsibilities);
+                }
+                if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0) {
+                    setBenefits(data.benefits);
+                }
+                showToast('success', 'AI extracted opportunity details successfully!');
+                setAiText('');
+            } else {
+                throw new Error(data.error || 'Failed to extract data');
+            }
+        } catch (error: any) {
+            showToast('error', error.message || 'Error extracting AI data.');
+        } finally {
+            setExtractingAi(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -157,6 +205,36 @@ export default function CreateOpportunityPage() {
 
                     {/* ─── LEFT COLUMN ─── */}
                     <div className="lg:col-span-2 space-y-5">
+
+                        {/* AI Extractor Box */}
+                        <div className="bg-gradient-to-r from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border border-[#1976D2]/20 p-6 space-y-3 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-[#1976D2]">
+                                    <Sparkles size={20} />
+                                    <h3 className="font-bold text-sm uppercase tracking-widest">1000Jobs AI Auto-Fill</h3>
+                                </div>
+                                <span className="text-xs text-[#1976D2]/70 bg-white px-2 py-1 rounded-md border border-[#1976D2]/20 shadow-sm font-semibold">Paste raw text here</span>
+                            </div>
+                            <div className="space-y-3">
+                                <textarea 
+                                    value={aiText}
+                                    onChange={(e) => setAiText(e.target.value)}
+                                    placeholder="Paste job description, scholarship details, or grant text here, and AI will read them and fill out the form below automatically..."
+                                    className="w-full px-4 py-3 rounded-xl border border-white focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all shadow-sm resize-none h-24"
+                                />
+                                <div className="flex justify-end">
+                                    <button 
+                                        type="button"
+                                        onClick={handleAIExtract}
+                                        disabled={!aiText.trim() || extractingAi}
+                                        className="px-6 py-2.5 bg-[#1976D2] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#1565C0] disabled:opacity-50 transition-colors shadow-sm"
+                                    >
+                                        {extractingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                                        Auto-Fill Form
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Type Selector */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

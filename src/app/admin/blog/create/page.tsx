@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, FileText, Save, Link2, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Save, Link2, Eye, EyeOff, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -24,6 +24,8 @@ export default function CreateBlogPostPage() {
     });
 
     const [imageUrl, setImageUrl] = useState('');
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [generatingAi, setGeneratingAi] = useState(false);
 
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
@@ -37,6 +39,36 @@ export default function CreateBlogPostPage() {
             title,
             slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
         });
+    };
+
+    const handleAIGenerate = async () => {
+        if (!aiPrompt) return;
+        setGeneratingAi(true);
+        try {
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_blog', prompt: aiPrompt })
+            });
+            const data = await res.json();
+            if (data.title && data.content) {
+                setFormData({
+                    ...formData,
+                    title: data.title,
+                    slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+                    excerpt: data.excerpt || '',
+                    content: data.content
+                });
+                showToast('success', 'AI generated post successfully!');
+                setAiPrompt('');
+            } else {
+                throw new Error(data.error || 'Failed to generate');
+            }
+        } catch (error: any) {
+            showToast('error', error.message || 'Error generating AI content.');
+        } finally {
+            setGeneratingAi(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -101,6 +133,33 @@ export default function CreateBlogPostPage() {
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* ── Left: Main Content ── */}
                     <div className="lg:col-span-2 space-y-5">
+
+                        {/* AI Generator Box */}
+                        <div className="bg-gradient-to-r from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border border-[#1976D2]/20 p-6 space-y-3 shadow-sm">
+                            <div className="flex items-center gap-2 text-[#1976D2]">
+                                <Sparkles size={20} />
+                                <h3 className="font-bold text-sm uppercase tracking-widest">1000Jobs AI Generator</h3>
+                            </div>
+                            <div className="flex gap-3">
+                                <input 
+                                    type="text" 
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    placeholder="E.g., Write a blog post about the top 5 interview tips for 2026..."
+                                    className="flex-1 px-4 py-3 rounded-xl border border-white focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all shadow-sm"
+                                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAIGenerate())}
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={handleAIGenerate}
+                                    disabled={!aiPrompt || generatingAi}
+                                    className="px-6 py-3 bg-[#1976D2] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#1565C0] disabled:opacity-50 transition-colors shadow-sm"
+                                >
+                                    {generatingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
 
                         {/* Title & Slug */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">

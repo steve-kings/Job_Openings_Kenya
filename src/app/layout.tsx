@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
+import AIChatbot from "@/components/AIChatbot";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -81,6 +82,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <PWAInstallButton />
+        <AIChatbot />
       </body>
     </html>
   );
