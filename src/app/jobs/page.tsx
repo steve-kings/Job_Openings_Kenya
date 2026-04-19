@@ -35,6 +35,7 @@ export default async function JobsPage({
     const today = new Date().toISOString().split('T')[0];
     const params = await searchParams;
     const filterType = typeof params.type === 'string' ? params.type : 'All';
+    const filterQuery = typeof params.q === 'string' ? params.q : '';
 
     let query = supabase
         .from('opportunities')
@@ -45,6 +46,10 @@ export default async function JobsPage({
 
     if (filterType !== 'All') {
         query = query.eq('type', filterType);
+    }
+    
+    if (filterQuery) {
+        query = query.or(`title.ilike.%${filterQuery}%,company.ilike.%${filterQuery}%,location.ilike.%${filterQuery}%`);
     }
 
     const { data: opportunities, error } = await query;
@@ -148,10 +153,17 @@ export default async function JobsPage({
                                 return (
                                     <div 
                                         key={job.id} 
-                                        className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 ${colors.border} group hover:-translate-y-1`}
+                                        className={`bg-white rounded-2xl flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 ${colors.border} group hover:-translate-y-1`}
                                     >
-                                        <div className={`h-2 ${colors.badge}`}></div>
-                                        <div className="p-6">
+                                        {job.thumbnail_url ? (
+                                            <div className="w-full h-48 overflow-hidden relative shrink-0">
+                                                <div className={`absolute top-0 inset-x-0 h-1 ${colors.badge} z-10`}></div>
+                                                <img src={job.thumbnail_url} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            </div>
+                                        ) : (
+                                            <div className={`h-2 ${colors.badge} shrink-0`}></div>
+                                        )}
+                                        <div className="p-6 flex-1 flex flex-col">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 mb-2">
@@ -188,13 +200,15 @@ export default async function JobsPage({
                                                 {job.short_description}
                                             </p>
 
-                                            <Link 
-                                                href={`/jobs/${job.id}`} 
-                                                className={`btn ${colors.badge} text-white hover:opacity-90 w-full border-none gap-2 group`}
-                                            >
-                                                View Full Details
-                                                <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />
-                                            </Link>
+                                            <div className="mt-auto pt-4">
+                                                <Link 
+                                                    href={`/jobs/${job.id}`} 
+                                                    className={`btn ${colors.badge} text-white hover:opacity-90 w-full border-none gap-2 group/btn`}
+                                                >
+                                                    View Full Details
+                                                    <ExternalLink size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 );
