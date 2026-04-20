@@ -9,9 +9,10 @@ interface JobDetailClientProps {
     job: any;
     user: any;
     opportunityId: string;
+    similarJobs?: any[];
 }
 
-export default function JobDetailClient({ job, user, opportunityId }: JobDetailClientProps) {
+export default function JobDetailClient({ job, user, opportunityId, similarJobs }: JobDetailClientProps) {
     const [copySuccess, setCopySuccess] = useState(false);
     
     // AI Cover Letter State
@@ -431,6 +432,67 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                     </div>
                 </div>
             </div>
+
+            {/* Similar Opportunities Slider */}
+            {similarJobs && similarJobs.length > 0 && (
+                <div className="bg-white border-t border-gray-100 py-16">
+                    <div className="container mx-auto px-6 lg:px-12">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-bold text-gray-900">You might also like...</h2>
+                            <Link href="/jobs" className="text-[#1976D2] font-semibold hover:underline flex items-center gap-1 text-sm">
+                                View all <ExternalLink size={16} />
+                            </Link>
+                        </div>
+                        
+                        {/* Horizontal Scroll Area */}
+                        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide">
+                            {similarJobs.map((simJob) => {
+                                const simDaysLeft = Math.max(0, Math.ceil((new Date(simJob.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+                                const isExpired = simDaysLeft === 0;
+
+                                return (
+                                    <Link 
+                                        key={simJob.id} 
+                                        href={`/jobs/${simJob.id}`}
+                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-[#1976D2]/30 transition-all hover:-translate-y-1 block group"
+                                    >
+                                        <div className="p-5">
+                                            {/* Header */}
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-sm bg-gradient-to-br ${typeColors[simJob.type as keyof typeof typeColors]?.gradient || typeColors['Job'].gradient}`}>
+                                                    {simJob.company.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isExpired ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'} flex items-center gap-1`}>
+                                                    <Clock size={12} />
+                                                    {isExpired ? 'Expired' : `${simDaysLeft}d left`}
+                                                </span>
+                                            </div>
+
+                                            {/* Body */}
+                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1976D2] transition-colors line-clamp-2 md:h-14">
+                                                {simJob.title}
+                                            </h3>
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-1">{simJob.company}</p>
+                                            
+                                            {/* Footer */}
+                                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium pt-4 border-t border-gray-50">
+                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                                                    <Building size={12} className="text-gray-400" />
+                                                    {simJob.type}
+                                                </span>
+                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                                                    <MapPin size={12} className="text-gray-400" />
+                                                    <span className="truncate max-w-[100px]">{simJob.location}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* AI Cover Letter Generator Modal */}
             {cvModalOpen && (
