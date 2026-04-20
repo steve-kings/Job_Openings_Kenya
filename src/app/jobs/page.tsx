@@ -70,38 +70,46 @@ export default async function JobsPage({
             {/* Hero Slider */}
             <JobsHeroSlider />
 
-            {/* Quick Stats */}
-            <div className="py-12 bg-white">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="text-center p-6 bg-gradient-to-br from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border-2 border-[#1976D2]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#1976D2]">
-                                <FontAwesomeIcon icon={faBriefcase} />
+            {/* Quick Stats — horizontal scroll on mobile, grid on desktop */}
+            <div className="py-8 bg-white">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-12">
+                    {/* Mobile: scrollable row */}
+                    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide lg:hidden">
+                        {[
+                            { icon: faBriefcase,        count: jobsCount,        label: 'Active Jobs',        bg: 'from-[#1976D2]/10 to-[#1976D2]/5', border: 'border-[#1976D2]/20', color: 'text-[#1976D2]' },
+                            { icon: faHandHoldingDollar, count: grantsCount,      label: 'Grants',             bg: 'from-[#4CAF50]/10 to-[#4CAF50]/5', border: 'border-[#4CAF50]/20', color: 'text-[#4CAF50]' },
+                            { icon: faGraduationCap,    count: scholarshipsCount, label: 'Scholarships',       bg: 'from-[#1565C0]/10 to-[#1565C0]/5', border: 'border-[#1565C0]/20', color: 'text-[#1565C0]' },
+                            { icon: faChalkboardTeacher, count: trainingsCount,   label: 'Training',           bg: 'from-[#4CAF50]/10 to-[#4CAF50]/5', border: 'border-[#4CAF50]/20', color: 'text-[#4CAF50]' },
+                        ].map(({ icon, count, label, bg, border, color }) => (
+                            <div key={label} className={`snap-start shrink-0 w-32 text-center p-4 bg-gradient-to-br ${bg} rounded-2xl border-2 ${border}`}>
+                                <div className={`text-2xl mb-2 ${color}`}>
+                                    <FontAwesomeIcon icon={icon} />
+                                </div>
+                                <div className="text-2xl font-bold text-gray-900 mb-0.5">{count}</div>
+                                <div className="text-xs text-gray-600 leading-tight">{label}</div>
                             </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop: 4-col grid */}
+                    <div className="hidden lg:grid grid-cols-4 gap-6">
+                        <div className="text-center p-6 bg-gradient-to-br from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border-2 border-[#1976D2]/20 hover:shadow-lg transition-all">
+                            <div className="text-4xl mb-3 text-[#1976D2]"><FontAwesomeIcon icon={faBriefcase} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{jobsCount}</div>
                             <div className="text-sm text-gray-600">Active Jobs</div>
                         </div>
-
                         <div className="text-center p-6 bg-gradient-to-br from-[#4CAF50]/10 to-[#4CAF50]/5 rounded-2xl border-2 border-[#4CAF50]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#4CAF50]">
-                                <FontAwesomeIcon icon={faHandHoldingDollar} />
-                            </div>
+                            <div className="text-4xl mb-3 text-[#4CAF50]"><FontAwesomeIcon icon={faHandHoldingDollar} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{grantsCount}</div>
                             <div className="text-sm text-gray-600">Grants Available</div>
                         </div>
-
                         <div className="text-center p-6 bg-gradient-to-br from-[#1565C0]/10 to-[#1565C0]/5 rounded-2xl border-2 border-[#1565C0]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#1565C0]">
-                                <FontAwesomeIcon icon={faGraduationCap} />
-                            </div>
+                            <div className="text-4xl mb-3 text-[#1565C0]"><FontAwesomeIcon icon={faGraduationCap} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{scholarshipsCount}</div>
                             <div className="text-sm text-gray-600">Scholarships</div>
                         </div>
-
                         <div className="text-center p-6 bg-gradient-to-br from-[#4CAF50]/10 to-[#4CAF50]/5 rounded-2xl border-2 border-[#4CAF50]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#4CAF50]">
-                                <FontAwesomeIcon icon={faChalkboardTeacher} />
-                            </div>
+                            <div className="text-4xl mb-3 text-[#4CAF50]"><FontAwesomeIcon icon={faChalkboardTeacher} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{trainingsCount}</div>
                             <div className="text-sm text-gray-600">Training Programs</div>
                         </div>
