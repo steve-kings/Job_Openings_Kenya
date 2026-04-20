@@ -122,7 +122,7 @@ export default function ProfileEditorPage() {
     const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all bg-white";
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-16">
+        <div className="p-4 lg:p-8 space-y-8 max-w-7xl mx-auto">
             {/* Toast */}
             {toast && (
                 <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
@@ -132,42 +132,37 @@ export default function ProfileEditorPage() {
             )}
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white py-12">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <Link href="/dashboard" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-4 text-sm group">
-                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                        Back to Dashboard
-                    </Link>
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div>
-                            <h1 className="text-3xl font-bold">My Public Profile</h1>
-                            <p className="text-white/80 mt-1">Build your talent profile to get discovered by employers</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            {form.username && form.is_public && (
-                                <Link
-                                    href={`/talent/${form.username}`}
-                                    target="_blank"
-                                    className="btn bg-white/20 hover:bg-white/30 text-white border-none gap-2 btn-sm"
-                                >
-                                    <ExternalLink size={16} /> Preview Profile
-                                </Link>
-                            )}
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-2"
+            <div className="bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white p-8 lg:p-12 rounded-3xl shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <h1 className="text-3xl lg:text-4xl font-bold">My Public Profile</h1>
+                        <p className="text-white/80 mt-2 text-lg">Build your talent profile to get discovered by employers</p>
+                    </div>
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                        {form.username && form.is_public && (
+                            <Link
+                                href={`/talent/${form.username}`}
+                                target="_blank"
+                                className="btn bg-white/20 hover:bg-white/30 text-white border border-white/30 gap-2 w-full md:w-auto"
                             >
-                                {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                                {saving ? 'Saving...' : 'Save Profile'}
-                            </button>
-                        </div>
+                                <ExternalLink size={18} /> Preview
+                            </Link>
+                        )}
+                        <button
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-2 w-full md:w-auto shadow-lg"
+                        >
+                            {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                            {saving ? 'Saving...' : 'Save Profile'}
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 lg:px-12 py-10">
-                <div className="grid lg:grid-cols-3 gap-6">
+            <div>
+                <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Form */}
                     <div className="lg:col-span-2 space-y-6">
 

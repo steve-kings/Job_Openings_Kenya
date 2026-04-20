@@ -81,45 +81,41 @@ export default function DashboardPage() {
     const userName = profile?.full_name || user?.email?.split('@')[0] || 'User';
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className="p-4 lg:p-8 space-y-8 max-w-7xl mx-auto">
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-[#1976D2] via-[#1976D2] to-[#1565C0] text-white py-16">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 overflow-hidden">
-                                    {profile?.avatar_url ? (
-                                        <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <User className="text-white" size={32} />
-                                    )}
-                                </div>
-                                <div>
-                                    <h1 className="text-4xl lg:text-5xl font-bold">
-                                        Welcome back, {userName}!
-                                    </h1>
-                                    <p className="text-white/90 text-lg mt-1">{user?.email}</p>
-                                </div>
+            <div className="bg-gradient-to-br from-[#1976D2] via-[#1976D2] to-[#1565C0] text-white p-8 lg:p-12 rounded-3xl shadow-xl relative overflow-hidden">
+                {/* Decorative background elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-[#4CAF50]/20 rounded-full blur-2xl translate-y-1/2"></div>
+                
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 overflow-hidden shadow-inner cursor-pointer hover:bg-white/20 transition-colors"
+                                onClick={() => router.push('/dashboard/profile')}>
+                                {profile?.avatar_url ? (
+                                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="text-white" size={36} />
+                                )}
                             </div>
-                            <p className="text-white/80 mt-2 flex items-center gap-2">
-                                <Calendar size={16} />
-                                Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
-                            </p>
+                            <div>
+                                <h1 className="text-3xl lg:text-4xl font-bold">
+                                    Welcome back, {userName}!
+                                </h1>
+                                <p className="text-white/80 text-lg mt-1">{user?.email}</p>
+                            </div>
                         </div>
-                        <button 
-                            onClick={handleSignOut}
-                            className="hidden md:flex btn btn-outline border-white/30 text-white hover:bg-white/10 hover:border-white gap-2"
-                        >
-                            <LogOut size={18} />
-                            Sign Out
-                        </button>
+                        <p className="text-white/80 flex items-center gap-2 font-medium bg-black/10 w-fit px-3 py-1.5 rounded-lg border border-white/10">
+                            <Calendar size={16} />
+                            Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
+                        </p>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="container mx-auto px-6 lg:px-12 py-12">
+            <div className="space-y-8">
                 {/* Platform Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="card bg-white shadow-xl border-t-4 border-[#1976D2]">
