@@ -59,6 +59,8 @@ export default function Navbar() {
         { href: '/', label: 'Home' },
         { href: '/about', label: 'About' },
         { href: '/jobs', label: 'Opportunities' },
+        { href: '/talent', label: 'Talent' },
+        { href: '/community', label: 'Community' },
         { href: 'https://kings-learn.vercel.app', label: 'Learning', external: true },
         { href: '/blog', label: 'Blog' },
         { href: '/contact', label: 'Contact' },

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Briefcase, FileText, ExternalLink, User, Mail, Calendar, Award, TrendingUp, LogOut } from 'lucide-react';
+import { BookOpen, Briefcase, FileText, ExternalLink, User, Mail, Calendar, Award, TrendingUp, LogOut, MessageSquare } from 'lucide-react';
 
 export default function DashboardPage() {
     const [user, setUser] = useState<any>(null);
@@ -224,8 +224,42 @@ export default function DashboardPage() {
                                         <FileText className="text-white" size={32} />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-bold text-gray-900">Blog & Stories</h3>
+                                        <h3 className="text-xl font-bold text-gray-900">Blog &amp; Stories</h3>
                                         <p className="text-gray-600 text-sm mt-1">Read success stories</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <Link
+                            href="/community"
+                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#7B1FA2]"
+                        >
+                            <div className="card-body">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-4 bg-[#7B1FA2] rounded-xl">
+                                        <MessageSquare className="text-white" size={32} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold text-gray-900">Community Forum</h3>
+                                        <p className="text-gray-600 text-sm mt-1">Ask questions &amp; share knowledge</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <Link
+                            href="/dashboard/profile"
+                            className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-l-4 border-[#1976D2]"
+                        >
+                            <div className="card-body">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-4 bg-[#1976D2] rounded-xl">
+                                        <User className="text-white" size={32} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold text-gray-900">My Public Profile</h3>
+                                        <p className="text-gray-600 text-sm mt-1">Build your talent portfolio</p>
                                     </div>
                                 </div>
                             </div>
