@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { getBaseUrl } from '@/lib/utils/url';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/reset-password`,
+                redirectTo: `${getBaseUrl()}/reset-password`,
             });
 
             if (error) throw error;
