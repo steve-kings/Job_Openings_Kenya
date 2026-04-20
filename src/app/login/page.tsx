@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { getBaseUrl } from '@/lib/utils/url';
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true);
@@ -21,11 +22,10 @@ export default function Login() {
     const router = useRouter();
 
     const handleGoogleLogin = async () => {
-        const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${redirectUrl}/auth/callback`,
+                redirectTo: `${getBaseUrl()}/auth/callback`,
             },
         });
     };
