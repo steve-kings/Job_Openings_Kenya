@@ -4,6 +4,7 @@ import { MapPin, Calendar, Building, Briefcase, Clock, ExternalLink } from 'luci
 import JobsFilter from '@/components/JobsFilter';
 import JobsHeroSlider from '@/components/JobsHeroSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import BookmarkButton from '@/components/BookmarkButton';
 import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 import type { Metadata } from 'next';
 
@@ -166,14 +167,26 @@ export default async function JobsPage({
                                         <div className="p-6 flex-1 flex flex-col">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <span className={`${colors.badge} text-white px-3 py-1 rounded-full text-xs font-semibold`}>
-                                                            {job.type}
-                                                        </span>
-                                                        <span className="flex items-center gap-1 text-xs text-gray-500">
-                                                            <Clock size={12} />
-                                                            {Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
-                                                        </span>
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`${colors.badge} text-white px-3 py-1 rounded-full text-xs font-semibold`}>
+                                                                {job.type}
+                                                            </span>
+                                                            <span className="flex items-center gap-1 text-xs text-gray-500">
+                                                                <Clock size={12} />
+                                                                {Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+                                                            </span>
+                                                        </div>
+                                                        <BookmarkButton 
+                                                            job={{
+                                                                id: job.id,
+                                                                title: job.title,
+                                                                company: job.company,
+                                                                type: job.type,
+                                                                location: job.location
+                                                            }}
+                                                            className="p-1 z-20 bg-white/80 rounded-full hover:bg-white"
+                                                        />
                                                     </div>
                                                     <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#1976D2] transition-colors line-clamp-2">
                                                         {job.title}

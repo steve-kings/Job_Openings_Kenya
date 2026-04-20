@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, LogOut, LayoutDashboard, Settings, Award, Menu, X } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Settings, Award, Menu, X, Bookmark } from 'lucide-react';
+import { useBookmarks } from '@/contexts/BookmarkContext';
 
 export default function Navbar() {
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { savedJobs, setDrawerOpen } = useBookmarks();
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
@@ -106,6 +108,19 @@ export default function Navbar() {
 
                     {/* Right Side - User Profile or Login */}
                     <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setDrawerOpen(true)}
+                            className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="Saved Jobs"
+                        >
+                            <Bookmark size={22} className={savedJobs.length > 0 ? "fill-[#1976D2] text-[#1976D2]" : ""} />
+                            {savedJobs.length > 0 && (
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full">
+                                    {savedJobs.length}
+                                </span>
+                            )}
+                        </button>
+
                         {user ? (
                             <div className="dropdown dropdown-end">
                                 <div

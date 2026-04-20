@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
 import { getBaseUrl } from "@/lib/utils/url";
+import { BookmarkProvider } from "@/contexts/BookmarkContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -77,13 +78,15 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}
       >
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
-        <PWAInstallButton />
-        <AIChatbot />
+        <BookmarkProvider>
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+          <PWAInstallButton />
+          <AIChatbot />
+        </BookmarkProvider>
       </body>
     </html>
   );

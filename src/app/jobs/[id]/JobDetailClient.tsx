@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, Lightbulb } from 'lucide-react';
+import BookmarkButton from '@/components/BookmarkButton';
 
 interface JobDetailClientProps {
     job: any;
@@ -19,6 +20,11 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
     const [coverLetter, setCoverLetter] = useState('');
     const [generatingLetter, setGeneratingLetter] = useState(false);
     const [letterCopied, setLetterCopied] = useState(false);
+
+    // AI Mock Interview State
+    const [prepModalOpen, setPrepModalOpen] = useState(false);
+    const [prepMaterial, setPrepMaterial] = useState('');
+    const [generatingPrep, setGeneratingPrep] = useState(false);
 
     if (!job) {
         return (
@@ -109,6 +115,32 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
         setTimeout(() => setLetterCopied(false), 2000);
     };
 
+    const handleGeneratePrep = async () => {
+        setGeneratingPrep(true);
+        try {
+            const res = await fetch('/api/generate-interview-prep', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    jobTitle: job.title, 
+                    jobDescription: job.description, 
+                    company: job.company 
+                })
+            });
+            const data = await res.json();
+            if (data.prepMaterial) {
+                setPrepMaterial(data.prepMaterial);
+            } else {
+                throw new Error(data.error || 'Failed');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to generate interview prep. Please try again.');
+        } finally {
+            setGeneratingPrep(false);
+        }
+    };
+
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Header Section */}
@@ -130,7 +162,23 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                     {daysLeft > 0 ? `${daysLeft} days left` : 'Deadline passed'}
                                 </span>
                             </div>
-                            <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight">{job.title}</h1>
+                            <div className="flex items-start justify-between gap-4 max-w-4xl">
+                                <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight">{job.title}</h1>
+                                
+                                <div className="hidden sm:block mt-2">
+                                    <BookmarkButton 
+                                        job={{
+                                            id: job.id,
+                                            title: job.title,
+                                            company: job.company,
+                                            type: job.type,
+                                            location: job.location
+                                        }}
+                                        className="bg-white/20 hover:bg-white/40 px-4 py-2 rounded-xl backdrop-blur-sm shadow-sm"
+                                        showText={true}
+                                    />
+                                </div>
+                            </div>
                             <div className="flex flex-wrap gap-4 text-white/90">
                                 <span className="flex items-center gap-2">
                                     <Building size={18} />
@@ -326,6 +374,14 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                             <Sparkles size={18} className="text-yellow-300" />
                                             AI Cover Letter
                                         </button>
+
+                                        <button 
+                                            onClick={() => setPrepModalOpen(true)}
+                                            className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] w-full border-none gap-2"
+                                        >
+                                            <Lightbulb size={18} className="text-yellow-200" />
+                                            AI Interview Prep
+                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -439,6 +495,75 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                                     >
                                         Start Over
                                     </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* AI Mock Interview Prep Modal */}
+            {prepModalOpen && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-[#1976D2]">
+                            <div className="flex items-center gap-3 text-white">
+                                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                    <Lightbulb size={20} className="text-yellow-200" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold">AI Interview Preparation</h3>
+                                    <p className="text-sm text-white/80">Tailored exactly for {job.company}</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setPrepModalOpen(false)} className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto flex-1 bg-gray-50/50 space-y-6">
+                            {!prepMaterial ? (
+                                <div className="space-y-6 text-center max-w-md mx-auto py-10">
+                                    <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <Lightbulb size={48} className="text-[#1976D2]" />
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Want to ace your interview?</h4>
+                                    <p className="text-gray-600 mb-8">
+                                        Our AI will deeply analyze the requirements for the <strong>{job.title}</strong> role at {job.company}. It will generate the top 5 questions you are most likely to be asked, along with expert cheat-sheet answers.
+                                    </p>
+                                    <button 
+                                        onClick={handleGeneratePrep} 
+                                        disabled={generatingPrep}
+                                        className="w-full py-4 text-lg bg-[#1976D2] hover:bg-[#1565C0] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50"
+                                    >
+                                        {generatingPrep ? <Loader2 size={24} className="animate-spin" /> : <Sparkles size={24} />}
+                                        {generatingPrep ? "Analyzing Job & Generating Questions..." : "Generate Interview Guide"}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6 animate-in slide-in-from-bottom-4">
+                                    <div className="prose prose-blue max-w-none bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                        <div dangerouslySetInnerHTML={{ __html: prepMaterial.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <button 
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(prepMaterial);
+                                                alert('Interview guide copied to clipboard!');
+                                            }}
+                                            className="flex-1 py-3 bg-[#1976D2] hover:bg-[#1565C0] text-white font-bold rounded-xl transition-colors gap-2 flex items-center justify-center"
+                                        >
+                                            <Copy size={18} /> Copy to Clipboard
+                                        </button>
+                                        <button 
+                                            onClick={() => setPrepMaterial('')}
+                                            className="flex-1 py-3 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-colors"
+                                        >
+                                            Start Over
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
