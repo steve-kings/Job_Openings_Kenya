@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Send, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NewThreadPage() {
@@ -14,6 +14,8 @@ export default function NewThreadPage() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [generatingAi, setGeneratingAi] = useState(false);
 
     const [form, setForm] = useState({
         title: '',
@@ -37,6 +39,32 @@ export default function NewThreadPage() {
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
         setTimeout(() => setToast(null), 4000);
+    };
+
+    const handleAiWrite = async () => {
+        if (!aiPrompt.trim()) return;
+        setGeneratingAi(true);
+        try {
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'generate_forum_post',
+                    prompt: aiPrompt,
+                })
+            });
+            const data = await res.json();
+            if (data.content) {
+                setForm(f => ({ ...f, content: data.content }));
+                setAiPrompt('');
+            } else {
+                throw new Error(data.error || 'Failed');
+            }
+        } catch {
+            showToast('error', 'AI could not generate content. Try again.');
+        } finally {
+            setGeneratingAi(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -127,7 +155,29 @@ export default function NewThreadPage() {
 
                     {/* Content */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-3">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Details</h3>
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Details</h3>
+                            {/* AI Writer */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    value={aiPrompt}
+                                    onChange={e => setAiPrompt(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAiWrite())}
+                                    placeholder="Describe what to write..."
+                                    className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 focus:border-[#1976D2] focus:ring-1 focus:ring-[#1976D2]/20 outline-none w-48 text-gray-600"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAiWrite}
+                                    disabled={!aiPrompt.trim() || generatingAi}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1976D2] hover:bg-[#1565C0] text-white text-xs font-bold rounded-lg disabled:opacity-50 transition-colors"
+                                >
+                                    {generatingAi ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                                    AI Write
+                                </button>
+                            </div>
+                        </div>
                         <textarea
                             required
                             value={form.content}

@@ -139,7 +139,39 @@ Output ONLY valid JSON.`
             return NextResponse.json({ coverLetter: data.choices[0].message.content });
         }
 
+        else if (action === 'generate_forum_post') {
+            const { prompt } = body;
+            const systemMessage = {
+                role: 'system',
+                content: `You are a helpful writing assistant for a career community forum for African youth called 1000Jobs. 
+Your job is to help users write short, clear, and well-structured forum discussion posts.
+Given a brief prompt from the user, write a focused forum post body — NOT a title.
+Keep it concise: 3–5 sentences max. Sound natural, helpful, and conversational.
+Do NOT add greetings like "Hello!" or sign-offs. Just the post content directly.`
+            };
+
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.1-8b-instant',
+                    messages: [systemMessage, { role: 'user', content: prompt }],
+                    temperature: 0.7,
+                    max_tokens: 200,
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || 'Error from AI service');
+
+            return NextResponse.json({ content: data.choices[0].message.content });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+
 
     } catch (error: any) {
         console.error('AI API Error:', error);

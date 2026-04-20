@@ -75,12 +75,6 @@ export default async function ForumPage() {
                                         className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all group"
                                     >
                                         <div className="flex items-start gap-4">
-                                            <div
-                                                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-sm"
-                                                style={{ backgroundColor: `${cat.color}15` }}
-                                            >
-                                                {cat.icon}
-                                            </div>
                                             <div className="flex-1 min-w-0">
                                                 <h3 className="font-bold text-gray-900 group-hover:text-[#1976D2] transition-colors">{cat.name}</h3>
                                                 <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{cat.description}</p>
@@ -126,7 +120,7 @@ export default async function ForumPage() {
                                                     {thread.is_pinned && <span className="flex items-center gap-1 text-xs font-bold text-orange-500"><Pin size={11} /> Pinned</span>}
                                                     {thread.forum_categories && (
                                                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${thread.forum_categories.color}20`, color: thread.forum_categories.color }}>
-                                                            {thread.forum_categories.icon} {thread.forum_categories.name}
+                                                            {thread.forum_categories.name}
                                                         </span>
                                                     )}
                                                 </div>
