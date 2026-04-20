@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Eye, Calendar, MapPin, Building2, TrendingUp, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Calendar, MapPin, Building2, TrendingUp, AlertCircle, CheckCircle, Clock, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -96,10 +96,24 @@ export default function AdminOpportunitiesPage() {
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Opportunities</h1>
                     <p className="text-sm sm:text-base text-gray-600">Create, edit, and manage job postings, grants, scholarships, and trainings</p>
                 </div>
-                <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#1976D2] text-white hover:bg-[#1565C0] border-none gap-2 w-full sm:w-auto">
-                    <Plus size={18} />
-                    Add New Opportunity
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <button 
+                        onClick={() => {
+                            const url = `${window.location.origin}/jobs?urgent=true`;
+                            const text = `🚨 Urgent! Several opportunities are expiring in the next 3 days on 1000Jobs. Apply now before they close:\n\n${url}`;
+                            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                        }}
+                        className="btn btn-sm sm:btn-md bg-[#25D366] text-white hover:bg-[#128C7E] border-none gap-2 w-full sm:w-auto shadow-md"
+                        title="Share Expiring Opportunities via WhatsApp"
+                    >
+                        <Share2 size={18} />
+                        Share Expiring
+                    </button>
+                    <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#1976D2] text-white hover:bg-[#1565C0] border-none gap-2 w-full sm:w-auto shadow-md">
+                        <Plus size={18} />
+                        Add New
+                    </Link>
+                </div>
             </div>
 
             {/* Stats Cards */}

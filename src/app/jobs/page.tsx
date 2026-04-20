@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { MapPin, Calendar, Building, Briefcase, Clock, ExternalLink } from 'lucide-react';
+import { MapPin, Calendar, Building, Briefcase, Clock, ExternalLink, AlertCircle } from 'lucide-react';
 import JobsFilter from '@/components/JobsFilter';
 import JobsHeroSlider from '@/components/JobsHeroSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,13 +37,22 @@ export default async function JobsPage({
     const params = await searchParams;
     const filterType = typeof params.type === 'string' ? params.type : 'All';
     const filterQuery = typeof params.q === 'string' ? params.q : '';
+    const isUrgent = params.urgent === 'true';
 
     let query = supabase
         .from('opportunities')
         .select('*')
         .gte('deadline', today) // Only show active/future deadlines
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .eq('status', 'active');
+
+    if (isUrgent) {
+        const threeDaysDate = new Date();
+        threeDaysDate.setDate(threeDaysDate.getDate() + 3);
+        const maxDate = threeDaysDate.toISOString().split('T')[0];
+        query = query.lte('deadline', maxDate).order('deadline', { ascending: true });
+    } else {
+        query = query.order('created_at', { ascending: false });
+    }
 
     if (filterType !== 'All') {
         query = query.eq('type', filterType);
@@ -69,6 +78,21 @@ export default async function JobsPage({
         <div className="bg-white">
             {/* Hero Slider */}
             <JobsHeroSlider />
+
+            {/* Expiring Soon Alert */}
+            {isUrgent && (
+                <div className="bg-red-50 py-4 border-b border-red-100">
+                    <div className="container mx-auto px-6 lg:px-12 flex items-start sm:items-center gap-3">
+                        <div className="p-2 bg-red-100 text-red-600 rounded-lg shrink-0">
+                            <AlertCircle size={24} />
+                        </div>
+                        <div>
+                            <h3 className="text-red-800 font-bold text-lg">Urgent Opportunities</h3>
+                            <p className="text-red-700 text-sm">These selected opportunities are expiring in the next 3 days! Apply immediately.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Quick Stats — horizontal scroll on mobile, grid on desktop */}
             <div className="py-8 bg-white">
