@@ -130,9 +130,15 @@ export default function Navbar() {
                                     role="button"
                                     className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
-                                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-[#1976D2] flex items-center justify-center text-white font-bold shadow-md">
-                                        {profile?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
-                                    </div>
+                                    {profile?.avatar_url ? (
+                                        <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full overflow-hidden shadow-md border-2 border-white">
+                                            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : (
+                                        <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-[#1976D2] flex items-center justify-center text-white font-bold shadow-md">
+                                            {profile?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                                        </div>
+                                    )}
                                     <div className="hidden md:block text-left">
                                         <p className="text-sm font-semibold text-gray-900">
                                             {profile?.full_name || 'User'}

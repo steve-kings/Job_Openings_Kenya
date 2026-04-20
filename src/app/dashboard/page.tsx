@@ -88,8 +88,12 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30">
-                                    <User className="text-white" size={32} />
+                                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 overflow-hidden">
+                                    {profile?.avatar_url ? (
+                                        <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User className="text-white" size={32} />
+                                    )}
                                 </div>
                                 <div>
                                     <h1 className="text-4xl lg:text-5xl font-bold">
