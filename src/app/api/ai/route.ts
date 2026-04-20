@@ -170,6 +170,37 @@ Do NOT add greetings like "Hello!" or sign-offs. Just the post content directly.
             return NextResponse.json({ content: data.choices[0].message.content });
         }
 
+        else if (action === 'generate_profile') {
+            const { prompt, type } = body;
+            const systemContent = type === 'headline'
+                ? `You are an expert career coach helping African youth write a highly professional, catchy, and concise LinkedIn-style Headline based on their prompt. Keep it strictly under 80 characters. Do NOT wrap in quotes. Do NOT include greetings.`
+                : `You are an expert career coach helping African youth write a professional, engaging, and clean profile Bio/About section. Use the user's prompt to generate a highly polished 3-4 sentence bio. Do NOT wrap in quotes. Do NOT include greetings. Sound natural and ambitious.`;
+
+            const systemMessage = {
+                role: 'system',
+                content: systemContent
+            };
+
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.1-8b-instant',
+                    messages: [systemMessage, { role: 'user', content: prompt }],
+                    temperature: 0.7,
+                    max_tokens: type === 'headline' ? 60 : 300,
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || 'Error from AI service');
+
+            return NextResponse.json({ content: data.choices[0].message.content });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
 
 

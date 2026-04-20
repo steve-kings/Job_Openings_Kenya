@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera } from 'lucide-react';
+import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -16,6 +16,9 @@ export default function ProfileEditorPage() {
     const [user, setUser] = useState<any>(null);
     const [skillInput, setSkillInput] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
+
+    const [aiPrompt, setAiPrompt] = useState({ state: '', open: '' as '' | 'headline' | 'bio' });
+    const [generatingAi, setGeneratingAi] = useState(false);
 
     const [form, setForm] = useState({
         full_name: '',
@@ -80,6 +83,31 @@ export default function ProfileEditorPage() {
 
     const removeSkill = (skill: string) => {
         setForm({ ...form, skills: form.skills.filter(s => s !== skill) });
+    };
+
+    const handleGenerateAi = async (type: 'headline' | 'bio') => {
+        if (!aiPrompt.state.trim()) {
+            showToast('error', 'Please enter a prompt to guide the AI.');
+            return;
+        }
+        setGeneratingAi(true);
+        try {
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generate_profile', prompt: aiPrompt.state, type }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to generate content');
+            
+            setForm(prev => ({ ...prev, [type]: data.content.trim() }));
+            setAiPrompt({ state: '', open: '' });
+            showToast('success', `${type === 'headline' ? 'Headline' : 'Bio'} generated successfully!`);
+        } catch (err: any) {
+            showToast('error', err.message);
+        } finally {
+            setGeneratingAi(false);
+        }
     };
 
     const handleSave = async () => {
@@ -253,7 +281,18 @@ export default function ProfileEditorPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-1.5 md:col-span-2">
-                                    <label className="text-sm font-semibold text-gray-700">Professional Headline</label>
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-semibold text-gray-700">Professional Headline</label>
+                                        <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'headline' ? '' : 'headline'}))} className="text-xs font-semibold text-[#1976D2] flex items-center gap-1 hover:text-[#1565C0] transition-colors"><Sparkles size={14}/> AI Writer</button>
+                                    </div>
+                                    {aiPrompt.open === 'headline' && (
+                                        <div className="mb-2 p-3 bg-[#1976D2]/5 border border-[#1976D2]/20 rounded-xl flex items-stretch gap-2 animate-in fade-in slide-in-from-top-2">
+                                            <input type="text" value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="e.g. Frontend developer passionate about React and UI..." className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#1976D2]" />
+                                            <button type="button" onClick={() => handleGenerateAi('headline')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 bg-[#1976D2] hover:bg-[#1565C0] text-white border-none shrink-0 gap-2">
+                                                {generatingAi ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />} <span>Gen</span>
+                                            </button>
+                                        </div>
+                                    )}
                                     <input type="text" value={form.headline} onChange={e => setForm({...form, headline: e.target.value})} className={inputCls} placeholder="e.g. Software Engineer | Open to Remote Opportunities" />
                                 </div>
                                 <div className="space-y-1.5">
@@ -265,11 +304,26 @@ export default function ProfileEditorPage() {
 
                         {/* Bio */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">About Me</h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">About Me</h3>
+                                <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'bio' ? '' : 'bio'}))} className="text-xs font-semibold text-[#1976D2] flex items-center gap-1 hover:text-[#1565C0] transition-colors"><Sparkles size={14}/> Generate with AI</button>
+                            </div>
+                            
+                            {aiPrompt.open === 'bio' && (
+                                <div className="p-3 bg-[#1976D2]/5 border border-[#1976D2]/20 rounded-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
+                                    <textarea value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="What do you want to highlight? (e.g. Over 3 years experience in digital marketing, passionate about telling African stories...)" className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#1976D2] resize-none h-20" />
+                                    <div className="flex justify-end">
+                                        <button type="button" onClick={() => handleGenerateAi('bio')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 px-4 bg-[#1976D2] hover:bg-[#1565C0] text-white border-none gap-2">
+                                            {generatingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} Generate Bio
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             <textarea
                                 value={form.bio}
                                 onChange={e => setForm({...form, bio: e.target.value})}
-                                rows={5}
+                                rows={6}
                                 className={`${inputCls} resize-none`}
                                 placeholder="Tell employers about yourself, your passion, and what makes you unique..."
                             />
