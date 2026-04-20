@@ -218,7 +218,10 @@ export default function JobDetailClient({ job, user, opportunityId }: JobDetailC
                         {/* Description */}
                         <div className="bg-white rounded-2xl shadow-lg p-8">
                             <h2 className={`text-2xl font-bold mb-4 ${colors.text}`}>About This Opportunity</h2>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.description}</p>
+                            <div 
+                                className="prose max-w-none text-gray-700 leading-relaxed font-sans"
+                                dangerouslySetInnerHTML={{ __html: job.description }} 
+                            />
                         </div>
 
                         {canView ? (

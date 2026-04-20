@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function EditBlogPostPage() {
     const params = useParams();
@@ -143,13 +144,11 @@ export default function EditBlogPostPage() {
                                 </div>
 
                                 <div className="form-control">
-                                    <label className="label font-medium">Content (Markdown/HTML)</label>
-                                    <textarea
-                                        required
-                                        className="textarea textarea-bordered h-96 font-mono text-sm"
+                                    <label className="label font-medium">Content (Rich Text)</label>
+                                    <RichTextEditor
                                         value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    ></textarea>
+                                        onChange={(content) => setFormData({ ...formData, content: content })}
+                                    />
                                 </div>
                             </div>
                         </div>

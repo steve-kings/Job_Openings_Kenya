@@ -187,17 +187,15 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                         </div>
 
                         {/* Content */}
-                        <div className="prose prose-lg max-w-none">
+                        <div className="prose prose-lg max-w-none font-sans">
                             {canRead ? (
-                                <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-                                    {post.content}
-                                </div>
+                                <div 
+                                    className="text-gray-700 leading-relaxed" 
+                                    dangerouslySetInnerHTML={{ __html: post.content }} 
+                                />
                             ) : (
                                 <div className="relative">
-                                    <div className="whitespace-pre-wrap blur-sm select-none h-60 overflow-hidden opacity-30">
-                                        {post.content.substring(0, 500)}...
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-                                    </div>
+                                    <div className="blur-sm select-none h-60 overflow-hidden opacity-30 pointer-events-none text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
                                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm">
                                         <div className={`w-20 h-20 rounded-full ${colors.bg} bg-opacity-10 flex items-center justify-center mb-4`}>
                                             <Lock size={40} className={colors.text} />

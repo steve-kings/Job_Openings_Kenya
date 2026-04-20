@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, FileText, Save, Link2, Eye, EyeOff, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function CreateBlogPostPage() {
     const router = useRouter();
@@ -192,19 +193,15 @@ export default function CreateBlogPostPage() {
                             </Field>
                         </div>
 
-                        {/* Content */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Post Content</h3>
-                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-lg">Markdown & HTML supported</span>
+                                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-lg">Rich Text Editor</span>
                             </div>
-                            <textarea
-                                required
+                            <RichTextEditor
                                 value={formData.content}
-                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                placeholder={`# Your Heading\n\nWrite your full article content here...\n\n## Section Title\n\nMore content...`}
-                                rows={22}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-sm text-gray-700 font-mono resize-none transition-all"
+                                onChange={(content) => setFormData({ ...formData, content: content })}
+                                placeholder={`Write your full article content here...`}
                             />
                         </div>
                     </div>

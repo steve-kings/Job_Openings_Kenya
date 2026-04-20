@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Plus, X, Briefcase, Save, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import RichTextEditor from '@/components/RichTextEditor';
 
 const TYPES = ['Job', 'Grant', 'Scholarship', 'Training'];
 
@@ -291,14 +292,10 @@ export default function CreateOpportunityPage() {
                                     className={`${inputCls} resize-none`}
                                 />
                             </Field>
-                            <Field label="Full Description" required hint="Markdown supported">
-                                <textarea
-                                    required
+                            <Field label="Full Description" required hint="WYSIWYG Supported">
+                                <RichTextEditor
                                     value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    placeholder={`## About the Role\n\nWrite a detailed description here...\n\n## About the Organization\n\nMore info...`}
-                                    rows={10}
-                                    className={`${inputCls} resize-none font-mono`}
+                                    onChange={(content) => setFormData({ ...formData, description: content })}
                                 />
                             </Field>
                         </div>

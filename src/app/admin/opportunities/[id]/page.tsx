@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function EditOpportunityPage() {
     const params = useParams();
@@ -224,12 +225,10 @@ export default function EditOpportunityPage() {
 
                         <div className="form-control mb-4">
                             <label className="label font-medium">Full Description</label>
-                            <textarea
-                                required
-                                className="textarea textarea-bordered h-40 font-mono text-sm"
+                            <RichTextEditor
                                 value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            ></textarea>
+                                onChange={(content) => setFormData({ ...formData, description: content })}
+                            />
                         </div>
 
                         <div className="form-control">
