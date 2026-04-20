@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft } from 'lucide-react';
+import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera } from 'lucide-react';
 import Link from 'next/link';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function ProfileEditorPage() {
     const supabase = createClient();
@@ -14,6 +15,7 @@ export default function ProfileEditorPage() {
     const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
     const [user, setUser] = useState<any>(null);
     const [skillInput, setSkillInput] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState('');
 
     const [form, setForm] = useState({
         full_name: '',
@@ -56,6 +58,7 @@ export default function ProfileEditorPage() {
                     open_to_work: profile.open_to_work !== false,
                     skills: profile.skills || [],
                 });
+                setAvatarUrl(profile.avatar_url || '');
             }
             setLoading(false);
         };
@@ -97,6 +100,7 @@ export default function ProfileEditorPage() {
                 is_public: form.is_public,
                 open_to_work: form.open_to_work,
                 skills: form.skills,
+                avatar_url: avatarUrl || null,
                 updated_at: new Date().toISOString(),
             }).eq('id', user.id);
 
@@ -207,6 +211,37 @@ export default function ProfileEditorPage() {
                             </div>
                         </div>
 
+                        {/* Profile Photo */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Profile Photo</h3>
+                            <div className="flex flex-col sm:flex-row items-center gap-6">
+                                {/* Avatar Preview */}
+                                <div className="relative shrink-0">
+                                    {avatarUrl ? (
+                                        <img src={avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover ring-4 ring-[#1976D2]/20 shadow-lg" />
+                                    ) : (
+                                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center ring-4 ring-[#1976D2]/20 shadow-lg">
+                                            <span className="text-3xl font-black text-white">
+                                                {form.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || <User size={32} className="text-white" />}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#1976D2] rounded-full flex items-center justify-center shadow">
+                                        <Camera size={14} className="text-white" />
+                                    </div>
+                                </div>
+                                {/* Upload Widget */}
+                                <div className="flex-1 w-full">
+                                    <CloudinaryUpload
+                                        onUploadComplete={(url) => setAvatarUrl(url)}
+                                        currentImage={avatarUrl}
+                                        folder="1000jobs-avatars"
+                                        label="Upload Profile Photo"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Basic Info */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Basic Information</h3>
@@ -217,9 +252,9 @@ export default function ProfileEditorPage() {
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-gray-700">Username <span className="text-red-500">*</span></label>
-                                    <div className="flex items-center gap-0">
-                                        <span className="px-3 py-3 bg-gray-100 rounded-l-xl border border-r-0 border-gray-200 text-gray-500 text-sm font-mono">1000jobs.vercel.app/talent/</span>
-                                        <input type="text" value={form.username} onChange={e => setForm({...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})} className="flex-1 px-4 py-3 rounded-r-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm font-mono text-gray-700 transition-all" placeholder="johndoe" />
+                                    <div className="flex items-center">
+                                        <span className="hidden sm:flex px-3 py-3 bg-gray-100 rounded-l-xl border border-r-0 border-gray-200 text-gray-500 text-xs font-mono shrink-0 whitespace-nowrap">/talent/</span>
+                                        <input type="text" value={form.username} onChange={e => setForm({...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})} className="w-full px-4 py-3 sm:rounded-l-none rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm font-mono text-gray-700 transition-all" placeholder="johndoe" />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5 md:col-span-2">
