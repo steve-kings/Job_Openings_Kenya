@@ -227,7 +227,7 @@ export default async function JobsPage({
                             Join our WhatsApp channel to get instant notifications when new opportunities are posted. Be the first to apply!
                         </p>
                         <a 
-                            href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+                            href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn bg-[#4CAF50] text-white hover:bg-[#388E3C] btn-lg border-none px-10 gap-2"

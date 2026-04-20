@@ -247,7 +247,7 @@ export default function ContactPage() {
                                 Get daily opportunities, updates, and connect with other youth across Africa.
                             </p>
                             <a
-                                href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+                                href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn bg-white text-[#4CAF50] hover:bg-gray-100 border-none w-full"

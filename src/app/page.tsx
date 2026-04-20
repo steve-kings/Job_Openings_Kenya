@@ -154,7 +154,7 @@ export default async function Home() {
                   About us →
                 </Link>
                 <a 
-                  href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+                  href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn bg-[#4CAF50] text-white hover:bg-[#388E3C] px-8 border-none"
@@ -306,7 +306,7 @@ export default async function Home() {
               Explore Opportunities
             </Link>
             <a
-              href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+              href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
               target="_blank"
               rel="noopener noreferrer"
               className="btn bg-[#4CAF50] text-white hover:bg-[#388E3C] btn-lg border-none px-10 gap-2"

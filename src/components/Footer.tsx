@@ -107,7 +107,7 @@ export default function Footer() {
                             </li>
                             <li>
                                 <a
-                                    href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+                                    href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-300 hover:text-[#4CAF50] transition-colors flex items-center gap-2 group"

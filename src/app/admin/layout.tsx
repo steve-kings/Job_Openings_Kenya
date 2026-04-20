@@ -200,8 +200,8 @@ export default function AdminLayout({
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 min-h-screen">
-                    <div className="p-4 sm:p-6 lg:p-8 max-w-full overflow-x-hidden">
+                <main className="flex-1 min-h-screen min-w-0 flex flex-col overflow-x-hidden">
+                    <div className="p-4 sm:p-6 lg:p-8 flex-1 max-w-full">
                         {children}
                     </div>
                 </main>

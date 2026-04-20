@@ -115,7 +115,7 @@ export default function HeroSlider() {
                     <span className="sm:hidden">Opportunities</span>
                   </Link>
                   <a
-                    href="https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b"
+                    href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn bg-green-600 text-white hover:bg-green-700 btn-sm sm:btn-md lg:btn-lg px-6 md:px-8"
