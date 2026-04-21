@@ -2,10 +2,10 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import 'react-quill/dist/quill.snow.css';
+import 'react-quill-new/dist/quill.snow.css';
 
-// Dynamically import react-quill to avoid SSR document is not defined errors.
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false, loading: () => <div className="h-64 align-middle text-center py-20 text-gray-400 bg-gray-50 border border-gray-200 rounded-xl">Loading Editor...</div> });
+// Dynamically import react-quill-new to avoid SSR document is not defined errors.
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false, loading: () => <div className="h-64 align-middle text-center py-20 text-gray-400 bg-gray-50 border border-gray-200 rounded-xl">Loading Editor...</div> });
 
 interface RichTextEditorProps {
     value: string;
