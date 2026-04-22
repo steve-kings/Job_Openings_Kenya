@@ -43,8 +43,9 @@ export default function DashboardLayout({
     const menuItems = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'My Profile', href: '/dashboard/profile', icon: User },
+        { name: 'Saved Jobs', href: '/dashboard/saved', icon: Bookmark },
         { name: 'Community', href: '/community', icon: MessageSquare },
-        { name: 'Opportunities', href: '/jobs', icon: Bookmark },
+        { name: 'Opportunities', href: '/jobs', icon: FileText },
     ];
 
     return (
@@ -130,16 +131,7 @@ export default function DashboardLayout({
                             );
                         })}
                         
-                        <button
-                            onClick={() => {
-                                setIsMobileMenuOpen(false);
-                                setDrawerOpen(true);
-                            }}
-                            className="flex items-center gap-3 p-4 rounded-xl transition-all font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full text-left"
-                        >
-                            <Bookmark size={22} className="text-gray-400" />
-                            <span>Saved Items</span>
-                        </button>
+
                     </nav>
 
                     {/* Sidebar Footer */}
