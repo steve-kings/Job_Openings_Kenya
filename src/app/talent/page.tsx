@@ -52,7 +52,7 @@ export default async function TalentDirectoryPage({
                     </p>
 
                     {/* Search */}
-                    <form method="GET" className="max-w-2xl mx-auto flex gap-2 px-2 sm:px-0">
+                    <form method="GET" className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 px-2 sm:px-0 mt-8">
                         <div className="flex-1 flex items-center gap-2 sm:gap-3 bg-white rounded-2xl px-4 py-3 shadow-2xl overflow-hidden">
                             <Search size={18} className="text-gray-400 shrink-0" />
                             <input
@@ -63,7 +63,7 @@ export default async function TalentDirectoryPage({
                                 className="flex-1 outline-none text-gray-800 font-medium bg-transparent text-sm sm:text-base min-w-0"
                             />
                         </div>
-                        <button type="submit" className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none px-4 sm:px-8 rounded-2xl font-bold shadow-2xl text-sm shrink-0">
+                        <button type="submit" className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none px-4 sm:px-8 py-3 h-auto min-h-0 rounded-2xl font-bold shadow-2xl text-base w-full sm:w-auto shrink-0 flex items-center justify-center">
                             Search
                         </button>
                     </form>
@@ -83,7 +83,7 @@ export default async function TalentDirectoryPage({
             </div>
 
             {/* Grid */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-12 pb-20">
                 {!talents || talents.length === 0 ? (
                     <div className="text-center py-16 bg-white rounded-2xl shadow">
                         <Users size={56} className="text-gray-200 mx-auto mb-4" />
@@ -94,7 +94,7 @@ export default async function TalentDirectoryPage({
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                         {talents.map((talent) => {
                             const initials = talent.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
                             return (
