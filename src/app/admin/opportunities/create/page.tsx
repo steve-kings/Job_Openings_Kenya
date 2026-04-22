@@ -16,6 +16,61 @@ const TYPE_COLORS: Record<string, string> = {
     Scholarship: 'from-[#7B1FA2] to-[#6A1B9A]',
     Training: 'from-[#F57C00] to-[#E65100]',
 };
+const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+    setter([...arr, '']);
+
+const updateItem = (i: number, val: string, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) => {
+    const next = [...arr]; next[i] = val; setter(next);
+};
+
+const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+    setter(arr.filter((_, idx) => idx !== i));
+
+const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
+    <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+            {hint && <span className="text-xs text-gray-400">{hint}</span>}
+        </div>
+        {children}
+    </div>
+);
+
+const ListEditor = ({
+    label, color, items, setter, placeholder
+}: { label: string; color: string; items: string[]; setter: React.Dispatch<React.SetStateAction<string[]>>; placeholder: string }) => (
+    <div className="space-y-3">
+        <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold text-gray-700">{label}</h4>
+            <button
+                type="button"
+                onClick={() => addItem(setter, items)}
+                className={`flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-1.5 rounded-lg bg-gradient-to-r ${color} hover:shadow-md transition-all`}
+            >
+                <Plus size={13} /> Add
+            </button>
+        </div>
+        <div className="space-y-2">
+            {items.map((item, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                    <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => updateItem(i, e.target.value, setter, items)}
+                        placeholder={placeholder}
+                        className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
+                    />
+                    {items.length > 1 && (
+                        <button type="button" onClick={() => removeItem(i, setter, items)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                            <X size={15} />
+                        </button>
+                    )}
+                </div>
+            ))}
+        </div>
+    </div>
+);
 
 export default function CreateOpportunityPage() {
     const router = useRouter();
@@ -47,16 +102,6 @@ export default function CreateOpportunityPage() {
         setToast({ type, msg });
         setTimeout(() => setToast(null), 4000);
     };
-
-    const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
-        setter([...arr, '']);
-
-    const updateItem = (i: number, val: string, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) => {
-        const next = [...arr]; next[i] = val; setter(next);
-    };
-
-    const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
-        setter(arr.filter((_, idx) => idx !== i));
 
     const handleAIExtract = async () => {
         if (!aiText.trim()) return;
@@ -124,53 +169,7 @@ export default function CreateOpportunityPage() {
         }
     };
 
-    const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
-        <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
-                {hint && <span className="text-xs text-gray-400">{hint}</span>}
-            </div>
-            {children}
-        </div>
-    );
-
     const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 bg-white transition-all";
-
-    const ListEditor = ({
-        label, color, items, setter, placeholder
-    }: { label: string; color: string; items: string[]; setter: React.Dispatch<React.SetStateAction<string[]>>; placeholder: string }) => (
-        <div className="space-y-3">
-            <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold text-gray-700">{label}</h4>
-                <button
-                    type="button"
-                    onClick={() => addItem(setter, items)}
-                    className={`flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-1.5 rounded-lg bg-gradient-to-r ${color} hover:shadow-md transition-all`}
-                >
-                    <Plus size={13} /> Add
-                </button>
-            </div>
-            <div className="space-y-2">
-                {items.map((item, i) => (
-                    <div key={i} className="flex gap-2 items-center">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center font-bold">{i + 1}</span>
-                        <input
-                            type="text"
-                            value={item}
-                            onChange={(e) => updateItem(i, e.target.value, setter, items)}
-                            placeholder={placeholder}
-                            className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
-                        />
-                        {items.length > 1 && (
-                            <button type="button" onClick={() => removeItem(i, setter, items)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                <X size={15} />
-                            </button>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
 
     const selectedColor = TYPE_COLORS[formData.type] || TYPE_COLORS['Job'];
 

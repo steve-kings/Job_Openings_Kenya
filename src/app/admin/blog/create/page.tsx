@@ -8,6 +8,16 @@ import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import RichTextEditor from '@/components/RichTextEditor';
 
+const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
+    <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+            {hint && <span className="text-xs text-gray-400">{hint}</span>}
+        </div>
+        {children}
+    </div>
+);
+
 export default function CreateBlogPostPage() {
     const router = useRouter();
     const supabase = createClient();
@@ -93,15 +103,7 @@ export default function CreateBlogPostPage() {
 
     const categories = ['Success Story', 'Career Insights', 'Organization News', 'How-To', 'Events', 'Opportunities'];
 
-    const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
-        <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
-                {hint && <span className="text-xs text-gray-400">{hint}</span>}
-            </div>
-            {children}
-        </div>
-    );
+
 
     return (
         <div className="max-w-6xl mx-auto pb-16">
