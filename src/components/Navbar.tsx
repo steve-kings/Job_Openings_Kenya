@@ -56,9 +56,8 @@ export default function Navbar() {
     }, [pathname]);
 
     const navLinks = [
-        { href: '/', label: 'Home' },
+        { href: '/', label: 'Opportunities' },
         { href: '/about', label: 'About' },
-        { href: '/jobs', label: 'Opportunities' },
         { href: '/talent', label: 'Talent' },
         { href: '/community', label: 'Community' },
         { href: 'https://kings-learn.vercel.app', label: 'Learning', external: true },

@@ -1,12 +1,13 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 
 export default function JobsFilter() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     
     const [type, setType] = useState(searchParams.get('type') || 'All');
     const [query, setQuery] = useState(searchParams.get('q') || '');
@@ -21,7 +22,7 @@ export default function JobsFilter() {
             if (!query.trim()) params.delete('q');
             else params.set('q', query.trim());
 
-            router.push(`/jobs?${params.toString()}`, { scroll: false });
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
         }, 300); // 300ms debounce
         
         return () => clearTimeout(timer);

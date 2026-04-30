@@ -45,7 +45,7 @@ export default function DashboardLayout({
         { name: 'My Profile', href: '/dashboard/profile', icon: User },
         { name: 'Saved Jobs', href: '/dashboard/saved', icon: Bookmark },
         { name: 'Community', href: '/community', icon: MessageSquare },
-        { name: 'Opportunities', href: '/jobs', icon: FileText },
+        { name: 'Opportunities', href: '/', icon: FileText },
     ];
 
     return (
