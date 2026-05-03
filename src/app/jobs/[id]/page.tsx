@@ -21,8 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     const siteUrl = getBaseUrl();
     const url = `${siteUrl}/jobs/${resolvedParams.id}`;
-    const fallbackImage = `${siteUrl}/1000jobs_logo.jpeg`;
-    const imageUrl = job.thumbnail_url || fallbackImage;
+    const dynamicOgImageUrl = `${siteUrl}/api/og/job/${resolvedParams.id}`;
     
     return {
         title: `${job.title} - ${job.company} | 1000Jobs`,
@@ -34,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             siteName: '1000Jobs - 1000Jobs',
             images: [
                 {
-                    url: imageUrl,
+                    url: dynamicOgImageUrl,
                     width: 1200,
                     height: 630,
                     alt: job.title,
@@ -47,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             card: 'summary_large_image',
             title: job.title,
             description: job.short_description || job.description.substring(0, 160),
-            images: [imageUrl],
+            images: [dynamicOgImageUrl],
         },
     };
 }

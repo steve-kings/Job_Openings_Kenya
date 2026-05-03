@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, Lightbulb, PhoneCall } from 'lucide-react';
 import BookmarkButton from '@/components/BookmarkButton';
 
 interface JobDetailClientProps {
@@ -84,6 +84,12 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
     const handleLinkedInShare = () => {
         const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
         window.open(url, '_blank', 'width=600,height=400');
+    };
+
+    const handleProfessionalHelp = () => {
+        const message = `Hello 1000Jobs Team! I would like professional assistance applying for the *${job.title}* opportunity at *${job.company}*.`;
+        const url = `https://wa.me/254752182132?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
     };
 
     const handleGenerateCoverLetter = async () => {
@@ -197,15 +203,24 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                         </div>
                         
                         {canView && (
-                            <a 
-                                href={job.apply_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="btn bg-white text-gray-900 hover:bg-gray-100 btn-lg border-none gap-2 shadow-xl"
-                            >
-                                Apply Now
-                                <ExternalLink size={20} />
-                            </a>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <a 
+                                    href={job.apply_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="btn bg-white text-gray-900 hover:bg-gray-100 border-none gap-2 shadow-xl flex-1 sm:flex-none"
+                                >
+                                    Apply Now
+                                    <ExternalLink size={20} />
+                                </a>
+                                <button
+                                    onClick={handleProfessionalHelp}
+                                    className="btn bg-[#25D366] text-white hover:bg-[#1da851] border-none gap-2 shadow-xl flex-1 sm:flex-none"
+                                >
+                                    <PhoneCall size={20} />
+                                    Get Professional Help
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -370,6 +385,14 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                             Apply Now
                                             <ExternalLink size={18} />
                                         </a>
+
+                                        <button
+                                            onClick={handleProfessionalHelp}
+                                            className="btn bg-[#25D366] text-white hover:bg-[#1da851] w-full border-none gap-2"
+                                        >
+                                            <PhoneCall size={18} />
+                                            Professional Application Help
+                                        </button>
 
                                         <button 
                                             onClick={() => setCvModalOpen(true)}

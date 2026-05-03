@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bookmark, X, Trash2, ExternalLink } from 'lucide-react';
+import { Bookmark, X, Trash2, ExternalLink, AlertCircle } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface SavedJob {
     id: string;
@@ -27,6 +28,11 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
     const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [closingJobs, setClosingJobs] = useState<SavedJob[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+    const [hasCheckedDeadlines, setHasCheckedDeadlines] = useState(false);
+    
+    const supabase = createClient();
 
     useEffect(() => {
         setMounted(true);
@@ -43,6 +49,40 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('1000jobs_bookmarks', JSON.stringify(savedJobs));
         }
     }, [savedJobs, mounted]);
+
+    // Check for expiring jobs
+    useEffect(() => {
+        if (!mounted || savedJobs.length === 0 || hasCheckedDeadlines) return;
+
+        const checkDeadlines = async () => {
+            setHasCheckedDeadlines(true);
+            const ids = savedJobs.map(j => j.id);
+            
+            const { data, error } = await supabase
+                .from('opportunities')
+                .select('id, deadline')
+                .in('id', ids);
+
+            if (data && !error) {
+                const now = new Date();
+                const fortyEightHoursFromNow = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+                
+                const expiringIds = data.filter(job => {
+                    if (!job.deadline) return false;
+                    const deadlineDate = new Date(job.deadline);
+                    return deadlineDate > now && deadlineDate <= fortyEightHoursFromNow;
+                }).map(job => job.id);
+
+                if (expiringIds.length > 0) {
+                    const expiringSavedJobs = savedJobs.filter(sj => expiringIds.includes(sj.id));
+                    setClosingJobs(expiringSavedJobs);
+                    setShowAlert(true);
+                }
+            }
+        };
+
+        checkDeadlines();
+    }, [mounted, savedJobs, hasCheckedDeadlines, supabase]);
 
     const toggleBookmark = (job: SavedJob) => {
         setSavedJobs(prev => {
@@ -68,9 +108,38 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
         <BookmarkContext.Provider value={{ savedJobs, toggleBookmark, removeBookmark, isBookmarked, isDrawerOpen, setDrawerOpen }}>
             {children}
             
-            {/* Bookmark Drawer globally injected */}
+            {/* Bookmark Drawer & Alerts globally injected */}
             {mounted && (
                 <>
+                    {/* Closing Soon Alert */}
+                    {showAlert && closingJobs.length > 0 && (
+                        <div className="toast toast-top toast-center z-[10000] w-full sm:w-auto px-4 mt-16 sm:mt-0">
+                            <div className="alert bg-orange-50 border-l-4 border-orange-500 shadow-2xl relative pr-12 flex-row sm:flex-row items-center gap-4">
+                                <AlertCircle className="text-orange-500 flex-shrink-0" size={28} />
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-orange-900 text-lg">Action Required</h3>
+                                    <div className="text-sm text-orange-800 font-medium">
+                                        {closingJobs.length} {closingJobs.length === 1 ? 'job' : 'jobs'} you saved {closingJobs.length === 1 ? 'is' : 'are'} closing within 48 hours!
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                                    <button 
+                                        onClick={() => { setShowAlert(false); setDrawerOpen(true); }} 
+                                        className="btn btn-sm bg-orange-500 hover:bg-orange-600 text-white border-none"
+                                    >
+                                        View
+                                    </button>
+                                </div>
+                                <button 
+                                    onClick={() => setShowAlert(false)} 
+                                    className="btn btn-ghost btn-xs btn-circle absolute top-2 right-2 text-orange-800 hover:bg-orange-200"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Backdrop */}
                     {isDrawerOpen && (
                         <div 

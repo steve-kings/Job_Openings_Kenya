@@ -21,8 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     const siteUrl = getBaseUrl();
     const url = `${siteUrl}/blog/${resolvedParams.slug}`;
-    const fallbackImage = `${siteUrl}/1000jobs_logo.jpeg`;
-    const imageUrl = post.featured_image || fallbackImage;
+    const dynamicOgImageUrl = `${siteUrl}/api/og/blog/${resolvedParams.slug}`;
     
     return {
         title: `${post.title} | 1000Jobs Blog`,
@@ -34,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             siteName: '1000Jobs - 1000Jobs',
             images: [
                 {
-                    url: imageUrl,
+                    url: dynamicOgImageUrl,
                     width: 1200,
                     height: 630,
                     alt: post.title,
@@ -49,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             card: 'summary_large_image',
             title: post.title,
             description: post.excerpt || post.content.substring(0, 160),
-            images: [imageUrl],
+            images: [dynamicOgImageUrl],
         },
     };
 }

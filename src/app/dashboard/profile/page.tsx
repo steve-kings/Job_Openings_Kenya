@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera, Sparkles } from 'lucide-react';
+import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera, Sparkles, FileText } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -448,6 +448,13 @@ export default function ProfileEditorPage() {
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Profile'}
                         </button>
+
+                        <Link
+                            href="/dashboard/profile/resume"
+                            className="w-full btn bg-gray-900 hover:bg-gray-800 text-white border-none gap-2 py-4 flex items-center justify-center rounded-xl font-bold shadow-lg mt-4"
+                        >
+                            <FileText size={18} /> Download PDF Resume
+                        </Link>
                     </div>
                 </div>
             </div>
