@@ -1,0 +1,134 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { sendEmail } from '@/lib/brevo';
+import { getBaseUrl } from '@/lib/utils/url';
+
+export async function GET(request: Request) {
+    try {
+        // Security: Verify the request is coming from Vercel Cron
+        const authHeader = request.headers.get('authorization');
+        const cronSecret = process.env.CRON_SECRET;
+        
+        if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const supabase = await createClient();
+
+        // 1. Fetch Active Subscribers
+        const { data: subscribers, error: subError } = await supabase
+            .from('subscribers')
+            .select('email')
+            .eq('status', 'active');
+
+        if (subError) throw subError;
+
+        if (!subscribers || subscribers.length === 0) {
+            console.log('[Cron] No active subscribers found. Skipping newsletter.');
+            return NextResponse.json({ success: true, message: 'No subscribers. Skipped.' });
+        }
+
+        // 2. Fetch Top 5 Latest Opportunities
+        const { data: opportunities, error: oppError } = await supabase
+            .from('opportunities')
+            .select('*')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        if (oppError || !opportunities || opportunities.length === 0) {
+            console.log('[Cron] No active opportunities found. Skipping newsletter.');
+            return NextResponse.json({ success: true, message: 'No opportunities. Skipped.' });
+        }
+
+        const siteUrl = getBaseUrl();
+        const logoUrl = `${siteUrl}/1000jobs_logo.jpeg`;
+        const weekStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Weekly Top Opportunities - 1000Jobs</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; background-color: #f8fafc; margin: 0; padding: 0; }
+                .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0; border-radius: 16px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+                .header { background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%); color: #ffffff; padding: 40px 30px; text-align: center; }
+                .header img { width: 70px; height: 70px; border-radius: 14px; margin-bottom: 16px; object-fit: cover; }
+                .header h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 800; }
+                .header .week { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 16px; border-radius: 50px; font-size: 13px; margin-top: 8px; }
+                .content { padding: 40px 30px; }
+                .intro { font-size: 16px; margin-bottom: 30px; color: #475569; }
+                .job-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+                .job-type { display: inline-block; padding: 4px 12px; background-color: #dbeafe; color: #1d4ed8; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+                .job-title { margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #0f172a; }
+                .job-company { margin: 0 0 14px 0; font-size: 14px; color: #64748b; }
+                .btn { display: inline-block; padding: 11px 22px; background-color: #1976D2; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; }
+                .cta-section { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 24px; text-align: center; margin-top: 30px; }
+                .cta-section a { color: #1976D2; font-weight: 700; text-decoration: underline; }
+                .footer { background-color: #f8fafc; padding: 28px 30px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+                .footer a { color: #1976D2; text-decoration: none; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <img src="${logoUrl}" alt="1000Jobs">
+                    <h1>🔥 Your Weekly Top 5</h1>
+                    <p>Hand-picked opportunities just for you</p>
+                    <span class="week">Week of ${weekStr}</span>
+                </div>
+                <div class="content">
+                    <p class="intro">Hello! Here are the top 5 latest opportunities on 1000Jobs this week. Don't wait — deadlines fill up fast!</p>
+                    ${opportunities.map((job: any) => `
+                    <div class="job-card">
+                        <span class="job-type">${job.type}</span>
+                        <h2 class="job-title">${job.title}</h2>
+                        <p class="job-company">📍 ${job.company} &bull; ${job.location || 'Remote/Online'}</p>
+                        <a href="${siteUrl}/jobs/${job.id}" class="btn">View & Apply →</a>
+                    </div>
+                    `).join('')}
+                    <div class="cta-section">
+                        <p style="margin:0 0 10px 0; font-weight:600; color:#0f172a;">Want to see all opportunities?</p>
+                        <a href="${siteUrl}/jobs">Browse All 1000+ Opportunities on 1000jobs.co.ke</a>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>You're receiving this because you subscribed at <a href="${siteUrl}">1000jobs.co.ke</a>.</p>
+                    <p>&copy; ${new Date().getFullYear()} 1000Jobs. Empowering African Youth. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        // 3. Send in BCC chunks of 50
+        const bccList = subscribers.map(s => ({ email: s.email }));
+        const chunkSize = 50;
+        let sentCount = 0;
+
+        for (let i = 0; i < bccList.length; i += chunkSize) {
+            const chunk = bccList.slice(i, i + chunkSize);
+            await sendEmail({
+                to: [{ email: 'info.1000jobs@gmail.com', name: '1000Jobs Team' }],
+                bcc: chunk,
+                subject: `🔥 Your Weekly Top 5 Opportunities - Week of ${weekStr}`,
+                htmlContent,
+            });
+            sentCount += chunk.length;
+        }
+
+        console.log(`[Cron] Newsletter sent successfully to ${sentCount} subscribers.`);
+        return NextResponse.json({
+            success: true,
+            message: `Newsletter auto-sent to ${sentCount} subscribers!`,
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error: any) {
+        console.error('[Cron] Newsletter error:', error);
+        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    }
+}
