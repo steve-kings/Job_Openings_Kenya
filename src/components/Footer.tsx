@@ -1,12 +1,28 @@
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, ExternalLink } from 'lucide-react';
 import FooterInstallButton from './FooterInstallButton';
+import NewsletterForm from './NewsletterForm';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
         <footer className="bg-gradient-to-br from-gray-900 via-[#1565C0] to-gray-900 text-white mt-auto">
+            {/* Newsletter Section */}
+            <div className="border-b border-white/10 bg-[#1565C0]/20">
+                <div className="container mx-auto px-4 lg:px-8 py-10 lg:py-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 max-w-5xl mx-auto">
+                        <div className="text-center md:text-left flex-1">
+                            <h3 className="text-2xl font-bold text-white mb-2">Subscribe to Weekly Opportunities</h3>
+                            <p className="text-gray-300 text-sm">Get the top 5 hand-picked jobs, grants, and scholarships delivered to your inbox every week.</p>
+                        </div>
+                        <div className="w-full md:w-auto flex-1 max-w-md">
+                            <NewsletterForm />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Main Footer Content */}
             <div className="container mx-auto px-4 lg:px-8 py-12 lg:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">

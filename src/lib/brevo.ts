@@ -1,11 +1,13 @@
 export async function sendEmail({
     to,
+    bcc,
     subject,
     htmlContent,
     senderName = '1000Jobs Team',
     senderEmail = 'info.1000jobs@gmail.com'
 }: {
     to: { email: string; name?: string }[];
+    bcc?: { email: string; name?: string }[];
     subject: string;
     htmlContent: string;
     senderName?: string;
@@ -24,6 +26,7 @@ export async function sendEmail({
         body: JSON.stringify({
             sender: { name: senderName, email: senderEmail },
             to: to,
+            ...(bcc && bcc.length > 0 ? { bcc } : {}),
             subject: subject,
             htmlContent: htmlContent,
         }),

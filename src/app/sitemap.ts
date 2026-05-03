@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 import { getBaseUrl } from '@/lib/utils/url';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const siteUrl = getBaseUrl();
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch dynamic content
     const { data: opportunities } = await supabase
