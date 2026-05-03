@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, Building, ExternalLink, Lock, CheckCircle, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, Lightbulb, PhoneCall } from 'lucide-react';
 import BookmarkButton from '@/components/BookmarkButton';
+import GoogleAd from '@/components/GoogleAd';
 
 interface JobDetailClientProps {
     job: any;
@@ -451,6 +452,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                     {copySuccess ? 'Link Copied!' : 'Copy Link'}
                                 </button>
                             </div>
+
+                            {/* Google AdSense Banner */}
+                            <GoogleAd adSlot="PLACEHOLDER_SLOT_ID" />
                         </div>
                     </div>
                 </div>
