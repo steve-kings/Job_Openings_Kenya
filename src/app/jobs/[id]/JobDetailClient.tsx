@@ -169,8 +169,8 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                     {daysLeft > 0 ? `${daysLeft} days left` : 'Deadline passed'}
                                 </span>
                             </div>
-                            <div className="flex items-start justify-between gap-4 max-w-4xl">
-                                <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight">{job.title}</h1>
+                            <div className="flex items-start justify-between gap-4 max-w-4xl min-w-0">
+                                <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight break-words break-all sm:break-words">{job.title}</h1>
                                 
                                 <div className="hidden sm:block mt-2">
                                     <BookmarkButton 
@@ -230,12 +230,12 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
             <div className="container mx-auto px-6 lg:px-12 py-12">
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-8 min-w-0">
                         {/* Description */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 overflow-hidden">
                             <h2 className={`text-2xl font-bold mb-4 ${colors.text}`}>About This Opportunity</h2>
                             <div 
-                                className="prose max-w-none text-gray-700 leading-relaxed font-sans"
+                                className="prose max-w-none text-gray-700 leading-relaxed font-sans break-words overflow-x-auto"
                                 dangerouslySetInnerHTML={{ __html: job.description }} 
                             />
                         </div>
@@ -326,7 +326,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                     </div>
 
                     {/* Sidebar */}
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-1 min-w-0">
                         <div className="sticky top-24 space-y-6">
                             {/* Quick Info Card */}
                             <div className="bg-white rounded-2xl shadow-lg p-6">
