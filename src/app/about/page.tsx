@@ -52,7 +52,7 @@ export default async function About() {
 
                 <div className="container mx-auto px-6 lg:px-12 relative z-10 py-20 lg:py-32">
                     <div className="max-w-3xl">
-                        <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                             Who we are?
                         </h1>
                         <p className="text-xl text-white/90 leading-relaxed">
@@ -205,50 +205,50 @@ export default async function About() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <h2 className="text-3xl font-bold text-center mb-12 text-white">Our Goals</h2>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
                         {/* Goal 1 */}
                         <div className="text-center text-white">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                <FontAwesomeIcon icon={faLightbulb} className="text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <FontAwesomeIcon icon={faLightbulb} className="text-3xl sm:text-4xl" />
                             </div>
-                            <h3 className="font-bold mb-2">Empower</h3>
-                            <p className="text-sm text-white/90">Youth with knowledge</p>
+                            <h3 className="font-bold mb-1 text-sm sm:text-base">Empower</h3>
+                            <p className="text-xs sm:text-sm text-white/90">Youth with knowledge</p>
                         </div>
 
                         {/* Goal 2 */}
                         <div className="text-center text-white">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                <FontAwesomeIcon icon={faUsers} className="text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <FontAwesomeIcon icon={faUsers} className="text-3xl sm:text-4xl" />
                             </div>
-                            <h3 className="font-bold mb-2">Bridge</h3>
-                            <p className="text-sm text-white/90">The opportunity gap</p>
+                            <h3 className="font-bold mb-1 text-sm sm:text-base">Bridge</h3>
+                            <p className="text-xs sm:text-sm text-white/90">The opportunity gap</p>
                         </div>
 
                         {/* Goal 3 */}
                         <div className="text-center text-white">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                <FontAwesomeIcon icon={faHandshake} className="text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <FontAwesomeIcon icon={faHandshake} className="text-3xl sm:text-4xl" />
                             </div>
-                            <h3 className="font-bold mb-2">Connect</h3>
-                            <p className="text-sm text-white/90">Youth with partners</p>
+                            <h3 className="font-bold mb-1 text-sm sm:text-base">Connect</h3>
+                            <p className="text-xs sm:text-sm text-white/90">Youth with partners</p>
                         </div>
 
                         {/* Goal 4 */}
                         <div className="text-center text-white">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                <FontAwesomeIcon icon={faTrophy} className="text-4xl" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <FontAwesomeIcon icon={faTrophy} className="text-3xl sm:text-4xl" />
                             </div>
-                            <h3 className="font-bold mb-2">Innovate</h3>
-                            <p className="text-sm text-white/90">Solutions for Africa</p>
+                            <h3 className="font-bold mb-1 text-sm sm:text-base">Innovate</h3>
+                            <p className="text-xs sm:text-sm text-white/90">Solutions for Africa</p>
                         </div>
 
                         {/* Goal 5 */}
-                        <div className="text-center text-white">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                <FontAwesomeIcon icon={faRocket} className="text-4xl" />
+                        <div className="text-center text-white col-span-2 sm:col-span-1">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <FontAwesomeIcon icon={faRocket} className="text-3xl sm:text-4xl" />
                             </div>
-                            <h3 className="font-bold mb-2">Transform</h3>
-                            <p className="text-sm text-white/90">Lives and communities</p>
+                            <h3 className="font-bold mb-1 text-sm sm:text-base">Transform</h3>
+                            <p className="text-xs sm:text-sm text-white/90">Lives and communities</p>
                         </div>
                     </div>
                 </div>
@@ -335,10 +335,10 @@ export default async function About() {
                         Whether you're looking for opportunities or want to partner with us, we'd love to hear from you.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="/jobs" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] btn-lg border-none px-10">
+                        <a href="/jobs" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] btn-lg border-none w-full sm:w-auto px-6 sm:px-10">
                             Explore Opportunities
                         </a>
-                        <a href="mailto:contact@1000jobs.org" className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none px-10">
+                        <a href="mailto:contact@1000jobs.org" className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none w-full sm:w-auto px-6 sm:px-10">
                             Partner With Us
                         </a>
                     </div>

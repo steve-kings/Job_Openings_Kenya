@@ -99,11 +99,11 @@ export default function DashboardPage() {
                                     <User className="text-white" size={36} />
                                 )}
                             </div>
-                            <div>
-                                <h1 className="text-3xl lg:text-4xl font-bold">
+                            <div className="min-w-0">
+                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold break-words">
                                     Welcome back, {userName}!
                                 </h1>
-                                <p className="text-white/80 text-lg mt-1">{user?.email}</p>
+                                <p className="text-white/80 text-base sm:text-lg mt-1 truncate">{user?.email}</p>
                             </div>
                         </div>
                         <p className="text-white/80 flex items-center gap-2 font-medium bg-black/10 w-fit px-3 py-1.5 rounded-lg border border-white/10">

@@ -67,7 +67,7 @@ export default async function BlogPage() {
                             <BookOpen size={18} />
                             <span>1000Jobs Blog</span>
                         </div>
-                        <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                             Stories, Insights &
                             <span className="block text-[#4CAF50]">Community Updates</span>
                         </h1>
@@ -96,7 +96,7 @@ export default async function BlogPage() {
                         
                         <Link href={`/blog/${featuredPost.slug}`}>
                             <div className="grid lg:grid-cols-2 gap-8 bg-gradient-to-br from-gray-50 to-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 group border-2 border-gray-100">
-                                <div className="relative h-96 lg:h-auto overflow-hidden">
+                                <div className="relative h-64 sm:h-80 lg:h-auto overflow-hidden">
                                     <img
                                         src={featuredPost.featured_image || '/images/img4.jpg'}
                                         alt={featuredPost.title}
@@ -241,7 +241,7 @@ export default async function BlogPage() {
                     </p>
                     <a 
                         href="mailto:stories@1000jobs.org" 
-                        className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
+                        className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none w-full sm:w-auto px-6 sm:px-10"
                     >
                         Submit Your Story
                     </a>

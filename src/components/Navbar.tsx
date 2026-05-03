@@ -108,7 +108,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Right Side - User Profile or Login */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 sm:gap-3">
                         <button 
                             onClick={() => setDrawerOpen(true)}
                             className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"

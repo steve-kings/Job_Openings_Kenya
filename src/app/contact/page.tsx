@@ -44,8 +44,8 @@ export default function ContactPage() {
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-[#1976D2] via-[#4CAF50] to-[#1565C0] text-white py-16 lg:py-20">
                 <div className="container mx-auto px-4 lg:px-8 text-center">
-                    <h1 className="text-4xl lg:text-5xl font-black mb-4">Get in Touch</h1>
-                    <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto">
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Get in Touch</h1>
+                    <p className="text-lg sm:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto">
                         We're here to help you succeed. Reach out to us and let's start a conversation.
                     </p>
                 </div>
