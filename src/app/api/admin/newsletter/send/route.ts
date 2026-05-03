@@ -120,7 +120,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ 
             success: true, 
-            message: \`Newsletter sent successfully to \${sentCount} subscribers!\`
+            message: `Newsletter sent successfully to ${sentCount} subscribers!`
         });
 
     } catch (error: any) {

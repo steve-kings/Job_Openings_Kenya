@@ -44,7 +44,7 @@ export default function NewsletterAdminPage() {
     };
 
     const handleSendNewsletter = async () => {
-        if (!confirm(\`Are you sure you want to send the newsletter to \${subscribersCount} subscribers? This action cannot be undone.\`)) return;
+        if (!confirm(`Are you sure you want to send the newsletter to ${subscribersCount} subscribers? This action cannot be undone.`)) return;
         
         setSending(true);
         setMessage({ type: '', text: '' });
@@ -134,7 +134,7 @@ export default function NewsletterAdminPage() {
                     </p>
 
                     {message.text && (
-                        <div className={\`alert mb-6 \${message.type === 'success' ? 'alert-success text-white' : 'alert-error text-white'}\`}>
+                        <div className={`alert mb-6 ${message.type === 'success' ? 'alert-success text-white' : 'alert-error text-white'}`}>
                             {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
                             <span>{message.text}</span>
                         </div>
