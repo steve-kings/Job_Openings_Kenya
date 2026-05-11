@@ -97,6 +97,7 @@ export default function CreateOpportunityPage() {
 
     const [aiText, setAiText] = useState('');
     const [extractingAi, setExtractingAi] = useState(false);
+    const [keepCompany, setKeepCompany] = useState(false);
 
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
@@ -161,7 +162,23 @@ export default function CreateOpportunityPage() {
             });
             if (error) throw error;
             showToast('success', 'Opportunity created successfully!');
-            setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1500);
+            
+            if (keepCompany) {
+                setFormData(prev => ({
+                    ...prev,
+                    title: '',
+                    short_description: '',
+                    description: '',
+                }));
+                setRequirements(['']);
+                setResponsibilities(['']);
+                setBenefits(['']);
+                setAiText('');
+                setThumbnailUrl('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1500);
+            }
         } catch (error: any) {
             showToast('error', error?.message || 'Error creating opportunity. Please try again.');
         } finally {
@@ -345,6 +362,16 @@ export default function CreateOpportunityPage() {
                             </div>
 
                             <hr className="border-gray-100" />
+
+                            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    checked={keepCompany} 
+                                    onChange={(e) => setKeepCompany(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 text-[#1976D2] focus:ring-[#1976D2]"
+                                />
+                                <span>Keep company & location for next post (for multiple positions)</span>
+                            </label>
 
                             <button
                                 type="submit"

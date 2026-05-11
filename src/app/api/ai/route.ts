@@ -74,19 +74,20 @@ export async function POST(req: Request) {
             const { text } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are an AI assistant for 1000Jobs administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields:
-- title: The job, grant, or scholarship title.
-- type: Must be one of ["Job", "Grant", "Scholarship", "Training"].
-- company: The hiring organization or provider.
-- location: Geographic area or "Remote".
-- deadline: YYYY-MM-DD if present, otherwise guess a reasonable future date or leave empty string.
-- apply_url: Any URL found, or empty.
-- short_description: 150-200 characters summary.
-- description: Full Markdown detailed description.
-- requirements: Array of requirement strings.
-- responsibilities: Array of responsibility strings.
-- benefits: Array of benefit strings.
-
+                content: `You are an AI assistant for 1000Jobs administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named:
+{
+  "title": "The job, grant, or scholarship title.",
+  "type": "Must be one of ['Job', 'Grant', 'Scholarship', 'Training'].",
+  "company": "The hiring organization or provider (CRITICAL).",
+  "location": "Geographic area or 'Remote'.",
+  "deadline": "YYYY-MM-DD if present, otherwise guess a reasonable future date or leave empty string.",
+  "apply_url": "Any URL found, or empty.",
+  "short_description": "150-200 characters summary.",
+  "description": "Full Markdown detailed description.",
+  "requirements": ["req 1", "req 2"],
+  "responsibilities": ["resp 1", "resp 2"],
+  "benefits": ["benefit 1"]
+}
 Output ONLY valid JSON.`
             };
 
