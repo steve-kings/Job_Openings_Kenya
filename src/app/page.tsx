@@ -5,6 +5,7 @@ import JobsFilter from '@/components/JobsFilter';
 import JobsHeroSlider from '@/components/JobsHeroSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BookmarkButton from '@/components/BookmarkButton';
+import HiringNowSlider from '@/components/HiringNowSlider';
 import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 import type { Metadata } from 'next';
 
@@ -159,21 +160,7 @@ export default async function HomePage({
                             <h2 className="text-3xl font-bold text-gray-900 mb-2">Hiring Now</h2>
                             <p className="text-gray-600">Top companies actively recruiting on 1000Jobs</p>
                         </div>
-                        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide lg:justify-center">
-                            {uniqueCompanies.map((company, idx) => (
-                                <Link 
-                                    key={idx} 
-                                    href={`/?q=${encodeURIComponent(company as string)}`}
-                                    className="snap-start shrink-0 flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 min-w-[160px] max-w-[160px] group"
-                                >
-                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner">
-                                        <Building className="text-gray-400 group-hover:text-[#1976D2] transition-colors" size={28} />
-                                    </div>
-                                    <h3 className="font-bold text-gray-800 text-center text-sm line-clamp-1 w-full" title={company as string}>{company as string}</h3>
-                                    <p className="text-xs text-[#1976D2] mt-1 font-semibold">View Jobs</p>
-                                </Link>
-                            ))}
-                        </div>
+                        <HiringNowSlider companies={uniqueCompanies as string[]} />
                     </div>
                 </div>
             )}
