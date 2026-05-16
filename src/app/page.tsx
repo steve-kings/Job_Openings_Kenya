@@ -82,6 +82,8 @@ export default async function HomePage({
     const scholarshipsCount = opportunities?.filter(o => o.type === 'Scholarship').length || 0;
     const trainingsCount = opportunities?.filter(o => o.type === 'Training').length || 0;
 
+    const uniqueCompanies = Array.from(new Set(opportunities?.map((o: any) => o.company))).filter(Boolean).slice(0, 12);
+
     return (
         <div className="bg-white">
             {/* Hero Slider */}
@@ -148,6 +150,93 @@ export default async function HomePage({
                     </div>
                 </div>
             </div>
+
+            {/* Hiring Now Companies */}
+            {uniqueCompanies && uniqueCompanies.length > 0 && (
+                <div className="py-12 bg-gray-50 border-t border-gray-200">
+                    <div className="container mx-auto px-6 lg:px-12">
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Hiring Now</h2>
+                            <p className="text-gray-600">Top companies actively recruiting on 1000Jobs</p>
+                        </div>
+                        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide lg:justify-center">
+                            {uniqueCompanies.map((company, idx) => (
+                                <Link 
+                                    key={idx} 
+                                    href={`/?q=${encodeURIComponent(company as string)}`}
+                                    className="snap-start shrink-0 flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 min-w-[160px] max-w-[160px] group"
+                                >
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner">
+                                        <Building className="text-gray-400 group-hover:text-[#1976D2] transition-colors" size={28} />
+                                    </div>
+                                    <h3 className="font-bold text-gray-800 text-center text-sm line-clamp-1 w-full" title={company as string}>{company as string}</h3>
+                                    <p className="text-xs text-[#1976D2] mt-1 font-semibold">View Jobs</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Latest Jobs Slider */}
+            {!isUrgent && filterType === 'All' && !filterQuery && opportunities && opportunities.length > 0 && (
+                <div className="py-12 bg-white border-t border-gray-200">
+                    <div className="container mx-auto px-6 lg:px-12">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Jobs in Kenya 2026</h2>
+                                <p className="text-gray-600">Swipe to discover the newest opportunities</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide">
+                            {opportunities.slice(0, 8).map((job) => {
+                                const typeColors = {
+                                    'Job': { badge: 'bg-[#1976D2]', gradient: 'from-[#1976D2] to-[#1565C0]' },
+                                    'Grant': { badge: 'bg-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#388E3C]' },
+                                    'Scholarship': { badge: 'bg-[#1565C0]', gradient: 'from-[#1565C0] to-[#5D4037]' },
+                                    'Training': { badge: 'bg-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#e08d0a]' },
+                                };
+                                const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
+                                const daysLeft = job.deadline ? Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))) : null;
+
+                                return (
+                                    <Link 
+                                        key={job.id} 
+                                        href={`/jobs/${job.id}`}
+                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:border-[#1976D2]/30 transition-all hover:-translate-y-1 block group"
+                                    >
+                                        <div className="p-5">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-sm bg-gradient-to-br ${colors.gradient}`}>
+                                                    {job.company.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${daysLeft === 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'} flex items-center gap-1`}>
+                                                    <Clock size={12} />
+                                                    {daysLeft === null ? 'Rolling' : daysLeft === 0 ? 'Expired' : `${daysLeft}d left`}
+                                                </span>
+                                            </div>
+                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1976D2] transition-colors line-clamp-2 md:h-14">
+                                                {job.title}
+                                            </h3>
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-1">{job.company}</p>
+                                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium pt-4 border-t border-gray-50">
+                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                                                    <Building size={12} className="text-gray-400" />
+                                                    {job.type}
+                                                </span>
+                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
+                                                    <MapPin size={12} className="text-gray-400" />
+                                                    <span className="truncate max-w-[100px]">{job.location}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Filter Section */}
             <div id="opportunities" className="py-8 bg-gray-50 border-y border-gray-200">

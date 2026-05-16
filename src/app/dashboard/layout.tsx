@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, User, Bookmark, FileText, Users, Home, Menu, X, LogOut, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, User, Bookmark, FileText, Users, Home, Menu, X, LogOut, MessageSquare, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useBookmarks } from '@/contexts/BookmarkContext';
@@ -45,6 +45,7 @@ export default function DashboardLayout({
         { name: 'My Profile', href: '/dashboard/profile', icon: User },
         { name: 'Saved Jobs', href: '/dashboard/saved', icon: Bookmark },
         { name: 'Community', href: '/community', icon: MessageSquare },
+        { name: 'Success Stories', href: '/dashboard/feedback', icon: Sparkles },
         { name: 'Opportunities', href: '/', icon: FileText },
     ];
 

@@ -74,16 +74,16 @@ export async function POST(req: Request) {
             const { text } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are an AI assistant for 1000Jobs administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named:
+                content: `You are an AI assistant for 1000Jobs administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named. You MUST extract the hiring company name.
 {
-  "title": "The job, grant, or scholarship title.",
-  "type": "Must be one of ['Job', 'Grant', 'Scholarship', 'Training'].",
-  "company": "The hiring organization or provider (CRITICAL).",
+  "title": "The exact job, grant, or scholarship title.",
+  "type": "Must be exactly one of ['Job', 'Grant', 'Scholarship', 'Training']. Default to 'Job'.",
+  "company": "The hiring organization, company, or provider (CRITICAL). If missing, infer it from context or use 'Unknown'.",
   "location": "Geographic area or 'Remote'.",
-  "deadline": "YYYY-MM-DD if present, otherwise guess a reasonable future date or leave empty string.",
-  "apply_url": "Any URL found, or empty.",
-  "short_description": "150-200 characters summary.",
-  "description": "Full Markdown detailed description.",
+  "deadline": "YYYY-MM-DD if present. If rolling or no deadline, leave as empty string ''.",
+  "apply_url": "Any URL found, or empty string.",
+  "short_description": "150-200 characters engaging summary.",
+  "description": "Full Markdown detailed description with appropriate headers.",
   "requirements": ["req 1", "req 2"],
   "responsibilities": ["resp 1", "resp 2"],
   "benefits": ["benefit 1"]
@@ -98,7 +98,7 @@ Output ONLY valid JSON.`
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    model: 'llama-3.1-8b-instant',
+                    model: 'llama-3.3-70b-versatile',
                     messages: [systemMessage, { role: 'user', content: text }],
                     temperature: 0.2,
                     response_format: { type: "json_object" }
