@@ -39,10 +39,18 @@ export default async function HomePage({
     const filterQuery = typeof params.q === 'string' ? params.q : '';
     const isUrgent = params.urgent === 'true';
 
+    const { data: bannersData } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('type', 'Banner')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
     let query = supabase
         .from('opportunities')
         .select('*')
-        .gte('deadline', today) // Only show active/future deadlines
+        .neq('type', 'Banner')
+        .or(`deadline.gte.${today},deadline.is.null`) // Show active/future deadlines or rolling basis
         .eq('status', 'active');
 
     if (isUrgent) {
@@ -77,7 +85,7 @@ export default async function HomePage({
     return (
         <div className="bg-white">
             {/* Hero Slider */}
-            <JobsHeroSlider />
+            <JobsHeroSlider customSlides={bannersData || undefined} />
 
             {/* Expiring Soon Alert */}
             {isUrgent && (
@@ -206,7 +214,7 @@ export default async function HomePage({
                                                             </span>
                                                             <span className="flex items-center gap-1 text-xs text-gray-500 truncate">
                                                                 <Clock size={12} className="shrink-0" />
-                                                                {Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+                                                                {job.deadline ? `${Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days left` : 'Rolling Basis'}
                                                             </span>
                                                         </div>
                                                         <BookmarkButton 
@@ -237,7 +245,7 @@ export default async function HomePage({
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-gray-600">
                                                     <Calendar size={16} className={colors.text} />
-                                                    <span>Deadline: {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                                    <span>Deadline: {job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Rolling Basis'}</span>
                                                 </div>
                                             </div>
 

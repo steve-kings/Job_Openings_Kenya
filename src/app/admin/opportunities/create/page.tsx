@@ -8,13 +8,14 @@ import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import RichTextEditor from '@/components/RichTextEditor';
 
-const TYPES = ['Job', 'Grant', 'Scholarship', 'Training'];
+const TYPES = ['Job', 'Grant', 'Scholarship', 'Training', 'Banner'];
 
 const TYPE_COLORS: Record<string, string> = {
     Job: 'from-[#1976D2] to-[#1565C0]',
     Grant: 'from-[#4CAF50] to-[#388E3C]',
     Scholarship: 'from-[#7B1FA2] to-[#6A1B9A]',
     Training: 'from-[#F57C00] to-[#E65100]',
+    Banner: 'from-[#E91E63] to-[#C2185B]',
 };
 const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
     setter([...arr, '']);
@@ -267,7 +268,7 @@ export default function CreateOpportunityPage() {
                                             : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
-                                        {t === 'Job' && '💼'} {t === 'Grant' && '💰'} {t === 'Scholarship' && '🎓'} {t === 'Training' && '📚'} {t}
+                                        {t === 'Job' && '💼'} {t === 'Grant' && '💰'} {t === 'Scholarship' && '🎓'} {t === 'Training' && '📚'} {t === 'Banner' && '🖼️'} {t}
                                     </button>
                                 ))}
                             </div>
@@ -280,22 +281,23 @@ export default function CreateOpportunityPage() {
                                 <Field label="Title" required>
                                     <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g. Senior Frontend Developer" className={inputCls} />
                                 </Field>
-                                <Field label="Company / Organization" required>
-                                    <input type="text" required value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
+                                <Field label="Company / Organization" required={formData.type !== 'Banner'}>
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
                                 </Field>
-                                <Field label="Location" required>
-                                    <input type="text" required value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
+                                <Field label="Location" required={formData.type !== 'Banner'}>
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
                                 </Field>
-                                <Field label="Application Deadline" required>
-                                    <input type="date" required value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
+                                <Field label="Application Deadline" hint="Leave empty for Rolling Basis">
+                                    <input type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
                                 </Field>
-                                <Field label="Application Link" required>
-                                    <input type="url" required value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={`${inputCls} md:col-span-2`} />
+                                <Field label="Application Link" required={formData.type !== 'Banner'}>
+                                    <input type="url" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={`${inputCls} md:col-span-2`} />
                                 </Field>
                             </div>
                         </div>
 
                         {/* Descriptions */}
+                        {formData.type !== 'Banner' && (
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Description</h3>
                             <Field label="Short Description" required hint={`${formData.short_description.length} chars`}>
@@ -315,8 +317,10 @@ export default function CreateOpportunityPage() {
                                 />
                             </Field>
                         </div>
+                        )}
 
                         {/* Dynamic Lists */}
+                        {formData.type !== 'Banner' && (
                         <div className="grid md:grid-cols-3 gap-5">
                             {[
                                 { label: 'Requirements', color: 'from-[#1976D2] to-[#1565C0]', items: requirements, setter: setRequirements, placeholder: 'e.g. 3+ years of experience' },
@@ -328,6 +332,7 @@ export default function CreateOpportunityPage() {
                                 </div>
                             ))}
                         </div>
+                        )}
                     </div>
 
                     {/* ─── RIGHT SIDEBAR ─── */}
