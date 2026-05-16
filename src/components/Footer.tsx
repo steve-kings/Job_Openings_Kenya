@@ -40,13 +40,14 @@ export default function Footer() {
                         </p>
                         <div className="flex gap-3">
                             <a
-                                href="https://facebook.com"
+                                href="https://www.facebook.com/profile.php?id=61587179078827"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#1976D2] flex items-center justify-center transition-all hover:scale-110"
                             >
                                 <Facebook size={18} />
                             </a>
+                            {/* Hidden until pages are created
                             <a
                                 href="https://twitter.com"
                                 target="_blank"
@@ -63,8 +64,9 @@ export default function Footer() {
                             >
                                 <Instagram size={18} />
                             </a>
+                            */}
                             <a
-                                href="https://linkedin.com"
+                                href="https://www.linkedin.com/company/1000-job-opportunities/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#4CAF50] flex items-center justify-center transition-all hover:scale-110"
@@ -156,8 +158,8 @@ export default function Footer() {
                                 <Mail size={18} className="text-[#4CAF50] mt-1 flex-shrink-0" />
                                 <div>
                                     <p className="text-sm">Email</p>
-                                    <a href="mailto:info@1000jobs.org" className="hover:text-[#4CAF50] transition-colors">
-                                        info@1000jobs.org
+                                    <a href="mailto:info@1000jobs.co.ke" className="hover:text-[#4CAF50] transition-colors">
+                                        info@1000jobs.co.ke
                                     </a>
                                 </div>
                             </li>
