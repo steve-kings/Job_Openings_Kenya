@@ -2,7 +2,7 @@ export default function PartnerPage() {
     return (
         <div className="container-custom py-10">
             <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-primary mb-4">Partner with 1000Jobs</h1>
+                <h1 className="text-4xl font-bold text-primary mb-4">Partner with Job Openings Kenya</h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                     Join us in empowering the next generation of African leaders. Together, we can create lasting impact.
                 </p>
@@ -27,7 +27,7 @@ export default function PartnerPage() {
                     <div className="card-body text-center">
                         <div className="text-4xl mb-3">🤝</div>
                         <h3 className="card-title justify-center mb-2">Grant Support</h3>
-                        <p className="text-gray-600">Provide funding for youth-led initiatives, startups, and community projects across Africa.</p>
+                        <p className="text-gray-600">Provide funding for youth-led initiatives, startups, and community projects across Kenya.</p>
                     </div>
                 </div>
             </div>

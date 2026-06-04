@@ -26,7 +26,7 @@ export async function GET(
     }
 
     const siteUrl = getBaseUrl();
-    const logoUrl = `${siteUrl}/1000jobs_logo.jpeg`;
+    const logoUrl = `${siteUrl}/job_openings_kenya_logo.jpeg`;
     
     // Fallback if company logo isn't available, use thumbnail or main logo
     const companyImageUrl = job.thumbnail_url || logoUrl;
@@ -49,8 +49,8 @@ export async function GET(
             >
                 {/* Header Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', position: 'absolute', top: '40px', left: '80px' }}>
-                    <img src={logoUrl} alt="1000Jobs" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
-                    <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#1976D2' }}>1000Jobs</span>
+                    <img src={logoUrl} alt="Job Openings Kenya" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
+                    <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#5CB800' }}>Job Openings Kenya</span>
                 </div>
 
                 {/* Job Title */}
@@ -104,7 +104,7 @@ export async function GET(
                 {/* Footer Decor */}
                 <div style={{ position: 'absolute', bottom: '40px', right: '80px', display: 'flex', alignItems: 'center' }}>
                     <span style={{ fontSize: '32px', color: '#64748b' }}>Apply now at </span>
-                    <span style={{ fontSize: '32px', color: '#1976D2', fontWeight: 'bold', marginLeft: '12px' }}>1000jobs.org</span>
+                    <span style={{ fontSize: '32px', color: '#5CB800', fontWeight: 'bold', marginLeft: '12px' }}>Job Openings Kenya.org</span>
                 </div>
             </div>
         ),

@@ -4,8 +4,8 @@ import { Metadata } from 'next';
 import { FileText, TrendingUp, Briefcase, Eye, Calendar, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-    title: 'Popular | 1000Jobs',
-    description: 'Discover the most viewed articles and opportunities on 1000Jobs.',
+    title: 'Popular | Job Openings Kenya',
+    description: 'Discover the most viewed articles and opportunities on Job Openings Kenya.',
 };
 
 export const revalidate = 3600;
@@ -30,7 +30,7 @@ export default async function PopularPage() {
     return (
         <div className="bg-gray-50 min-h-screen pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-br from-gray-900 to-[#1565C0] text-white py-16">
+            <div className="bg-gradient-to-br from-gray-900 to-[#4A9900] text-white py-16">
                 <div className="container mx-auto px-6 lg:px-12 text-center">
                     <TrendingUp className="mx-auto mb-4 text-orange-400" size={64} />
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Trending Now</h1>
@@ -106,7 +106,7 @@ export default async function PopularPage() {
                 {/* Popular Opportunities Section */}
                 <div className="mb-12">
                     <div className="flex items-center gap-3 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 w-fit">
-                        <div className="p-3 bg-blue-100 text-[#1976D2] rounded-xl">
+                        <div className="p-3 bg-blue-100 text-[#5CB800] rounded-xl">
                             <Briefcase size={24} />
                         </div>
                         <div>
@@ -124,10 +124,10 @@ export default async function PopularPage() {
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {popularJobs.map((job, index) => {
                                 const typeColors = {
-                                    'Job': { text: 'text-[#1976D2]', bg: 'bg-[#1976D2]/10' },
-                                    'Grant': { text: 'text-[#4CAF50]', bg: 'bg-[#4CAF50]/10' },
-                                    'Scholarship': { text: 'text-[#1565C0]', bg: 'bg-[#1565C0]/10' },
-                                    'Training': { text: 'text-[#4CAF50]', bg: 'bg-[#4CAF50]/10' },
+                                    'Job': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
+                                    'Grant': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
+                                    'Scholarship': { text: 'text-[#4A9900]', bg: 'bg-[#4A9900]/10' },
+                                    'Training': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
                                 };
                                 const color = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
 
@@ -137,7 +137,7 @@ export default async function PopularPage() {
                                         key={job.id} 
                                         className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all group relative"
                                     >
-                                        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-br from-[#1976D2] to-[#1565C0] text-white flex items-center justify-center font-bold text-sm shadow-md border-2 border-white">
+                                        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] text-white flex items-center justify-center font-bold text-sm shadow-md border-2 border-white">
                                             #{index + 1}
                                         </div>
                                         
@@ -151,7 +151,7 @@ export default async function PopularPage() {
                                             </span>
                                         </div>
                                         
-                                        <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1976D2] transition-colors line-clamp-2">
+                                        <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#5CB800] transition-colors line-clamp-2">
                                             {job.title}
                                         </h3>
                                         <p className="text-gray-600 text-sm mb-4 line-clamp-1">{job.company}</p>

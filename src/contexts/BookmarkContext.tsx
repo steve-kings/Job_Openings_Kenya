@@ -36,17 +36,22 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setMounted(true);
-        const stored = localStorage.getItem('1000jobs_bookmarks');
+        // Migrate old key if present
+        const oldData = localStorage.getItem('1000jobs_bookmarks');
+        const newData = localStorage.getItem('jobopeningskenya_bookmarks');
+        if (oldData && !newData) {
+            localStorage.setItem('jobopeningskenya_bookmarks', oldData);
+            localStorage.removeItem('1000jobs_bookmarks');
+        }
+        const stored = localStorage.getItem('jobopeningskenya_bookmarks');
         if (stored) {
-            try {
-                setSavedJobs(JSON.parse(stored));
-            } catch(e) {}
+            try { setSavedJobs(JSON.parse(stored)); } catch(e) {}
         }
     }, []);
 
     useEffect(() => {
         if (mounted) {
-            localStorage.setItem('1000jobs_bookmarks', JSON.stringify(savedJobs));
+            localStorage.setItem('jobopeningskenya_bookmarks', JSON.stringify(savedJobs));
         }
     }, [savedJobs, mounted]);
 
@@ -155,7 +160,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                         }`}
                     >
                         <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50">
-                            <div className="flex items-center gap-3 text-[#1976D2]">
+                            <div className="flex items-center gap-3 text-[#5CB800]">
                                 <Bookmark size={24} className="fill-current" />
                                 <h2 className="text-xl font-bold text-gray-900">Saved Jobs</h2>
                             </div>
@@ -180,7 +185,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                                         <div key={job.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow relative group">
                                             <div className="pr-8">
                                                 <Link href={`/jobs/${job.id}`} onClick={() => setDrawerOpen(false)}>
-                                                    <h4 className="font-bold text-gray-900 group-hover:text-[#1976D2] transition-colors line-clamp-1">{job.title}</h4>
+                                                    <h4 className="font-bold text-gray-900 group-hover:text-[#5CB800] transition-colors line-clamp-1">{job.title}</h4>
                                                     <p className="text-sm text-gray-600 mb-2">{job.company}</p>
                                                     <div className="flex gap-2">
                                                         <span className="text-xs font-semibold bg-gray-100 px-2 py-1 rounded-md text-gray-700">{job.type}</span>
@@ -205,7 +210,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                                 <Link 
                                     href="/jobs" 
                                     onClick={() => setDrawerOpen(false)}
-                                    className="btn w-full bg-[#1976D2] hover:bg-[#1565C0] text-white border-none gap-2"
+                                    className="btn w-full bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2"
                                 >
                                     Browse More Jobs
                                     <ExternalLink size={16} />

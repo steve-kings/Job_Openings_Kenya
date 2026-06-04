@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     if (!job) {
         return {
-            title: 'Opportunity Not Found | 1000Jobs',
+            title: 'Opportunity Not Found | Job Openings Kenya',
         };
     }
 
@@ -24,13 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const dynamicOgImageUrl = `${siteUrl}/api/og/job/${resolvedParams.id}`;
     
     return {
-        title: `${job.title} - ${job.company} | 1000Jobs`,
+        title: `${job.title} - ${job.company} | Job Openings Kenya`,
         description: job.short_description || job.description.substring(0, 160),
         openGraph: {
             title: job.title,
             description: job.short_description || job.description.substring(0, 160),
             url: url,
-            siteName: '1000Jobs - 1000Jobs',
+            siteName: 'Job Openings Kenya - Job Openings Kenya',
             images: [
                 {
                     url: dynamicOgImageUrl,

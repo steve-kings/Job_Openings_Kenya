@@ -20,14 +20,14 @@ const config = {
   daisyui: {
     themes: [
       {
-        "jobs1000": {
-          "primary": "#1976D2",
-          "secondary": "#4CAF50",
-          "accent": "#1565C0",
+        "jobopeningskenya": {
+          "primary": "#5CB800",
+          "secondary": "#C8A882",
+          "accent": "#4A9900",
           "neutral": "#3E2723",
           "base-100": "#FFFFFF",
           "info": "#3ABFF8",
-          "success": "#4CAF50",
+          "success": "#5CB800",
           "warning": "#FBBD23",
           "error": "#F87272",
         },

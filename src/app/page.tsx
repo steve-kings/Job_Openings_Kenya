@@ -10,18 +10,18 @@ import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher 
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: '1000Jobs | Discover Jobs, Grants, Scholarships & Training for African Youth',
-    description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs. Updated daily with new opportunities across Africa.',
+    title: 'Job Openings Kenya | Latest Jobs, Grants, Scholarships & Training in Kenya',
+    description: 'Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.',
     openGraph: {
-        title: '1000Jobs | Discover Jobs, Grants, Scholarships & Training',
-        description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs updated daily.',
+        title: 'Job Openings Kenya | Latest Jobs, Grants & Scholarships in Kenya',
+        description: 'Your Portal for the latest Job Openings in Kenya. Verified listings updated daily.',
         images: ['/images/img2.jpg'],
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        title: '1000Jobs | African Youth Opportunities',
-        description: 'Discover verified opportunities for African youth - jobs, grants, scholarships, and training programs.',
+        title: 'Job Openings Kenya | Kenya Jobs Portal',
+        description: 'Your Portal for the latest Job Openings in Kenya. Verified listings updated daily.',
         images: ['/images/img2.jpg'],
     },
 };
@@ -111,10 +111,10 @@ export default async function HomePage({
                     {/* Mobile: scrollable row */}
                     <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide lg:hidden">
                         {[
-                            { icon: faBriefcase,        count: jobsCount,        label: 'Active Jobs',        bg: 'from-[#1976D2]/10 to-[#1976D2]/5', border: 'border-[#1976D2]/20', color: 'text-[#1976D2]' },
-                            { icon: faHandHoldingDollar, count: grantsCount,      label: 'Grants',             bg: 'from-[#4CAF50]/10 to-[#4CAF50]/5', border: 'border-[#4CAF50]/20', color: 'text-[#4CAF50]' },
-                            { icon: faGraduationCap,    count: scholarshipsCount, label: 'Scholarships',       bg: 'from-[#1565C0]/10 to-[#1565C0]/5', border: 'border-[#1565C0]/20', color: 'text-[#1565C0]' },
-                            { icon: faChalkboardTeacher, count: trainingsCount,   label: 'Training',           bg: 'from-[#4CAF50]/10 to-[#4CAF50]/5', border: 'border-[#4CAF50]/20', color: 'text-[#4CAF50]' },
+                            { icon: faBriefcase,        count: jobsCount,        label: 'Active Jobs',        bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
+                            { icon: faHandHoldingDollar, count: grantsCount,      label: 'Grants',             bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
+                            { icon: faGraduationCap,    count: scholarshipsCount, label: 'Scholarships',       bg: 'from-[#4A9900]/10 to-[#4A9900]/5', border: 'border-[#4A9900]/20', color: 'text-[#4A9900]' },
+                            { icon: faChalkboardTeacher, count: trainingsCount,   label: 'Training',           bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
                         ].map(({ icon, count, label, bg, border, color }) => (
                             <div key={label} className={`snap-start shrink-0 w-32 text-center p-4 bg-gradient-to-br ${bg} rounded-2xl border-2 ${border}`}>
                                 <div className={`text-2xl mb-2 ${color}`}>
@@ -128,23 +128,23 @@ export default async function HomePage({
 
                     {/* Desktop: 4-col grid */}
                     <div className="hidden lg:grid grid-cols-4 gap-6">
-                        <div className="text-center p-6 bg-gradient-to-br from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border-2 border-[#1976D2]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#1976D2]"><FontAwesomeIcon icon={faBriefcase} /></div>
+                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
+                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faBriefcase} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{jobsCount}</div>
                             <div className="text-sm text-gray-600">Active Jobs</div>
                         </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#4CAF50]/10 to-[#4CAF50]/5 rounded-2xl border-2 border-[#4CAF50]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#4CAF50]"><FontAwesomeIcon icon={faHandHoldingDollar} /></div>
+                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
+                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faHandHoldingDollar} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{grantsCount}</div>
                             <div className="text-sm text-gray-600">Grants Available</div>
                         </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#1565C0]/10 to-[#1565C0]/5 rounded-2xl border-2 border-[#1565C0]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#1565C0]"><FontAwesomeIcon icon={faGraduationCap} /></div>
+                        <div className="text-center p-6 bg-gradient-to-br from-[#4A9900]/10 to-[#4A9900]/5 rounded-2xl border-2 border-[#4A9900]/20 hover:shadow-lg transition-all">
+                            <div className="text-4xl mb-3 text-[#4A9900]"><FontAwesomeIcon icon={faGraduationCap} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{scholarshipsCount}</div>
                             <div className="text-sm text-gray-600">Scholarships</div>
                         </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#4CAF50]/10 to-[#4CAF50]/5 rounded-2xl border-2 border-[#4CAF50]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#4CAF50]"><FontAwesomeIcon icon={faChalkboardTeacher} /></div>
+                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
+                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faChalkboardTeacher} /></div>
                             <div className="text-3xl font-bold text-gray-900 mb-1">{trainingsCount}</div>
                             <div className="text-sm text-gray-600">Training Programs</div>
                         </div>
@@ -158,7 +158,7 @@ export default async function HomePage({
                     <div className="container mx-auto px-6 lg:px-12">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-bold text-gray-900 mb-2">Hiring Now</h2>
-                            <p className="text-gray-600">Top companies actively recruiting on 1000Jobs</p>
+                            <p className="text-gray-600">Top companies actively recruiting on Job Openings Kenya</p>
                         </div>
                         <HiringNowSlider companies={uniqueCompanies as string[]} />
                     </div>
@@ -178,10 +178,10 @@ export default async function HomePage({
                         <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide">
                             {opportunities.slice(0, 8).map((job) => {
                                 const typeColors = {
-                                    'Job': { badge: 'bg-[#1976D2]', gradient: 'from-[#1976D2] to-[#1565C0]' },
-                                    'Grant': { badge: 'bg-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#388E3C]' },
-                                    'Scholarship': { badge: 'bg-[#1565C0]', gradient: 'from-[#1565C0] to-[#5D4037]' },
-                                    'Training': { badge: 'bg-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#e08d0a]' },
+                                    'Job': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
+                                    'Grant': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
+                                    'Scholarship': { badge: 'bg-[#4A9900]', gradient: 'from-[#4A9900] to-[#5D4037]' },
+                                    'Training': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#e08d0a]' },
                                 };
                                 const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
                                 const daysLeft = job.deadline ? Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))) : null;
@@ -190,7 +190,7 @@ export default async function HomePage({
                                     <Link 
                                         key={job.id} 
                                         href={`/jobs/${job.id}`}
-                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:border-[#1976D2]/30 transition-all hover:-translate-y-1 block group"
+                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:border-[#5CB800]/30 transition-all hover:-translate-y-1 block group"
                                     >
                                         <div className="p-5">
                                             <div className="flex justify-between items-start mb-4">
@@ -202,7 +202,7 @@ export default async function HomePage({
                                                     {daysLeft === null ? 'Rolling' : daysLeft === 0 ? 'Expired' : `${daysLeft}d left`}
                                                 </span>
                                             </div>
-                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1976D2] transition-colors line-clamp-2 md:h-14">
+                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#5CB800] transition-colors line-clamp-2 md:h-14">
                                                 {job.title}
                                             </h3>
                                             <p className="text-gray-600 text-sm mb-4 line-clamp-1">{job.company}</p>
@@ -252,7 +252,7 @@ export default async function HomePage({
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">No Opportunities Found</h3>
                             <p className="text-gray-500 mb-6">Check back soon for new opportunities!</p>
-                            <Link href="/" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none">
+                            <Link href="/" className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none">
                                 View All Opportunities
                             </Link>
                         </div>
@@ -260,10 +260,10 @@ export default async function HomePage({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {opportunities.map((job) => {
                                 const typeColors = {
-                                    'Job': { bg: 'bg-[#1976D2]/10', border: 'border-[#1976D2]/30', text: 'text-[#1976D2]', badge: 'bg-[#1976D2]' },
-                                    'Grant': { bg: 'bg-[#4CAF50]/10', border: 'border-[#4CAF50]/30', text: 'text-[#4CAF50]', badge: 'bg-[#4CAF50]' },
-                                    'Scholarship': { bg: 'bg-[#1565C0]/10', border: 'border-[#1565C0]/30', text: 'text-[#1565C0]', badge: 'bg-[#1565C0]' },
-                                    'Training': { bg: 'bg-[#4CAF50]/10', border: 'border-[#4CAF50]/30', text: 'text-[#4CAF50]', badge: 'bg-[#4CAF50]' },
+                                    'Job': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
+                                    'Grant': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
+                                    'Scholarship': { bg: 'bg-[#4A9900]/10', border: 'border-[#4A9900]/30', text: 'text-[#4A9900]', badge: 'bg-[#4A9900]' },
+                                    'Training': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
                                 };
                                 const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
 
@@ -304,7 +304,7 @@ export default async function HomePage({
                                                             className="p-1 z-20 bg-white/80 rounded-full hover:bg-white"
                                                         />
                                                     </div>
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#1976D2] transition-colors line-clamp-2">
+                                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#5CB800] transition-colors line-clamp-2">
                                                         {job.title}
                                                     </h3>
                                                 </div>
@@ -348,18 +348,18 @@ export default async function HomePage({
             </div>
 
             {/* CTA Section */}
-            <div className="py-20 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white">
+            <div className="py-20 bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white">
                 <div className="container mx-auto px-6 lg:px-12 text-center">
                     <div className="max-w-3xl mx-auto">
-                        <h2 className="text-4xl font-bold mb-6">Don't Miss Out on New Opportunities</h2>
+                        <h2 className="text-4xl font-bold mb-6">Don&apos;t Miss the Latest Job Openings in Kenya</h2>
                         <p className="text-xl text-white/90 mb-8">
-                            Join our WhatsApp channel to get instant notifications when new opportunities are posted. Be the first to apply!
+                            Join our WhatsApp channel to get instant notifications whenever new jobs, grants, and scholarships are posted. Be the first to apply!
                         </p>
                         <a 
-                            href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
+                            href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn bg-[#4CAF50] text-white hover:bg-[#388E3C] btn-lg border-none w-full sm:w-auto px-6 sm:px-10 gap-2"
+                            className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] btn-lg border-none w-full sm:w-auto px-6 sm:px-10 gap-2"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />

@@ -35,15 +35,15 @@ export default function JobsFilter() {
                 <input
                     type="text"
                     placeholder="Search job, company, or country..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm transition-all"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
             </div>
             <div className="relative">
-                <Filter size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1976D2] z-10 pointer-events-none" />
+                <Filter size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5CB800] z-10 pointer-events-none" />
                 <select
-                    className="w-full sm:w-auto pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm font-semibold transition-all appearance-none bg-white cursor-pointer"
+                    className="w-full sm:w-auto pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm font-semibold transition-all appearance-none bg-white cursor-pointer"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                 >

@@ -30,7 +30,7 @@ export default function CreateBlogPostPage() {
         excerpt: '',
         content: '',
         category: 'Success Story',
-        author_name: '1000Jobs Team',
+        author_name: 'Job Openings Kenya Team',
         status: 'draft'
     });
 
@@ -109,7 +109,7 @@ export default function CreateBlogPostPage() {
         <div className="max-w-6xl mx-auto pb-16">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold transition-all animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold transition-all animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
                     {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                     {toast.msg}
                 </div>
@@ -117,17 +117,17 @@ export default function CreateBlogPostPage() {
 
             {/* Header */}
             <div className="mb-8">
-                <Link href="/admin/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1976D2] transition-colors text-sm mb-5 group">
+                <Link href="/admin/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#5CB800] transition-colors text-sm mb-5 group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                     Back to Blog Posts
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#4CAF50] to-[#388E3C] flex items-center justify-center shadow-lg">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#5CB800] to-[#4A9900] flex items-center justify-center shadow-lg">
                         <FileText className="text-white" size={28} />
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Create New Post</h1>
-                        <p className="text-gray-500 text-sm mt-0.5">Share stories & insights with the 1000Jobs community</p>
+                        <p className="text-gray-500 text-sm mt-0.5">Share stories & insights with the Job Openings Kenya community</p>
                     </div>
                 </div>
             </div>
@@ -138,10 +138,10 @@ export default function CreateBlogPostPage() {
                     <div className="lg:col-span-2 space-y-5">
 
                         {/* AI Generator Box */}
-                        <div className="bg-gradient-to-r from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border border-[#1976D2]/20 p-6 space-y-3 shadow-sm">
-                            <div className="flex items-center gap-2 text-[#1976D2]">
+                        <div className="bg-gradient-to-r from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border border-[#5CB800]/20 p-6 space-y-3 shadow-sm">
+                            <div className="flex items-center gap-2 text-[#5CB800]">
                                 <Sparkles size={20} />
-                                <h3 className="font-bold text-sm uppercase tracking-widest">1000Jobs AI Generator</h3>
+                                <h3 className="font-bold text-sm uppercase tracking-widest">Job Openings Kenya AI Generator</h3>
                             </div>
                             <div className="flex gap-3">
                                 <input 
@@ -149,14 +149,14 @@ export default function CreateBlogPostPage() {
                                     value={aiPrompt}
                                     onChange={(e) => setAiPrompt(e.target.value)}
                                     placeholder="E.g., Write a blog post about the top 5 interview tips for 2026..."
-                                    className="flex-1 px-4 py-3 rounded-xl border border-white focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all shadow-sm"
+                                    className="flex-1 px-4 py-3 rounded-xl border border-white focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all shadow-sm"
                                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAIGenerate())}
                                 />
                                 <button 
                                     type="button"
                                     onClick={handleAIGenerate}
                                     disabled={!aiPrompt || generatingAi}
-                                    className="px-6 py-3 bg-[#1976D2] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#1565C0] disabled:opacity-50 transition-colors shadow-sm"
+                                    className="px-6 py-3 bg-[#5CB800] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#4A9900] disabled:opacity-50 transition-colors shadow-sm"
                                 >
                                     {generatingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                                     Generate
@@ -174,7 +174,7 @@ export default function CreateBlogPostPage() {
                                     value={formData.title}
                                     onChange={handleTitleChange}
                                     placeholder="Enter an engaging post title..."
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-gray-900 font-medium text-lg transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-gray-900 font-medium text-lg transition-all"
                                 />
                             </Field>
                             <Field label="URL Slug" hint="Auto-generated">
@@ -190,7 +190,7 @@ export default function CreateBlogPostPage() {
                                     onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                                     placeholder="A compelling summary shown on listing cards (150–200 characters recommended)"
                                     rows={3}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-sm text-gray-700 resize-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 resize-none transition-all"
                                 />
                             </Field>
                         </div>
@@ -224,7 +224,7 @@ export default function CreateBlogPostPage() {
                                         onClick={() => setFormData({ ...formData, status: s })}
                                         className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${formData.status === s
                                             ? s === 'published'
-                                                ? 'bg-[#4CAF50] text-white border-[#4CAF50] shadow'
+                                                ? 'bg-[#5CB800] text-white border-[#5CB800] shadow'
                                                 : 'bg-gray-900 text-white border-gray-900 shadow'
                                             : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                                         }`}
@@ -238,7 +238,7 @@ export default function CreateBlogPostPage() {
                                 <select
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 bg-white transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 bg-white transition-all"
                                 >
                                     {categories.map(c => <option key={c}>{c}</option>)}
                                 </select>
@@ -249,7 +249,7 @@ export default function CreateBlogPostPage() {
                                     type="text"
                                     value={formData.author_name}
                                     onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all"
                                 />
                             </Field>
 
@@ -258,7 +258,7 @@ export default function CreateBlogPostPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#1976D2]/30 transition-all disabled:opacity-60"
+                                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#5CB800]/30 transition-all disabled:opacity-60"
                             >
                                 {loading ? (
                                     <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Saving...</>
@@ -274,10 +274,10 @@ export default function CreateBlogPostPage() {
                             <CloudinaryUpload
                                 onUploadComplete={(url) => setImageUrl(url)}
                                 currentImage={imageUrl}
-                                folder="1000jobs-blog"
+                                folder="Job Openings Kenya-blog"
                                 label="Upload Image"
                             />
-                            <p className="text-xs text-gray-400">Optional — default 1000Jobs branding used if empty.</p>
+                            <p className="text-xs text-gray-400">Optional — default Job Openings Kenya branding used if empty.</p>
                         </div>
                     </div>
                 </div>

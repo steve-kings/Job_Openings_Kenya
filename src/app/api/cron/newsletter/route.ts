@@ -42,7 +42,7 @@ export async function GET(request: Request) {
         }
 
         const siteUrl = getBaseUrl();
-        const logoUrl = `${siteUrl}/1000jobs_logo.jpeg`;
+        const logoUrl = `${siteUrl}/job_openings_kenya_logo.jpeg`;
         const weekStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
         const htmlContent = `
@@ -51,11 +51,11 @@ export async function GET(request: Request) {
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Weekly Top Opportunities - 1000Jobs</title>
+            <title>Weekly Top Opportunities - Job Openings Kenya</title>
             <style>
                 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; background-color: #f8fafc; margin: 0; padding: 0; }
                 .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0; border-radius: 16px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-                .header { background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%); color: #ffffff; padding: 40px 30px; text-align: center; }
+                .header { background: linear-gradient(135deg, #5CB800 0%, #4A9900 100%); color: #ffffff; padding: 40px 30px; text-align: center; }
                 .header img { width: 70px; height: 70px; border-radius: 14px; margin-bottom: 16px; object-fit: cover; }
                 .header h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 800; }
                 .header .week { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 16px; border-radius: 50px; font-size: 13px; margin-top: 8px; }
@@ -65,23 +65,23 @@ export async function GET(request: Request) {
                 .job-type { display: inline-block; padding: 4px 12px; background-color: #dbeafe; color: #1d4ed8; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
                 .job-title { margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #0f172a; }
                 .job-company { margin: 0 0 14px 0; font-size: 14px; color: #64748b; }
-                .btn { display: inline-block; padding: 11px 22px; background-color: #1976D2; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; }
+                .btn { display: inline-block; padding: 11px 22px; background-color: #5CB800; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; }
                 .cta-section { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 24px; text-align: center; margin-top: 30px; }
-                .cta-section a { color: #1976D2; font-weight: 700; text-decoration: underline; }
+                .cta-section a { color: #5CB800; font-weight: 700; text-decoration: underline; }
                 .footer { background-color: #f8fafc; padding: 28px 30px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-                .footer a { color: #1976D2; text-decoration: none; }
+                .footer a { color: #5CB800; text-decoration: none; }
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <img src="${logoUrl}" alt="1000Jobs">
+                    <img src="${logoUrl}" alt="Job Openings Kenya">
                     <h1>🔥 Your Weekly Top 5</h1>
                     <p>Hand-picked opportunities just for you</p>
                     <span class="week">Week of ${weekStr}</span>
                 </div>
                 <div class="content">
-                    <p class="intro">Hello! Here are the top 5 latest opportunities on 1000Jobs this week. Don't wait — deadlines fill up fast!</p>
+                    <p class="intro">Hello! Here are the top 5 latest opportunities on Job Openings Kenya this week. Don't wait — deadlines fill up fast!</p>
                     ${opportunities.map((job: any) => `
                     <div class="job-card">
                         <span class="job-type">${job.type}</span>
@@ -92,12 +92,12 @@ export async function GET(request: Request) {
                     `).join('')}
                     <div class="cta-section">
                         <p style="margin:0 0 10px 0; font-weight:600; color:#0f172a;">Want to see all opportunities?</p>
-                        <a href="${siteUrl}/jobs">Browse All 1000+ Opportunities on 1000jobs.co.ke</a>
+                        <a href="${siteUrl}/jobs">Browse All 1000+ Opportunities on Job Openings Kenya.co.ke</a>
                     </div>
                 </div>
                 <div class="footer">
-                    <p>You're receiving this because you subscribed at <a href="${siteUrl}">1000jobs.co.ke</a>.</p>
-                    <p>&copy; ${new Date().getFullYear()} 1000Jobs. Empowering African Youth. All rights reserved.</p>
+                    <p>You're receiving this because you subscribed at <a href="${siteUrl}">Job Openings Kenya.co.ke</a>.</p>
+                    <p>&copy; ${new Date().getFullYear()} Job Openings Kenya. Empowering African Youth. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -112,7 +112,7 @@ export async function GET(request: Request) {
         for (let i = 0; i < bccList.length; i += chunkSize) {
             const chunk = bccList.slice(i, i + chunkSize);
             await sendEmail({
-                to: [{ email: 'info.1000jobs@gmail.com', name: '1000Jobs Team' }],
+                to: [{ email: 'info.Job Openings Kenya@gmail.com', name: 'Job Openings Kenya Team' }],
                 bcc: chunk,
                 subject: `🔥 Your Weekly Top 5 Opportunities - Week of ${weekStr}`,
                 htmlContent,

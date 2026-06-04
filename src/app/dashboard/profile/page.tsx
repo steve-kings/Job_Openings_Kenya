@@ -143,29 +143,29 @@ export default function ProfileEditorPage() {
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center">
-            <Loader2 size={40} className="animate-spin text-[#1976D2]" />
+            <Loader2 size={40} className="animate-spin text-[#5CB800]" />
         </div>
     );
 
-    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all bg-white";
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all bg-white";
 
     return (
         <div className="p-4 lg:p-8 space-y-8 max-w-7xl mx-auto">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
                     {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                     {toast.msg}
                 </div>
             )}
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white p-8 lg:p-12 rounded-3xl shadow-xl relative overflow-hidden">
+            <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white p-8 lg:p-12 rounded-3xl shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
                 <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
                         <h1 className="text-3xl lg:text-4xl font-bold">My Public Profile</h1>
-                        <p className="text-white/80 mt-2 text-lg">Build your talent profile to get discovered by employers</p>
+                        <p className="text-white/80 mt-2 text-lg">Build your job seeker profile to get noticed by employers in Kenya</p>
                     </div>
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         {form.username && form.is_public && (
@@ -180,7 +180,7 @@ export default function ProfileEditorPage() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-2 w-full md:w-auto shadow-lg"
+                            className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 w-full md:w-auto shadow-lg"
                         >
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Profile'}
@@ -208,9 +208,9 @@ export default function ProfileEditorPage() {
                                         onChange={(e) => setForm({ ...form, is_public: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#1976D2]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#1976D2]"></div>
+                                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#5CB800]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#5CB800]"></div>
                                     <span className="ml-3 text-sm font-semibold text-gray-700">
-                                        {form.is_public ? <span className="flex items-center gap-1 text-[#1976D2]"><Eye size={16}/> Public</span> : <span className="flex items-center gap-1 text-gray-400"><EyeOff size={16}/> Private</span>}
+                                        {form.is_public ? <span className="flex items-center gap-1 text-[#5CB800]"><Eye size={16}/> Public</span> : <span className="flex items-center gap-1 text-gray-400"><EyeOff size={16}/> Private</span>}
                                     </span>
                                 </label>
                             </div>
@@ -226,9 +226,9 @@ export default function ProfileEditorPage() {
                                         onChange={(e) => setForm({ ...form, open_to_work: e.target.checked })}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#4CAF50]"></div>
+                                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#5CB800]"></div>
                                     <span className="ml-3 text-sm font-semibold text-gray-700">
-                                        {form.open_to_work ? <span className="text-[#4CAF50] flex items-center gap-1"><CheckCircle size={16}/> Yes</span> : <span className="text-gray-400">No</span>}
+                                        {form.open_to_work ? <span className="text-[#5CB800] flex items-center gap-1"><CheckCircle size={16}/> Yes</span> : <span className="text-gray-400">No</span>}
                                     </span>
                                 </label>
                             </div>
@@ -241,15 +241,15 @@ export default function ProfileEditorPage() {
                                 {/* Avatar Preview */}
                                 <div className="relative shrink-0">
                                     {avatarUrl ? (
-                                        <img src={avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover ring-4 ring-[#1976D2]/20 shadow-lg" />
+                                        <img src={avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover ring-4 ring-[#5CB800]/20 shadow-lg" />
                                     ) : (
-                                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center ring-4 ring-[#1976D2]/20 shadow-lg">
+                                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] flex items-center justify-center ring-4 ring-[#5CB800]/20 shadow-lg">
                                             <span className="text-3xl font-black text-white">
                                                 {form.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || <User size={32} className="text-white" />}
                                             </span>
                                         </div>
                                     )}
-                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#1976D2] rounded-full flex items-center justify-center shadow">
+                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#5CB800] rounded-full flex items-center justify-center shadow">
                                         <Camera size={14} className="text-white" />
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@ export default function ProfileEditorPage() {
                                     <CloudinaryUpload
                                         onUploadComplete={(url) => setAvatarUrl(url)}
                                         currentImage={avatarUrl}
-                                        folder="1000jobs-avatars"
+                                        folder="jobopeningskenya-avatars"
                                         label="Upload Profile Photo"
                                     />
                                 </div>
@@ -277,18 +277,18 @@ export default function ProfileEditorPage() {
                                     <label className="text-sm font-semibold text-gray-700">Username <span className="text-red-500">*</span></label>
                                     <div className="flex items-center">
                                         <span className="hidden sm:flex px-3 py-3 bg-gray-100 rounded-l-xl border border-r-0 border-gray-200 text-gray-500 text-xs font-mono shrink-0 whitespace-nowrap">/talent/</span>
-                                        <input type="text" value={form.username} onChange={e => setForm({...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})} className="w-full px-4 py-3 sm:rounded-l-none rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm font-mono text-gray-700 transition-all" placeholder="johndoe" />
+                                        <input type="text" value={form.username} onChange={e => setForm({...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})} className="w-full px-4 py-3 sm:rounded-l-none rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm font-mono text-gray-700 transition-all" placeholder="johndoe" />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5 md:col-span-2">
                                     <div className="flex items-center justify-between">
                                         <label className="text-sm font-semibold text-gray-700">Professional Headline</label>
-                                        <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'headline' ? '' : 'headline'}))} className="text-xs font-semibold text-[#1976D2] flex items-center gap-1 hover:text-[#1565C0] transition-colors"><Sparkles size={14}/> AI Writer</button>
+                                        <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'headline' ? '' : 'headline'}))} className="text-xs font-semibold text-[#5CB800] flex items-center gap-1 hover:text-[#4A9900] transition-colors"><Sparkles size={14}/> AI Writer</button>
                                     </div>
                                     {aiPrompt.open === 'headline' && (
-                                        <div className="mb-2 p-3 bg-[#1976D2]/5 border border-[#1976D2]/20 rounded-xl flex items-stretch gap-2 animate-in fade-in slide-in-from-top-2">
-                                            <input type="text" value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="e.g. Frontend developer passionate about React and UI..." className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#1976D2]" />
-                                            <button type="button" onClick={() => handleGenerateAi('headline')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 bg-[#1976D2] hover:bg-[#1565C0] text-white border-none shrink-0 gap-2">
+                                        <div className="mb-2 p-3 bg-[#5CB800]/5 border border-[#5CB800]/20 rounded-xl flex items-stretch gap-2 animate-in fade-in slide-in-from-top-2">
+                                            <input type="text" value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="e.g. Frontend developer passionate about React and UI..." className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#5CB800]" />
+                                            <button type="button" onClick={() => handleGenerateAi('headline')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 bg-[#5CB800] hover:bg-[#4A9900] text-white border-none shrink-0 gap-2">
                                                 {generatingAi ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />} <span>Gen</span>
                                             </button>
                                         </div>
@@ -306,14 +306,14 @@ export default function ProfileEditorPage() {
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">About Me</h3>
-                                <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'bio' ? '' : 'bio'}))} className="text-xs font-semibold text-[#1976D2] flex items-center gap-1 hover:text-[#1565C0] transition-colors"><Sparkles size={14}/> Generate with AI</button>
+                                <button type="button" onClick={() => setAiPrompt(p => ({...p, open: p.open === 'bio' ? '' : 'bio'}))} className="text-xs font-semibold text-[#5CB800] flex items-center gap-1 hover:text-[#4A9900] transition-colors"><Sparkles size={14}/> Generate with AI</button>
                             </div>
                             
                             {aiPrompt.open === 'bio' && (
-                                <div className="p-3 bg-[#1976D2]/5 border border-[#1976D2]/20 rounded-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
-                                    <textarea value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="What do you want to highlight? (e.g. Over 3 years experience in digital marketing, passionate about telling African stories...)" className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#1976D2] resize-none h-20" />
+                                <div className="p-3 bg-[#5CB800]/5 border border-[#5CB800]/20 rounded-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
+                                    <textarea value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="What do you want to highlight? (e.g. Over 3 years experience in digital marketing, passionate about telling African stories...)" className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#5CB800] resize-none h-20" />
                                     <div className="flex justify-end">
-                                        <button type="button" onClick={() => handleGenerateAi('bio')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 px-4 bg-[#1976D2] hover:bg-[#1565C0] text-white border-none gap-2">
+                                        <button type="button" onClick={() => handleGenerateAi('bio')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 px-4 bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2">
                                             {generatingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} Generate Bio
                                         </button>
                                     </div>
@@ -366,14 +366,14 @@ export default function ProfileEditorPage() {
                                     className={inputCls}
                                     placeholder="Type a skill and press Enter (e.g. React, Python, Excel)"
                                 />
-                                <button type="button" onClick={addSkill} className="btn bg-[#1976D2] text-white border-none">
+                                <button type="button" onClick={addSkill} className="btn bg-[#5CB800] text-white border-none">
                                     <Plus size={18} />
                                 </button>
                             </div>
                             {form.skills.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {form.skills.map((skill, i) => (
-                                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1976D2]/10 text-[#1976D2] text-sm font-semibold rounded-xl border border-[#1976D2]/20">
+                                        <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5CB800]/10 text-[#5CB800] text-sm font-semibold rounded-xl border border-[#5CB800]/20">
                                             {skill}
                                             <button type="button" onClick={() => removeSkill(skill)} className="hover:text-red-500 transition-colors">
                                                 <X size={14} />
@@ -411,8 +411,8 @@ export default function ProfileEditorPage() {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        <div className="bg-gradient-to-br from-[#1976D2]/10 to-[#1976D2]/5 border border-[#1976D2]/20 rounded-2xl p-6 space-y-4">
-                            <h3 className="font-bold text-[#1976D2]">💡 Tips for a Great Profile</h3>
+                        <div className="bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 border border-[#5CB800]/20 rounded-2xl p-6 space-y-4">
+                            <h3 className="font-bold text-[#5CB800]">💡 Tips for a Great Profile</h3>
                             <ul className="space-y-3 text-sm text-gray-700">
                                 {[
                                     'Use a professional headline that describes what you do',
@@ -422,7 +422,7 @@ export default function ProfileEditorPage() {
                                     'Turn on "Open to Work" to signal availability',
                                 ].map((tip, i) => (
                                     <li key={i} className="flex items-start gap-2">
-                                        <CheckCircle size={16} className="text-[#1976D2] shrink-0 mt-0.5" />
+                                        <CheckCircle size={16} className="text-[#5CB800] shrink-0 mt-0.5" />
                                         {tip}
                                     </li>
                                 ))}
@@ -433,7 +433,7 @@ export default function ProfileEditorPage() {
                             <h3 className="font-bold text-gray-900 mb-3">Your Public URL</h3>
                             {form.username ? (
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 font-mono text-xs text-gray-700 break-all">
-                                    1000jobs.vercel.app/talent/<span className="text-[#1976D2] font-bold">{form.username}</span>
+                                    jobopeningskenya.co.ke/talent/<span className="text-[#5CB800] font-bold">{form.username}</span>
                                 </div>
                             ) : (
                                 <p className="text-gray-400 text-sm">Set a username to generate your link</p>
@@ -443,7 +443,7 @@ export default function ProfileEditorPage() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="w-full btn bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white border-none gap-2 py-4"
+                            className="w-full btn bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white border-none gap-2 py-4"
                         >
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Profile'}

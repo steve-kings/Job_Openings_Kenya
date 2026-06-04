@@ -15,9 +15,9 @@ export default function PartnerLogo({ src, alt, className = '' }: PartnerLogoPro
         <img
             src={imgSrc}
             alt={alt}
-            className={className || "h-12 md:h-16 object-contain max-w-[150px]"}
+            className={className || 'h-12 md:h-16 object-contain max-w-[150px]'}
             onError={() => {
-                setImgSrc('/1000jobs_logo.jpeg');
+                setImgSrc('/job_openings_kenya_logo.jpeg');
             }}
         />
     );

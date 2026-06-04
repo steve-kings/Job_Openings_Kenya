@@ -26,7 +26,7 @@ export async function GET(
     }
 
     const siteUrl = getBaseUrl();
-    const logoUrl = `${siteUrl}/1000jobs_logo.jpeg`;
+    const logoUrl = `${siteUrl}/job_openings_kenya_logo.jpeg`;
     
     const featuredImage = post.featured_image;
 
@@ -62,8 +62,8 @@ export async function GET(
                 }}>
                     {/* Header Logo */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img src={logoUrl} alt="1000Jobs" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
-                        <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#1976D2' }}>1000Jobs Blog</span>
+                        <img src={logoUrl} alt="Job Openings Kenya" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
+                        <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#5CB800' }}>Job Openings Kenya Blog</span>
                     </div>
 
                     {/* Article Title */}
@@ -83,11 +83,11 @@ export async function GET(
                     {/* Footer Metadata */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: '#1976D2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '20px', fontWeight: 'bold', marginRight: '16px' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: '#5CB800', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '20px', fontWeight: 'bold', marginRight: '16px' }}>
                                 {post.author_name ? post.author_name[0].toUpperCase() : 'A'}
                             </div>
                             <span style={{ fontSize: '32px', color: '#334155', fontWeight: '600' }}>
-                                {post.author_name || '1000Jobs Team'}
+                                {post.author_name || 'Job Openings Kenya Team'}
                             </span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '28px', color: '#64748b' }}>

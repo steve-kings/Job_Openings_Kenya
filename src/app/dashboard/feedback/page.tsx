@@ -92,24 +92,24 @@ export default function FeedbackPage() {
         }
     };
 
-    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none text-sm text-gray-700 bg-gray-50 transition-all";
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 bg-gray-50 transition-all";
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             {toast && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
                     {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                     {toast.msg}
                 </div>
             )}
 
-            <div className="bg-gradient-to-br from-[#4CAF50] to-[#388E3C] rounded-3xl p-8 sm:p-10 text-white shadow-lg flex flex-col sm:flex-row items-center gap-6">
+            <div className="bg-gradient-to-br from-[#5CB800] to-[#4A9900] rounded-3xl p-8 sm:p-10 text-white shadow-lg flex flex-col sm:flex-row items-center gap-6">
                 <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
                     <Sparkles size={40} className="text-yellow-300" />
                 </div>
                 <div className="text-center sm:text-left">
                     <h1 className="text-3xl font-bold mb-2">Share Your Success Story</h1>
-                    <p className="text-white/90">Did you land a job, grant, or scholarship through 1000Jobs? Inspire others by sharing your journey!</p>
+                    <p className="text-white/90">Did you land a job, grant, or scholarship through Job Openings Kenya? Inspire others by sharing your journey!</p>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@ export default function FeedbackPage() {
                     <AlertCircle className="shrink-0 mt-0.5 text-yellow-600" />
                     <div>
                         <h3 className="font-bold mb-1 text-yellow-900">Testimonial Under Review</h3>
-                        <p className="text-sm">Thank you for sharing your story! Our team is currently reviewing it. Once approved, it will be featured on our public Discover page to inspire thousands of African youth.</p>
+                        <p className="text-sm">Thank you for sharing your story! Our team is currently reviewing it. Once approved, it will be featured on our public Discover page to inspire thousands of Kenyan job seekers.</p>
                     </div>
                 </div>
             )}
@@ -167,7 +167,7 @@ export default function FeedbackPage() {
                                 <CloudinaryUpload 
                                     onUploadComplete={(url) => setPhotoUrl(url)}
                                     currentImage={photoUrl}
-                                    folder="1000jobs-testimonials"
+                                    folder="Job Openings Kenya-testimonials"
                                     label="Upload Headshot"
                                 />
                             </div>
@@ -184,7 +184,7 @@ export default function FeedbackPage() {
                                 rows={6}
                                 value={formData.story}
                                 onChange={e => setFormData({...formData, story: e.target.value})}
-                                placeholder="Tell us how 1000Jobs helped you land this opportunity. What was your experience like? What advice would you give to other job seekers?"
+                                placeholder="Tell us how Job Openings Kenya helped you land this opportunity. What was your experience like? What advice would you give to other job seekers?"
                                 className={`${inputCls} resize-none`}
                             />
                         </div>
@@ -193,7 +193,7 @@ export default function FeedbackPage() {
                             <button
                                 type="submit"
                                 disabled={loading || !user || formData.story.length < 100}
-                                className="w-full py-4 bg-[#4CAF50] hover:bg-[#388E3C] text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                                className="w-full py-4 bg-[#5CB800] hover:bg-[#4A9900] text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <Quote size={20} />}
                                 {loading ? 'Submitting...' : 'Submit Success Story'}

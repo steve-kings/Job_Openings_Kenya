@@ -100,7 +100,7 @@ export default function AdminOpportunitiesPage() {
                     <button 
                         onClick={() => {
                             const url = `${window.location.origin}/jobs?urgent=true`;
-                            const text = `🚨 Urgent! Several opportunities are expiring in the next 3 days on 1000Jobs. Apply now before they close:\n\n${url}`;
+                            const text = `🚨 Urgent! Several opportunities are expiring in the next 3 days on Job Openings Kenya. Apply now before they close:\n\n${url}`;
                             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                         }}
                         className="btn btn-sm sm:btn-md bg-[#25D366] text-white hover:bg-[#128C7E] border-none gap-2 w-full sm:w-auto shadow-md"

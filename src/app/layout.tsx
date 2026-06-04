@@ -17,40 +17,40 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
   title: {
-    default: "1000Jobs - 1000Jobs",
-    template: "%s | 1000Jobs"
+    default: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
+    template: "%s | Job Openings Kenya"
   },
-  description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
-  keywords: "1000Jobs, Youth Empowerment, Africa, Education, Jobs, Scholarships, Grants, Training, Courses",
-  authors: [{ name: "1000Jobs Team" }],
+  description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.",
+  keywords: "Job Openings Kenya, Jobs in Kenya, Kenya Jobs 2025, Kenyan Jobs Portal, Scholarships Kenya, Grants Kenya, Training Kenya",
+  authors: [{ name: "Job Openings Kenya Team" }],
   icons: {
     icon: [
-      { url: '/1000jobs_logo.jpeg', sizes: 'any' },
-      { url: '/1000jobs_logo.jpeg', type: 'image/jpeg' }
+      { url: '/job_openings_kenya_logo.jpeg', sizes: 'any' },
+      { url: '/job_openings_kenya_logo.jpeg', type: 'image/jpeg' }
     ],
-    apple: '/1000jobs_logo.jpeg',
+    apple: '/job_openings_kenya_logo.jpeg',
   },
   openGraph: {
-    title: "1000Jobs - 1000Jobs",
-    description: "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
+    title: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
+    description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.",
     images: [
       {
-        url: `${getBaseUrl()}/1000jobs_logo.jpeg`,
+        url: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
         width: 1200,
         height: 630,
-        alt: '1000Jobs - 1000Jobs',
+        alt: 'Job Openings Kenya',
       }
     ],
     type: 'website',
-    siteName: '1000Jobs',
+    siteName: 'Job Openings Kenya',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "1000Jobs - 1000Jobs",
-    description: "Bridging the gap between young Africans and life-changing opportunities",
-    images: [`${getBaseUrl()}/1000jobs_logo.jpeg`],
-    creator: '@1000jobs_africa',
+    title: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
+    description: "Your Portal for the latest Job Openings in Kenya",
+    images: [`${getBaseUrl()}/job_openings_kenya_logo.jpeg`],
+    creator: '@JobOpeningsKE',
   },
   robots: {
     index: true,
@@ -64,17 +64,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="1000jobs">
+    <html lang="en" data-theme="jobopeningskenya">
       <head>
-        <link rel="icon" href="/1000jobs_logo.jpeg" type="image/jpeg" sizes="any" />
-        <link rel="shortcut icon" href="/1000jobs_logo.jpeg" type="image/jpeg" />
-        <link rel="apple-touch-icon" href="/1000jobs_logo.jpeg" />
+        <link rel="icon" href="/job_openings_kenya_logo.jpeg" type="image/jpeg" sizes="any" />
+        <link rel="shortcut icon" href="/job_openings_kenya_logo.jpeg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/job_openings_kenya_logo.jpeg" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1976D2" />
+        <meta name="theme-color" content="#5CB800" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="1000Jobs" />
+        <meta name="apple-mobile-web-app-title" content="Job Openings Kenya" />
       </head>
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}

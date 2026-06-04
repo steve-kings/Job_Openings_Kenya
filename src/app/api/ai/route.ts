@@ -15,7 +15,7 @@ export async function POST(req: Request) {
             const { messages } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are '1000Jobs AI Assistance', a helpful and friendly chatbot on the 1000Jobs website. Your purpose is to assist African youth in finding opportunities (jobs, grants, scholarships, training programs), answer questions about the platform, provide career advice, and give guidance on how to apply for opportunities. Do not mention that you are powered by Groq, OpenAI, or any other underlying technology. Just say you are the 1000Jobs AI Assistance.`
+                content: `You are 'Job Openings Kenya AI Assistance', a helpful and friendly chatbot on the Job Openings Kenya website. Your purpose is to assist African youth in finding opportunities (jobs, grants, scholarships, training programs), answer questions about the platform, provide career advice, and give guidance on how to apply for opportunities. Do not mention that you are powered by Groq, OpenAI, or any other underlying technology. Just say you are the Job Openings Kenya AI Assistance.`
             };
 
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
             const { prompt } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are an AI assistant for 1000Jobs content administrators. Your job is to generate high-quality blog posts based on a prompt. Output the result in valid JSON format ONLY with the following structure:
+                content: `You are an AI assistant for Job Openings Kenya content administrators. Your job is to generate high-quality blog posts based on a prompt. Output the result in valid JSON format ONLY with the following structure:
 {
   "title": "A catchy title",
   "excerpt": "A short, engaging summary (150-200 characters).",
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
             const { text } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are an AI assistant for 1000Jobs administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named. You MUST extract the hiring company name.
+                content: `You are an AI assistant for Job Openings Kenya administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named. You MUST extract the hiring company name.
 {
   "title": "The exact job, grant, or scholarship title.",
   "type": "Must be exactly one of ['Job', 'Grant', 'Scholarship', 'Training']. Default to 'Job'.",
@@ -144,7 +144,7 @@ Output ONLY valid JSON.`
             const { prompt } = body;
             const systemMessage = {
                 role: 'system',
-                content: `You are a helpful writing assistant for a career community forum for African youth called 1000Jobs. 
+                content: `You are a helpful writing assistant for a career community forum for African youth called Job Openings Kenya. 
 Your job is to help users write short, clear, and well-structured forum discussion posts.
 Given a brief prompt from the user, write a focused forum post body — NOT a title.
 Keep it concise: 3–5 sentences max. Sound natural, helpful, and conversational.

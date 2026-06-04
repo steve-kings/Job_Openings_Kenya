@@ -47,10 +47,10 @@ export default function HiringNowSlider({ companies }: { companies: string[] }) 
                     className="shrink-0 flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 min-w-[160px] max-w-[160px] group"
                 >
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-inner">
-                        <Building className="text-gray-400 group-hover:text-[#1976D2] transition-colors" size={28} />
+                        <Building className="text-gray-400 group-hover:text-[#5CB800] transition-colors" size={28} />
                     </div>
                     <h3 className="font-bold text-gray-800 text-center text-sm line-clamp-1 w-full" title={company}>{company}</h3>
-                    <p className="text-xs text-[#1976D2] mt-1 font-semibold">View Jobs</p>
+                    <p className="text-xs text-[#5CB800] mt-1 font-semibold">View Jobs</p>
                 </Link>
             ))}
         </div>

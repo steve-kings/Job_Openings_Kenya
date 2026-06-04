@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import { MessageSquare, TrendingUp, Clock, Pin, ArrowRight, Plus } from 'lucide-react';
 
 export const metadata: Metadata = {
-    title: 'Community Forum | 1000Jobs - Career Q&A for African Youth',
-    description: 'Join the 1000Jobs community forum. Ask career questions, share interview experiences, discuss scholarships and connect with other African youth.',
+    title: 'Community Forum | Job Openings Kenya - Career Q&A for Kenyan job seekers',
+    description: 'Join the Job Openings Kenya community forum. Ask career questions, share interview experiences, discuss scholarships and connect with other Kenyan job seekers.',
 };
 
 export const revalidate = 60;
@@ -29,7 +29,7 @@ export default async function ForumPage() {
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Hero */}
-            <div className="bg-gradient-to-br from-[#1565C0] via-[#1976D2] to-[#1976D2] text-white py-16">
+            <div className="bg-gradient-to-br from-[#4A9900] via-[#5CB800] to-[#5CB800] text-white py-16">
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="flex items-center justify-between flex-wrap gap-6">
                         <div>
@@ -39,19 +39,19 @@ export default async function ForumPage() {
                             </div>
                             <h1 className="text-4xl lg:text-5xl font-black mb-3">Ask. Share. Grow.</h1>
                             <p className="text-white/85 text-lg max-w-xl">
-                                Get career advice, share interview experiences, discuss opportunities and connect with thousands of African youth on their career journeys.
+                                Get career advice, share interview experiences, discuss opportunities and connect with thousands of Kenyan job seekers on their career journeys.
                             </p>
                         </div>
                         {user ? (
                             <Link
                                 href="/community/new"
-                                className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none btn-lg gap-2 shadow-2xl"
+                                className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none btn-lg gap-2 shadow-2xl"
                             >
                                 <Plus size={22} />
                                 Start a Discussion
                             </Link>
                         ) : (
-                            <Link href="/login?redirect=/community" className="btn bg-white text-[#1976D2] border-none btn-lg font-bold shadow-2xl hover:bg-gray-100">
+                            <Link href="/login?redirect=/community" className="btn bg-white text-[#5CB800] border-none btn-lg font-bold shadow-2xl hover:bg-gray-100">
                                 Login to Join
                             </Link>
                         )}
@@ -76,13 +76,13 @@ export default async function ForumPage() {
                                     >
                                         <div className="flex items-start gap-4">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-gray-900 group-hover:text-[#1976D2] transition-colors">{cat.name}</h3>
+                                                <h3 className="font-bold text-gray-900 group-hover:text-[#5CB800] transition-colors">{cat.name}</h3>
                                                 <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{cat.description}</p>
                                                 <p className="text-xs text-gray-400 mt-2 font-medium">
                                                     {cat.forum_threads?.[0]?.count || 0} discussions
                                                 </p>
                                             </div>
-                                            <ArrowRight size={18} className="text-gray-300 group-hover:text-[#1976D2] group-hover:translate-x-1 transition-all shrink-0 mt-1" />
+                                            <ArrowRight size={18} className="text-gray-300 group-hover:text-[#5CB800] group-hover:translate-x-1 transition-all shrink-0 mt-1" />
                                         </div>
                                     </Link>
                                 ))}
@@ -92,8 +92,8 @@ export default async function ForumPage() {
                         {/* Recent Threads */}
                         <div>
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2"><Clock size={20} className="text-[#1976D2]" /> Recent Discussions</h2>
-                                <Link href="/community/all" className="text-sm text-[#1976D2] font-semibold hover:underline">View all →</Link>
+                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2"><Clock size={20} className="text-[#5CB800]" /> Recent Discussions</h2>
+                                <Link href="/community/all" className="text-sm text-[#5CB800] font-semibold hover:underline">View all →</Link>
                             </div>
                             <div className="space-y-3">
                                 {recentThreads && recentThreads.length > 0 ? recentThreads.map((thread) => {
@@ -110,9 +110,9 @@ export default async function ForumPage() {
                                         <Link
                                             key={thread.id}
                                             href={`/community/${thread.id}`}
-                                            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:border-[#1976D2]/30 transition-all group flex items-start gap-4"
+                                            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:border-[#5CB800]/30 transition-all group flex items-start gap-4"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-[#1976D2] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-[#5CB800] flex items-center justify-center text-white text-sm font-bold shrink-0">
                                                 {initials}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -124,7 +124,7 @@ export default async function ForumPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                <h3 className="font-bold text-gray-900 group-hover:text-[#1976D2] transition-colors line-clamp-2">{thread.title}</h3>
+                                                <h3 className="font-bold text-gray-900 group-hover:text-[#5CB800] transition-colors line-clamp-2">{thread.title}</h3>
                                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                                                     <span>by <span className="font-semibold text-gray-600">{thread.profiles?.full_name || 'Anonymous'}</span></span>
                                                     <span>{timeAgo(thread.created_at)}</span>
@@ -139,7 +139,7 @@ export default async function ForumPage() {
                                         <MessageSquare size={48} className="text-gray-200 mx-auto mb-3" />
                                         <p className="text-gray-500 font-medium">No discussions yet. Be the first!</p>
                                         {user && (
-                                            <Link href="/community/new" className="btn bg-[#1976D2] text-white border-none mt-4 btn-sm">
+                                            <Link href="/community/new" className="btn bg-[#5CB800] text-white border-none mt-4 btn-sm">
                                                 Start a Discussion
                                             </Link>
                                         )}
@@ -153,18 +153,18 @@ export default async function ForumPage() {
                     <div className="space-y-6">
                         {/* CTA */}
                         {!user ? (
-                            <div className="bg-gradient-to-br from-[#1976D2] to-[#1565C0] rounded-2xl p-6 text-white">
+                            <div className="bg-gradient-to-br from-[#5CB800] to-[#4A9900] rounded-2xl p-6 text-white">
                                 <h3 className="font-bold text-xl mb-2">Join the Community!</h3>
                                 <p className="text-white/80 text-sm mb-4">Ask questions, share experiences and help other students navigate their career journey.</p>
-                                <Link href="/login?redirect=/community" className="btn bg-white text-[#1976D2] border-none w-full font-bold hover:bg-gray-100">
+                                <Link href="/login?redirect=/community" className="btn bg-white text-[#5CB800] border-none w-full font-bold hover:bg-gray-100">
                                     Login to Participate
                                 </Link>
                             </div>
                         ) : (
-                            <div className="bg-gradient-to-br from-[#4CAF50]/10 to-[#4CAF50]/5 border border-[#4CAF50]/20 rounded-2xl p-6">
+                            <div className="bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 border border-[#5CB800]/20 rounded-2xl p-6">
                                 <h3 className="font-bold text-gray-900 mb-2">Share Your Experience!</h3>
                                 <p className="text-sm text-gray-600 mb-4">Help other students by sharing what you know.</p>
-                                <Link href="/community/new" className="btn bg-[#4CAF50] text-white border-none w-full gap-2 hover:bg-[#388E3C]">
+                                <Link href="/community/new" className="btn bg-[#5CB800] text-white border-none w-full gap-2 hover:bg-[#4A9900]">
                                     <Plus size={18} /> Start a Discussion
                                 </Link>
                             </div>
@@ -182,7 +182,7 @@ export default async function ForumPage() {
                                     'Help others — what goes around comes around!',
                                 ].map((g, i) => (
                                     <li key={i} className="flex items-start gap-2">
-                                        <span className="w-5 h-5 bg-[#1976D2]/10 rounded-full flex items-center justify-center text-[#1976D2] text-xs font-bold shrink-0 mt-0.5">{i + 1}</span>
+                                        <span className="w-5 h-5 bg-[#5CB800]/10 rounded-full flex items-center justify-center text-[#5CB800] text-xs font-bold shrink-0 mt-0.5">{i + 1}</span>
                                         {g}
                                     </li>
                                 ))}
@@ -193,7 +193,7 @@ export default async function ForumPage() {
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <h3 className="font-bold text-gray-900 mb-2">🌟 Talent Directory</h3>
                             <p className="text-sm text-gray-600 mb-4">Create a public profile and get discovered by employers!</p>
-                            <Link href="/talent" className="btn bg-[#1976D2] text-white border-none w-full hover:bg-[#1565C0] text-sm">
+                            <Link href="/talent" className="btn bg-[#5CB800] text-white border-none w-full hover:bg-[#4A9900] text-sm">
                                 Browse Talent →
                             </Link>
                         </div>

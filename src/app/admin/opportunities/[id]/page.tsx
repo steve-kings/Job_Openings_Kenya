@@ -253,7 +253,7 @@ export default function EditOpportunityPage() {
                         <CloudinaryUpload
                             onUploadComplete={(url) => setThumbnailUrl(url)}
                             currentImage={thumbnailUrl}
-                            folder="1000jobs-opportunities"
+                            folder="Job Openings Kenya-opportunities"
                             label="Opportunity Thumbnail (Optional)"
                         />
                         <p className="text-xs text-gray-500 mt-2">

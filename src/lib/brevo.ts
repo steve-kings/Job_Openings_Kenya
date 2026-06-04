@@ -3,8 +3,8 @@ export async function sendEmail({
     bcc,
     subject,
     htmlContent,
-    senderName = '1000Jobs Team',
-    senderEmail = 'info.1000jobs@gmail.com'
+    senderName = 'Job Openings Kenya Team',
+    senderEmail = 'info@jobopeningskenya.co.ke'
 }: {
     to: { email: string; name?: string }[];
     bcc?: { email: string; name?: string }[];

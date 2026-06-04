@@ -128,7 +128,7 @@ export default function EditPartnerPage() {
                     <CloudinaryUpload
                         onUploadComplete={(url) => setLogoUrl(url)}
                         currentImage={logoUrl}
-                        folder="1000jobs-partners"
+                        folder="Job Openings Kenya-partners"
                         label="Partner Logo (Required)"
                     />
 

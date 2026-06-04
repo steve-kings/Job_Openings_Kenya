@@ -19,7 +19,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Article Not Found</h2>
                     <p className="text-gray-600 mb-6">This article may have been removed or doesn't exist.</p>
-                    <Link href="/blog" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none">
+                    <Link href="/blog" className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none">
                         Back to Blog
                     </Link>
                 </div>
@@ -31,12 +31,12 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
 
     // Category colors
     const categoryColors: { [key: string]: { bg: string; text: string } } = {
-        'Success Stories': { bg: 'bg-[#4CAF50]', text: 'text-[#4CAF50]' },
-        'Career Tips': { bg: 'bg-[#4CAF50]', text: 'text-[#4CAF50]' },
-        'Opportunities': { bg: 'bg-[#1976D2]', text: 'text-[#1976D2]' },
-        'News': { bg: 'bg-[#1565C0]', text: 'text-[#1565C0]' },
+        'Success Stories': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]' },
+        'Career Tips': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]' },
+        'Opportunities': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]' },
+        'News': { bg: 'bg-[#4A9900]', text: 'text-[#4A9900]' },
     };
-    const colors = categoryColors[post.category] || { bg: 'bg-[#1976D2]', text: 'text-[#1976D2]' };
+    const colors = categoryColors[post.category] || { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]' };
 
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `Check out this article: ${post.title}`;
@@ -82,18 +82,18 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#1976D2] to-[#1565C0]"></div>
+                    <div className="w-full h-full bg-gradient-to-br from-[#5CB800] to-[#4A9900]"></div>
                 )}
                 
-                {/* 1000Jobs Watermark - Bright & Creative */}
+                {/* Job Openings Kenya Watermark - Bright & Creative */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="relative">
                         <span className="text-white font-black text-9xl rotate-[-15deg] uppercase tracking-[0.3em] opacity-30 drop-shadow-[0_0_30px_rgba(243,156,18,0.5)]" style={{ textShadow: '0 0 40px rgba(243,156,18,0.6), 0 0 80px rgba(196,69,54,0.4)' }}>
-                            1000Jobs
+                            Job Openings Kenya
                         </span>
                         {/* Accent lines */}
-                        <div className="absolute -top-4 -left-4 w-20 h-1 bg-[#4CAF50] opacity-50 rotate-[-15deg]"></div>
-                        <div className="absolute -bottom-4 -right-4 w-20 h-1 bg-[#1976D2] opacity-50 rotate-[-15deg]"></div>
+                        <div className="absolute -top-4 -left-4 w-20 h-1 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
+                        <div className="absolute -bottom-4 -right-4 w-20 h-1 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
                     </div>
                 </div>
 
@@ -179,7 +179,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                             </button>
                             <button 
                                 onClick={handleCopyLink}
-                                className={`btn btn-sm border-none gap-2 ${copySuccess ? 'bg-[#4CAF50] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                                className={`btn btn-sm border-none gap-2 ${copySuccess ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                             >
                                 <Share2 size={14} />
                                 {copySuccess ? 'Copied!' : 'Copy Link'}
@@ -202,7 +202,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                                         </div>
                                         <h3 className="text-2xl font-bold mb-2 text-gray-900">Login to Read Full Article</h3>
                                         <p className="text-gray-600 mb-6 text-center max-w-md">
-                                            Join 1000Jobs to access full articles, courses, and exclusive opportunities.
+                                            Join Job Openings Kenya to access full articles, courses, and exclusive opportunities.
                                         </p>
                                         <Link 
                                             href={`/login?redirect=/blog/${slug}`} 
@@ -224,7 +224,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-gray-900">{post.author_name}</h3>
-                                <p className="text-gray-600">1000Jobs Contributor</p>
+                                <p className="text-gray-600">Job Openings Kenya Contributor</p>
                             </div>
                         </div>
                     </div>

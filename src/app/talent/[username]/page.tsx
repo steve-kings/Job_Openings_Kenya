@@ -8,10 +8,10 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
     const { username } = await params;
     const supabase = await createClient();
     const { data: profile } = await supabase.from('profiles').select('*').eq('username', username).eq('is_public', true).single();
-    if (!profile) return { title: 'Talent Not Found | 1000Jobs' };
+    if (!profile) return { title: 'Talent Not Found | Job Openings Kenya' };
     return {
-        title: `${profile.full_name} | 1000Jobs Talent`,
-        description: profile.bio || profile.headline || `${profile.full_name}'s talent profile on 1000Jobs`,
+        title: `${profile.full_name} | Job Openings Kenya Talent`,
+        description: profile.bio || profile.headline || `${profile.full_name}'s talent profile on Job Openings Kenya`,
     };
 }
 
@@ -34,14 +34,14 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
         <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen">
             {/* Back nav */}
             <div className="container mx-auto px-4 sm:px-6 lg:px-12 pt-6">
-                <Link href="/talent" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1976D2] transition-colors text-sm group">
+                <Link href="/talent" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#5CB800] transition-colors text-sm group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                     Back to Talent Directory
                 </Link>
             </div>
 
             {/* Hero Banner */}
-            <div className="bg-gradient-to-r from-[#1976D2] to-[#1565C0] mt-4">
+            <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] mt-4">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-10 lg:py-16">
                     <div className="flex flex-col items-center text-center md:flex-row md:items-end md:text-left gap-6">
                         {/* Avatar */}
@@ -54,7 +54,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                                 </div>
                             )}
                             {profile.open_to_work && (
-                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#4CAF50] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap flex items-center gap-1">
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#5CB800] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap flex items-center gap-1">
                                     <CheckCircle size={12} /> Open to Work
                                 </div>
                             )}
@@ -109,7 +109,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                                 <h3 className="font-bold text-gray-900 mb-4">🛠 Skills</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {profile.skills.map((skill: string, i: number) => (
-                                        <span key={i} className="px-3 py-1.5 bg-[#1976D2]/10 text-[#1976D2] text-sm font-semibold rounded-xl border border-[#1976D2]/20">
+                                        <span key={i} className="px-3 py-1.5 bg-[#5CB800]/10 text-[#5CB800] text-sm font-semibold rounded-xl border border-[#5CB800]/20">
                                             {skill}
                                         </span>
                                     ))}
@@ -117,11 +117,11 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                             </div>
 
                             {/* Contact CTA */}
-                            <div className="bg-gradient-to-br from-[#1976D2] to-[#1565C0] rounded-2xl p-5 sm:p-6 text-white">
+                            <div className="bg-gradient-to-br from-[#5CB800] to-[#4A9900] rounded-2xl p-5 sm:p-6 text-white">
                                 <h3 className="font-bold text-lg mb-2">Interested in {profile.full_name?.split(' ')[0]}?</h3>
                                 <p className="text-white/80 text-sm mb-4">Connect via LinkedIn or other social platforms.</p>
                                 {profile.linkedin_url ? (
-                                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="btn bg-white text-[#1976D2] hover:bg-gray-100 border-none w-full font-bold">
+                                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="btn bg-white text-[#5CB800] hover:bg-gray-100 border-none w-full font-bold">
                                         <Linkedin size={18} /> Connect on LinkedIn
                                     </a>
                                 ) : (
@@ -136,8 +136,8 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                         {profile.bio && (
                             <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 border border-gray-100">
                                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <span className="w-8 h-8 rounded-lg bg-[#1976D2]/10 flex items-center justify-center">
-                                        <Star size={18} className="text-[#1976D2]" />
+                                    <span className="w-8 h-8 rounded-lg bg-[#5CB800]/10 flex items-center justify-center">
+                                        <Star size={18} className="text-[#5CB800]" />
                                     </span>
                                     About Me
                                 </h2>
@@ -148,8 +148,8 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                         {profile.experience && (
                             <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 border border-gray-100">
                                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <span className="w-8 h-8 rounded-lg bg-[#4CAF50]/10 flex items-center justify-center">
-                                        <Briefcase size={18} className="text-[#4CAF50]" />
+                                    <span className="w-8 h-8 rounded-lg bg-[#5CB800]/10 flex items-center justify-center">
+                                        <Briefcase size={18} className="text-[#5CB800]" />
                                     </span>
                                     Experience
                                 </h2>

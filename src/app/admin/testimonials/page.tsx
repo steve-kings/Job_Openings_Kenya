@@ -70,7 +70,7 @@ export default function AdminTestimonialsPage() {
 
             {loading ? (
                 <div className="flex justify-center py-20">
-                    <Loader2 className="animate-spin text-[#1976D2]" size={40} />
+                    <Loader2 className="animate-spin text-[#5CB800]" size={40} />
                 </div>
             ) : testimonials.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -87,7 +87,7 @@ export default function AdminTestimonialsPage() {
                                 {t.user_photo_url ? (
                                     <img src={t.user_photo_url} alt={t.user_name} className="w-20 h-20 rounded-full object-cover shadow-sm border-2 border-white" />
                                 ) : (
-                                    <div className="w-20 h-20 rounded-full bg-[#1976D2]/10 text-[#1976D2] flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
+                                    <div className="w-20 h-20 rounded-full bg-[#5CB800]/10 text-[#5CB800] flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
                                         {t.user_name.charAt(0).toUpperCase()}
                                     </div>
                                 )}
@@ -107,12 +107,12 @@ export default function AdminTestimonialsPage() {
                             {/* Content */}
                             <div className="flex-1 flex flex-col">
                                 <div className="mb-4">
-                                    <h3 className="text-lg font-bold text-[#1976D2] mb-3 flex items-start gap-2">
+                                    <h3 className="text-lg font-bold text-[#5CB800] mb-3 flex items-start gap-2">
                                         <Sparkles size={20} className="shrink-0 mt-0.5" />
                                         Won: {t.opportunity_won}
                                     </h3>
                                     <div className="relative bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
-                                        <Quote size={40} className="absolute top-2 left-2 text-[#1976D2]/10" />
+                                        <Quote size={40} className="absolute top-2 left-2 text-[#5CB800]/10" />
                                         <p className="text-gray-700 leading-relaxed relative z-10 whitespace-pre-wrap pl-6 italic">
                                             "{t.story}"
                                         </p>
@@ -125,7 +125,7 @@ export default function AdminTestimonialsPage() {
                                         <button 
                                             onClick={() => updateStatus(t.id, 'approved')}
                                             disabled={actionLoading === t.id}
-                                            className="btn btn-sm bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-1.5"
+                                            className="btn btn-sm bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-1.5"
                                         >
                                             <CheckCircle size={16} /> Approve
                                         </button>

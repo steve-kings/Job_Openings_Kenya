@@ -34,7 +34,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Opportunity Not Found</h2>
                     <p className="text-gray-600 mb-6">This opportunity may have been removed or expired.</p>
-                    <Link href="/jobs" className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none">
+                    <Link href="/jobs" className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none">
                         Browse All Opportunities
                     </Link>
                 </div>
@@ -45,10 +45,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
     const canView = !!user;
 
     const typeColors = {
-        'Job': { bg: 'bg-[#1976D2]', border: 'border-[#1976D2]', text: 'text-[#1976D2]', gradient: 'from-[#1976D2] to-[#1565C0]' },
-        'Grant': { bg: 'bg-[#4CAF50]', border: 'border-[#4CAF50]', text: 'text-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#388E3C]' },
-        'Scholarship': { bg: 'bg-[#1565C0]', border: 'border-[#1565C0]', text: 'text-[#1565C0]', gradient: 'from-[#1565C0] to-[#5D4037]' },
-        'Training': { bg: 'bg-[#4CAF50]', border: 'border-[#4CAF50]', text: 'text-[#4CAF50]', gradient: 'from-[#4CAF50] to-[#e08d0a]' },
+        'Job': { bg: 'bg-[#5CB800]', border: 'border-[#5CB800]', text: 'text-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
+        'Grant': { bg: 'bg-[#5CB800]', border: 'border-[#5CB800]', text: 'text-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
+        'Scholarship': { bg: 'bg-[#4A9900]', border: 'border-[#4A9900]', text: 'text-[#4A9900]', gradient: 'from-[#4A9900] to-[#5D4037]' },
+        'Training': { bg: 'bg-[#5CB800]', border: 'border-[#5CB800]', text: 'text-[#5CB800]', gradient: 'from-[#5CB800] to-[#e08d0a]' },
     };
     const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
 
@@ -88,7 +88,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
     };
 
     const handleProfessionalHelp = () => {
-        const message = `Hello 1000Jobs Team! I would like professional assistance applying for the *${job.title}* opportunity at *${job.company}*.`;
+        const message = `Hello Job Openings Kenya Team! I would like professional assistance applying for the *${job.title}* opportunity at *${job.company}*.`;
         const url = `https://wa.me/254752182132?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     };
@@ -250,7 +250,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                         <ul className="space-y-3">
                                             {job.requirements.map((req: string, idx: number) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <CheckCircle className="text-[#4CAF50] shrink-0 mt-0.5" size={20} />
+                                                    <CheckCircle className="text-[#5CB800] shrink-0 mt-0.5" size={20} />
                                                     <span className="text-gray-700">{req}</span>
                                                 </li>
                                             ))}
@@ -280,7 +280,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                         <ul className="space-y-3">
                                             {job.benefits.map((ben: string, idx: number) => (
                                                 <li key={idx} className="flex items-start gap-3">
-                                                    <CheckCircle className="text-[#4CAF50] shrink-0 mt-0.5" size={20} />
+                                                    <CheckCircle className="text-[#5CB800] shrink-0 mt-0.5" size={20} />
                                                     <span className="text-gray-700">{ben}</span>
                                                 </li>
                                             ))}
@@ -352,7 +352,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                         <p className="font-semibold text-gray-900">
                                             {new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                         </p>
-                                        <p className={`text-sm ${daysLeft > 7 ? 'text-[#4CAF50]' : 'text-[#1976D2]'} font-medium mt-1`}>
+                                        <p className={`text-sm ${daysLeft > 7 ? 'text-[#5CB800]' : 'text-[#5CB800]'} font-medium mt-1`}>
                                             {daysLeft > 0 ? `${daysLeft} days remaining` : 'Deadline passed'}
                                         </p>
                                     </div>
@@ -405,7 +405,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
 
                                         <button 
                                             onClick={() => setPrepModalOpen(true)}
-                                            className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] w-full border-none gap-2"
+                                            className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] w-full border-none gap-2"
                                         >
                                             <Lightbulb size={18} className="text-yellow-200" />
                                             AI Interview Prep
@@ -446,7 +446,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                 </div>
                                 <button 
                                     onClick={handleCopyLink}
-                                    className={`btn btn-sm w-full border-none gap-2 ${copySuccess ? 'bg-[#4CAF50] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                                    className={`btn btn-sm w-full border-none gap-2 ${copySuccess ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                                 >
                                     <Share2 size={16} />
                                     {copySuccess ? 'Link Copied!' : 'Copy Link'}
@@ -466,7 +466,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                     <div className="container mx-auto px-6 lg:px-12">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl font-bold text-gray-900">You might also like...</h2>
-                            <Link href="/jobs" className="text-[#1976D2] font-semibold hover:underline flex items-center gap-1 text-sm">
+                            <Link href="/jobs" className="text-[#5CB800] font-semibold hover:underline flex items-center gap-1 text-sm">
                                 View all <ExternalLink size={16} />
                             </Link>
                         </div>
@@ -481,7 +481,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                     <Link 
                                         key={simJob.id} 
                                         href={`/jobs/${simJob.id}`}
-                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-[#1976D2]/30 transition-all hover:-translate-y-1 block group"
+                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-[#5CB800]/30 transition-all hover:-translate-y-1 block group"
                                     >
                                         <div className="p-5">
                                             {/* Header */}
@@ -496,7 +496,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                             </div>
 
                                             {/* Body */}
-                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1976D2] transition-colors line-clamp-2 md:h-14">
+                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#5CB800] transition-colors line-clamp-2 md:h-14">
                                                 {simJob.title}
                                             </h3>
                                             <p className="text-gray-600 text-sm mb-4 line-clamp-1">{simJob.company}</p>
@@ -527,13 +527,13 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                     <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                            <div className="flex items-center gap-3 text-[#1976D2]">
-                                <div className="w-10 h-10 rounded-xl bg-[#1976D2]/10 flex items-center justify-center">
+                            <div className="flex items-center gap-3 text-[#5CB800]">
+                                <div className="w-10 h-10 rounded-xl bg-[#5CB800]/10 flex items-center justify-center">
                                     <Sparkles size={20} />
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">AI Cover Letter Generator</h3>
-                                    <p className="text-sm text-gray-500">Powered by 1000Jobs AI</p>
+                                    <p className="text-sm text-gray-500">Powered by Job Openings Kenya AI</p>
                                 </div>
                             </div>
                             <button onClick={() => setCvModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
@@ -554,13 +554,13 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                             value={cvText}
                                             onChange={(e) => setCvText(e.target.value)}
                                             placeholder="Experience:\n- Software Developer at TechCorp (2020-2023)\n- Led a team of 5...\n\nEducation:\n- BSc Computer Science..."
-                                            className="w-full h-64 p-4 text-sm text-gray-700 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1976D2]/30 focus:border-[#1976D2] outline-none resize-none"
+                                            className="w-full h-64 p-4 text-sm text-gray-700 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#5CB800]/30 focus:border-[#5CB800] outline-none resize-none"
                                         />
                                     </div>
                                     <button 
                                         onClick={handleGenerateCoverLetter} 
                                         disabled={generatingLetter || !cvText.trim()}
-                                        className="w-full py-4 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#1976D2]/30 transition-all disabled:opacity-50"
+                                        className="w-full py-4 bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#5CB800]/30 transition-all disabled:opacity-50"
                                     >
                                         {generatingLetter ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                                         {generatingLetter ? "Writing your Cover Letter..." : "Generate Cover Letter"}
@@ -572,7 +572,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                         <h4 className="font-bold text-gray-900">Your Tailored Cover Letter</h4>
                                         <button 
                                             onClick={copyLetter}
-                                            className={`btn btn-sm text-white border-none gap-1.5 ${letterCopied ? 'bg-[#4CAF50] hover:bg-[#388E3C]' : 'bg-[#1976D2] hover:bg-[#1565C0]'}`}
+                                            className={`btn btn-sm text-white border-none gap-1.5 ${letterCopied ? 'bg-[#5CB800] hover:bg-[#4A9900]' : 'bg-[#5CB800] hover:bg-[#4A9900]'}`}
                                         >
                                             {letterCopied ? <CheckCircle size={14} /> : <Copy size={14} />}
                                             {letterCopied ? "Copied!" : "Copy Text"}
@@ -599,7 +599,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-[#1976D2]">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-[#5CB800]">
                             <div className="flex items-center gap-3 text-white">
                                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                                     <Lightbulb size={20} className="text-yellow-200" />
@@ -619,7 +619,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                             {!prepMaterial ? (
                                 <div className="space-y-6 text-center max-w-md mx-auto py-10">
                                     <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        <Lightbulb size={48} className="text-[#1976D2]" />
+                                        <Lightbulb size={48} className="text-[#5CB800]" />
                                     </div>
                                     <h4 className="text-2xl font-bold text-gray-900 mb-2">Want to ace your interview?</h4>
                                     <p className="text-gray-600 mb-8">
@@ -628,7 +628,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                     <button 
                                         onClick={handleGeneratePrep} 
                                         disabled={generatingPrep}
-                                        className="w-full py-4 text-lg bg-[#1976D2] hover:bg-[#1565C0] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50"
+                                        className="w-full py-4 text-lg bg-[#5CB800] hover:bg-[#4A9900] text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50"
                                     >
                                         {generatingPrep ? <Loader2 size={24} className="animate-spin" /> : <Sparkles size={24} />}
                                         {generatingPrep ? "Analyzing Job & Generating Questions..." : "Generate Interview Guide"}
@@ -645,7 +645,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                                                 navigator.clipboard.writeText(prepMaterial);
                                                 alert('Interview guide copied to clipboard!');
                                             }}
-                                            className="flex-1 py-3 bg-[#1976D2] hover:bg-[#1565C0] text-white font-bold rounded-xl transition-colors gap-2 flex items-center justify-center"
+                                            className="flex-1 py-3 bg-[#5CB800] hover:bg-[#4A9900] text-white font-bold rounded-xl transition-colors gap-2 flex items-center justify-center"
                                         >
                                             <Copy size={18} /> Copy to Clipboard
                                         </button>

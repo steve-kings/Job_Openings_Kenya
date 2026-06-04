@@ -38,18 +38,18 @@ export default function ForgotPassword() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#1976D2]">
+                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#5CB800]">
                     {/* Logo */}
                     <div className="flex justify-center pt-8">
                         <img
-                            src="/1000jobs_logo.jpeg"
-                            alt="1000Jobs Logo"
+                            src="/job_openings_kenya_logo.jpeg"
+                            alt="Job Openings Kenya Logo"
                             className="h-20 w-auto object-contain"
                         />
                     </div>
 
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-[#1976D2] via-[#4CAF50] to-[#1565C0] p-6 mt-4">
+                    <div className="bg-gradient-to-r from-[#5CB800] via-[#5CB800] to-[#4A9900] p-6 mt-4">
                         <h2 className="text-2xl font-bold text-white text-center">
                             Forgot Password?
                         </h2>
@@ -61,8 +61,8 @@ export default function ForgotPassword() {
                     <div className="p-8">
                         {success ? (
                             <div className="text-center">
-                                <div className="w-20 h-20 mx-auto mb-6 bg-[#4CAF50]/10 rounded-full flex items-center justify-center">
-                                    <svg className="w-10 h-10 text-[#4CAF50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-20 h-20 mx-auto mb-6 bg-[#5CB800]/10 rounded-full flex items-center justify-center">
+                                    <svg className="w-10 h-10 text-[#5CB800]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
                                 </div>
@@ -77,11 +77,11 @@ export default function ForgotPassword() {
                                 <div className="space-y-3">
                                     <button
                                         onClick={() => setSuccess(false)}
-                                        className="btn btn-outline border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white w-full"
+                                        className="btn btn-outline border-[#5CB800] text-[#5CB800] hover:bg-[#5CB800] hover:text-white w-full"
                                     >
                                         Try Another Email
                                     </button>
-                                    <Link href="/login" className="btn bg-[#1976D2] text-white border-none hover:bg-[#1565C0] w-full">
+                                    <Link href="/login" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full">
                                         Back to Login
                                     </Link>
                                 </div>
@@ -108,7 +108,7 @@ export default function ForgotPassword() {
                                         <input
                                             type="email"
                                             placeholder="e.g., wanjiku@example.com"
-                                            className="input input-bordered w-full pl-10 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20"
+                                            className="input input-bordered w-full pl-10 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
@@ -118,7 +118,7 @@ export default function ForgotPassword() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-[#1976D2] text-white hover:bg-[#1565C0] border-none w-full btn-lg"
+                                    className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none w-full btn-lg"
                                     disabled={loading}
                                 >
                                     {loading ? (
@@ -133,7 +133,7 @@ export default function ForgotPassword() {
 
                                 <Link
                                     href="/login"
-                                    className="flex items-center justify-center gap-2 text-[#1976D2] hover:text-[#1565C0] font-semibold transition-colors"
+                                    className="flex items-center justify-center gap-2 text-[#5CB800] hover:text-[#4A9900] font-semibold transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faArrowLeft} />
                                     Back to Login
@@ -146,3 +146,4 @@ export default function ForgotPassword() {
         </div>
     );
 }
+

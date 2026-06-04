@@ -15,13 +15,11 @@ export default function FooterInstallButton() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
-    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches 
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
       || (window.navigator as any).standalone;
-    
+
     setIsStandalone(isInStandaloneMode);
 
-    // Check if iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
 
@@ -36,7 +34,6 @@ export default function FooterInstallButton() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
     window.addEventListener('appinstalled', () => {
       setCanInstall(false);
       setDeferredPrompt(null);
@@ -49,39 +46,31 @@ export default function FooterInstallButton() {
 
   const handleInstallClick = async () => {
     if (isIOS) {
-      alert('To install 1000Jobs on iOS:\n\n1. Tap the Share button (square with arrow)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm');
+      alert('To install Job Openings Kenya on iOS:\n\n1. Tap the Share button (square with arrow)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm');
       return;
     }
-
     if (!deferredPrompt) return;
-
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      setCanInstall(false);
-    }
-    
+    if (outcome === 'accepted') setCanInstall(false);
     setDeferredPrompt(null);
   };
 
   if (isStandalone) {
     return (
-      <div className="flex items-center gap-2 text-[#4CAF50]">
+      <div className="flex items-center gap-2 text-[#5CB800]">
         <Smartphone size={20} />
         <span className="text-sm font-medium">App Installed ✓</span>
       </div>
     );
   }
 
-  if (!canInstall) {
-    return null;
-  }
+  if (!canInstall) return null;
 
   return (
     <button
       onClick={handleInstallClick}
-      className="btn bg-[#1976D2] text-white border-none hover:bg-[#1565C0] gap-2 px-6"
+      className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] gap-2 px-6"
     >
       <Download size={20} />
       Install App

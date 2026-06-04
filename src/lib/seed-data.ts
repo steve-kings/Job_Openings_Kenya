@@ -112,11 +112,11 @@ export const opportunities = [
 export const blogPosts = [
     {
         slug: 'how-jane-landed-her-dream-job',
-        title: 'How Jane Landed Her Dream Job Through 1000Jobs',
+        title: 'How Jane Landed Her Dream Job Through Job Openings Kenya',
         excerpt: 'Jane\'s journey from unemployment to becoming a software engineer at a leading tech company in Nairobi.',
-        content: 'Jane Kamau was struggling to find work after graduating with a degree in Computer Science. She discovered 1000Jobs through a friend and started browsing the daily opportunity drops. Within two weeks, she found a software developer internship that matched her skills perfectly. After applying through the platform and completing the interview process, she secured the position. Today, Jane is a full-time software engineer and credits 1000Jobs for giving her the visibility she needed to launch her career.',
+        content: 'Jane Kamau was struggling to find work after graduating with a degree in Computer Science. She discovered Job Openings Kenya through a friend and started browsing the daily opportunity drops. Within two weeks, she found a software developer internship that matched her skills perfectly. After applying through the platform and completing the interview process, she secured the position. Today, Jane is a full-time software engineer and credits Job Openings Kenya for giving her the visibility she needed to launch her career.',
         category: 'Success Story',
-        author_name: '1000Jobs Team',
+        author_name: 'Job Openings Kenya Team',
         featured_image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2088&auto=format&fit=crop',
         status: 'published',
         views: 1234
@@ -125,7 +125,7 @@ export const blogPosts = [
         slug: 'top-skills-2025',
         title: 'Top 10 Skills African Youth Need in 2025',
         excerpt: 'The job market is evolving. Here are the most in-demand skills for the coming year.',
-        content: 'As we move into 2025, the global job market continues to evolve rapidly. For African youth looking to remain competitive, here are the top 10 skills you should focus on: 1. Digital Literacy, 2. Data Analysis, 3. Cloud Computing, 4. Digital Marketing, 5. Project Management, 6. Communication Skills, 7. Problem-Solving, 8. Adaptability, 9. Cybersecurity Awareness, 10. Entrepreneurship. Each of these skills opens doors to new opportunities and can be learned through 1000Jobs\'s free training programs.',
+        content: 'As we move into 2025, the global job market continues to evolve rapidly. For African youth looking to remain competitive, here are the top 10 skills you should focus on: 1. Digital Literacy, 2. Data Analysis, 3. Cloud Computing, 4. Digital Marketing, 5. Project Management, 6. Communication Skills, 7. Problem-Solving, 8. Adaptability, 9. Cybersecurity Awareness, 10. Entrepreneurship. Each of these skills opens doors to new opportunities and can be learned through Job Openings Kenya\'s free training programs.',
         category: 'Career Insights',
         author_name: 'Dr. Amara Okafor',
         featured_image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop',
@@ -133,10 +133,10 @@ export const blogPosts = [
         views: 2567
     },
     {
-        slug: '1000jobs-reaches-5000-youth',
-        title: '1000Jobs Reaches 5,000+ Youth Across Africa',
+        slug: 'Job Openings Kenya-reaches-5000-youth',
+        title: 'Job Openings Kenya Reaches 5,000+ Youth Across Africa',
         excerpt: 'A milestone celebration as we reflect on our impact and look forward to scaling our mission.',
-        content: 'We are thrilled to announce that 1000Jobs has now reached over 5,000 young people across the African continent! This incredible milestone represents thousands of opportunities shared, hundreds of courses completed, and countless lives changed. From our humble beginnings sharing job listings on WhatsApp, we have grown into a comprehensive platform connecting youth with jobs, grants, scholarships, and training. Thank you to our partners, our team, and most importantly, to the youth who trust us to guide their career journeys. Here\'s to the next 5,000!',
+        content: 'We are thrilled to announce that Job Openings Kenya has now reached over 5,000 young people across the African continent! This incredible milestone represents thousands of opportunities shared, hundreds of courses completed, and countless lives changed. From our humble beginnings sharing job listings on WhatsApp, we have grown into a comprehensive platform connecting youth with jobs, grants, scholarships, and training. Thank you to our partners, our team, and most importantly, to the youth who trust us to guide their career journeys. Here\'s to the next 5,000!',
         category: 'Organization News',
         author_name: 'Stephen Kingori',
         featured_image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2069&auto=format&fit=crop',
@@ -149,7 +149,7 @@ export const blogPosts = [
         excerpt: 'Learn how to craft compelling applications that stand out from the crowd.',
         content: 'Winning a scholarship can be life-changing, but the competition is fierce. Here are 5 proven tips to make your application stand out: 1. Start Early - Don\'t wait until the deadline to begin. 2. Tailor Your Application - Customize each application to the specific scholarship. 3. Tell Your Story - Make your personal statement memorable and authentic. 4. Get Strong Recommendations - Choose referees who know you well and can speak to your strengths. 5. Proofread Everything - Grammar and spelling errors can disqualify otherwise strong applications. Follow these tips and increase your chances of success!',
         category: 'How-To',
-        author_name: '1000Jobs Team',
+        author_name: 'Job Openings Kenya Team',
         featured_image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop',
         status: 'published',
         views: 456

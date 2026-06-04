@@ -1,21 +1,21 @@
 {
-  "name": "1000Jobs - 1000Jobs",
-  "short_name": "1000Jobs",
-  "description": "Bridging the gap between young Africans and life-changing opportunities. Access free courses, verified jobs, grants, scholarships, and training programs.",
+  "name": "Job Openings Kenya",
+  "short_name": "JobOpeningsKE",
+  "description": "Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#1976D2",
+  "theme_color": "#5CB800",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/1000jobs_logo.jpeg",
+      "src": "/job_openings_kenya_logo.jpeg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/1000jobs_logo.jpeg",
+      "src": "/job_openings_kenya_logo.jpeg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"

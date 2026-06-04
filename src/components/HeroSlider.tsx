@@ -9,10 +9,10 @@ import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 const slides = [
   {
     id: 1,
-    title: "1000 JOB",
-    highlight: "OPPORTUNITIES",
+    title: "YOUR PORTAL FOR",
+    highlight: "JOBS IN KENYA",
     subtitle: "Daily Verified Jobs • No Scams • 100% Free",
-    description: "Find Entry-Level & Graduate Jobs across Kenya, Africa & Remote. We provide clear application links, updated daily, and manually verified before posting.",
+    description: "Find the latest job openings across Kenya — entry-level, graduate, and professional roles. Every listing is manually verified, scam-free, and updated daily.",
     image: "/images/img1.jpg",
     stat: "1,000+",
     statLabel: "Verified Jobs",
@@ -22,8 +22,8 @@ const slides = [
     id: 2,
     title: "Clear Application",
     highlight: "Links Provided",
-    subtitle: "Kenya | Africa | Remote",
-    description: "Stop wasting time on scams. We manually verify every opportunity before posting it, ensuring 100% free and genuine entry-level and graduate jobs.",
+    subtitle: "Nairobi | Mombasa | Remote | All Kenya",
+    description: "Stop wasting time on fake listings. Every opportunity on Job Openings Kenya is manually reviewed before publishing — 100% genuine and always free to apply.",
     image: "/images/img2.jpg",
     stat: "100%",
     statLabel: "Scam Free",
@@ -31,10 +31,10 @@ const slides = [
   },
   {
     id: 3,
-    title: "Empowering youth with",
-    highlight: "Daily Updates",
+    title: "Kenya's Latest",
+    highlight: "Daily Job Drops",
     subtitle: "Your career starts here",
-    description: "Join thousands of African youth accessing verified opportunities daily. Everything is manually verified, scam-free, and always 100% free.",
+    description: "Join thousands of Kenyan job seekers accessing fresh opportunities every day. Jobs, grants, scholarships, and training programs — all in one place.",
     image: "/images/img3.jpg",
     stat: "24/7",
     statLabel: "Daily Drops",
@@ -74,10 +74,10 @@ export default function HeroSlider() {
   const slide = slides[currentSlide];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#0A58A6] via-[#1976D2] to-[#42A5F5] overflow-hidden flex items-center py-20 md:py-0">
+    <div className="relative min-h-screen bg-gradient-to-br from-[#2E6B00] via-[#5CB800] to-[#7BC832] overflow-hidden flex items-center py-20 md:py-0">
       {/* Yellow Decorative Background Shapes */}
-      <div className="absolute top-0 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#4CAF50] rounded-br-[50px] md:rounded-br-[100px] -translate-x-16 md:-translate-x-32 -translate-y-16 md:-translate-y-32 transition-all duration-1000"></div>
-      <div className="absolute bottom-0 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-[#4CAF50] rounded-tl-[50px] md:rounded-tl-[100px] translate-x-16 md:translate-x-32 translate-y-16 md:translate-y-32 transition-all duration-1000"></div>
+      <div className="absolute top-0 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#5CB800] rounded-br-[50px] md:rounded-br-[100px] -translate-x-16 md:-translate-x-32 -translate-y-16 md:-translate-y-32 transition-all duration-1000"></div>
+      <div className="absolute bottom-0 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-[#5CB800] rounded-tl-[50px] md:rounded-tl-[100px] translate-x-16 md:translate-x-32 translate-y-16 md:translate-y-32 transition-all duration-1000"></div>
       
       {/* Main Content Container with White Card */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10 w-full">
@@ -98,7 +98,7 @@ export default function HeroSlider() {
                   {slide.title} <br/>
                   <span className="relative inline-block my-2">
                     <span className="relative z-10">{slide.highlight}</span>
-                    <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-4 bg-[#4CAF50] -z-0"></span>
+                    <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-4 bg-[#5CB800] -z-0"></span>
                   </span>
                   <br/>
                   <span className="block mt-2">{slide.subtitle}</span>
@@ -115,7 +115,7 @@ export default function HeroSlider() {
                     <span className="sm:hidden">Opportunities</span>
                   </Link>
                   <a
-                    href="https://whatsapp.com/channel/0029VbCAOUzDuMRgzkuhZe1e"
+                    href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn bg-green-600 text-white hover:bg-green-700 btn-sm sm:btn-md lg:btn-lg px-6 md:px-8"
@@ -127,7 +127,7 @@ export default function HeroSlider() {
               </div>
             </div>
 
-            {/* Right - African Youth Image Overlaid on Africa Map */}
+            {/* Right - Kenyan job seekers Image Overlaid on Africa Map */}
             <div className="relative h-[350px] sm:h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] order-1 lg:order-2">
               {/* Africa Map Shape - Beige/Tan */}
               <div className="absolute inset-0 flex items-center justify-center hidden md:flex">
@@ -136,12 +136,12 @@ export default function HeroSlider() {
                 </svg>
               </div>
 
-              {/* African Youth Image - Animated */}
+              {/* Kenyan job seekers Image - Animated */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div key={slide.id} className="relative w-[250px] h-[280px] sm:w-[300px] sm:h-[380px] md:w-[350px] md:h-[450px] rounded-2xl md:rounded-3xl overflow-hidden animate-fadeIn shadow-2xl">
                   <img 
                     src={slide.image}
-                    alt="African Youth" 
+                    alt="Job seeker in Kenya" 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -150,11 +150,11 @@ export default function HeroSlider() {
               {/* Decorative Paint Strokes - Hidden on mobile */}
               <div className="hidden md:block absolute top-16 left-8 w-24 h-16 bg-green-600 opacity-70 rounded-full blur-sm transform -rotate-12"></div>
               <div className="hidden md:block absolute top-32 left-4 w-32 h-12 bg-green-700 opacity-60 rounded-full blur-sm transform rotate-6"></div>
-              <div className="hidden md:block absolute bottom-32 right-8 w-28 h-20 bg-[#4CAF50] opacity-80 rounded-full blur-sm transform rotate-12"></div>
+              <div className="hidden md:block absolute bottom-32 right-8 w-28 h-20 bg-[#5CB800] opacity-80 rounded-full blur-sm transform rotate-12"></div>
               <div className="hidden md:block absolute bottom-20 right-4 w-36 h-16 bg-yellow-500 opacity-70 rounded-full blur-sm transform -rotate-6"></div>
 
               {/* Stats Badge - Animated */}
-              <div key={`stat-${slide.id}`} className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 md:bottom-8 md:right-8 bg-white rounded-xl md:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border-2 md:border-4 border-[#4CAF50] animate-fadeIn">
+              <div key={`stat-${slide.id}`} className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 md:bottom-8 md:right-8 bg-white rounded-xl md:rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border-2 md:border-4 border-[#5CB800] animate-fadeIn">
                 <div className="text-center">
                   <div className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-900">{slide.stat}</div>
                   <div className="text-xs sm:text-sm text-gray-600 font-medium mt-1">{slide.statLabel}</div>
@@ -183,7 +183,7 @@ export default function HeroSlider() {
                   onClick={() => goToSlide(index)}
                   className={`h-2.5 md:h-3 rounded-full transition-all ${
                     index === currentSlide 
-                      ? 'bg-[#4CAF50] w-6 md:w-8' 
+                      ? 'bg-[#5CB800] w-6 md:w-8' 
                       : 'bg-gray-300 hover:bg-gray-400 w-2.5 md:w-3'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}

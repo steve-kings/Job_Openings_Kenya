@@ -16,27 +16,22 @@ export default function PWAInstallButton() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if already installed (standalone mode)
-    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches 
-      || (window.navigator as any).standalone 
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone
       || document.referrer.includes('android-app://');
-    
+
     setIsStandalone(isInStandaloneMode);
 
-    // Check if iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
 
-    // Check if user has dismissed the banner before
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     const installed = localStorage.getItem('pwa-installed');
-    
+
     if (!isInStandaloneMode && !dismissed && !installed) {
-      // Show banner after 3 seconds
       setTimeout(() => setShowBanner(true), 3000);
     }
 
-    // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -45,7 +40,6 @@ export default function PWAInstallButton() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Listen for successful installation
     window.addEventListener('appinstalled', () => {
       setShowInstallButton(false);
       setShowBanner(false);
@@ -60,23 +54,16 @@ export default function PWAInstallButton() {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      // If no deferred prompt, show iOS instructions or generic message
       if (isIOS) {
-        alert('To install 1000Jobs on iOS:\n\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"');
+        alert('To install Job Openings Kenya on iOS:\n\n1. Tap the Share button\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"');
       }
       return;
     }
-
-    // Show the install prompt
     deferredPrompt.prompt();
-
-    // Wait for the user's response
     const { outcome } = await deferredPrompt.userChoice;
-    
     if (outcome === 'accepted') {
       localStorage.setItem('pwa-installed', 'true');
     }
-    
     setDeferredPrompt(null);
     setShowInstallButton(false);
     setShowBanner(false);
@@ -87,7 +74,6 @@ export default function PWAInstallButton() {
     localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  // Don't show anything if already installed
   if (isStandalone) return null;
 
   return (
@@ -95,40 +81,27 @@ export default function PWAInstallButton() {
       {/* Floating Install Banner */}
       {showBanner && (showInstallButton || isIOS) && (
         <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-slide-up">
-          <div className="bg-gradient-to-r from-[#1976D2] to-[#4CAF50] rounded-2xl shadow-2xl p-4 text-white">
+          <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] rounded-2xl shadow-2xl p-4 text-white">
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
-                <img 
-                  src="/1000jobs_logo.jpeg" 
-                  alt="1000Jobs" 
-                  className="w-10 h-10 rounded-lg object-cover"
-                />
+                <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya" className="w-10 h-10 rounded-lg object-cover" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg">Install 1000Jobs App</h3>
+                <h3 className="font-bold text-lg">Install Job Openings Kenya App</h3>
                 <p className="text-sm text-white/90 mb-3">
-                  Get quick access to opportunities, courses & more!
+                  Get instant access to the latest job openings in Kenya!
                 </p>
                 <div className="flex gap-2">
-                  <button
-                    onClick={handleInstallClick}
-                    className="btn btn-sm bg-white text-[#1976D2] hover:bg-gray-100 border-none gap-1"
-                  >
+                  <button onClick={handleInstallClick} className="btn btn-sm bg-white text-[#5CB800] hover:bg-gray-100 border-none gap-1">
                     <Download size={16} />
                     Install Now
                   </button>
-                  <button
-                    onClick={dismissBanner}
-                    className="btn btn-sm btn-ghost text-white hover:bg-white/20"
-                  >
+                  <button onClick={dismissBanner} className="btn btn-sm btn-ghost text-white hover:bg-white/20">
                     Later
                   </button>
                 </div>
               </div>
-              <button
-                onClick={dismissBanner}
-                className="text-white/70 hover:text-white"
-              >
+              <button onClick={dismissBanner} className="text-white/70 hover:text-white">
                 <X size={20} />
               </button>
             </div>
@@ -136,12 +109,12 @@ export default function PWAInstallButton() {
         </div>
       )}
 
-      {/* Fixed Install Button (always visible when installable) */}
+      {/* Fixed Install Button */}
       {(showInstallButton || isIOS) && !showBanner && (
         <button
           onClick={handleInstallClick}
-          className="fixed bottom-20 right-4 z-50 btn bg-[#1976D2] text-white border-none shadow-xl hover:bg-[#1565C0] gap-2 rounded-full px-4"
-          title="Install 1000Jobs App"
+          className="fixed bottom-20 right-4 z-50 btn bg-[#5CB800] text-white border-none shadow-xl hover:bg-[#4A9900] gap-2 rounded-full px-4"
+          title="Install Job Openings Kenya App"
         >
           <Smartphone size={20} />
           <span className="hidden sm:inline">Install App</span>
@@ -150,18 +123,10 @@ export default function PWAInstallButton() {
 
       <style jsx>{`
         @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(100px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(100px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
+        .animate-slide-up { animation: slide-up 0.5s ease-out; }
       `}</style>
     </>
   );

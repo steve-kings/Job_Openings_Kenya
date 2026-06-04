@@ -13,7 +13,7 @@ interface CloudinaryUploadProps {
 export default function CloudinaryUpload({
     onUploadComplete,
     currentImage,
-    folder = '1000jobs',
+    folder = 'jobopeningskenya',
     label = 'Upload Image'
 }: CloudinaryUploadProps) {
     const uid = useId();
@@ -85,7 +85,7 @@ export default function CloudinaryUpload({
     return (
         <div className="space-y-3">
             {preview ? (
-                <div className="relative group rounded-xl overflow-hidden border-2 border-[#4CAF50] shadow-md">
+                <div className="relative group rounded-xl overflow-hidden border-2 border-[#5CB800] shadow-md">
                     <img
                         src={preview}
                         alt="Preview"
@@ -107,7 +107,7 @@ export default function CloudinaryUpload({
                         </button>
                     </div>
                     {success && (
-                        <div className="absolute top-3 left-3 flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                        <div className="absolute top-3 left-3 flex items-center gap-1 bg-[#5CB800] text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
                             <CheckCircle size={12} /> Uploaded!
                         </div>
                     )}
@@ -116,7 +116,7 @@ export default function CloudinaryUpload({
             ) : (
                 <label
                     htmlFor={uid}
-                    className="block border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-[#1976D2] hover:bg-[#1976D2]/5 transition-all duration-200 cursor-pointer group"
+                    className="block border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-[#5CB800] hover:bg-[#5CB800]/5 transition-all duration-200 cursor-pointer group"
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
                 >
@@ -130,18 +130,18 @@ export default function CloudinaryUpload({
                     />
                     {uploading ? (
                         <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-[#1976D2]/10 flex items-center justify-center mb-3">
-                                <Loader2 className="animate-spin text-[#1976D2]" size={24} />
+                            <div className="w-12 h-12 rounded-full bg-[#5CB800]/10 flex items-center justify-center mb-3">
+                                <Loader2 className="animate-spin text-[#5CB800]" size={24} />
                             </div>
                             <p className="text-sm font-semibold text-gray-700">Uploading to Cloudinary...</p>
                             <p className="text-xs text-gray-400 mt-1">Please wait</p>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-[#1976D2]/10 flex items-center justify-center mb-3 transition-colors">
-                                <Upload className="text-gray-400 group-hover:text-[#1976D2] transition-colors" size={22} />
+                            <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-[#5CB800]/10 flex items-center justify-center mb-3 transition-colors">
+                                <Upload className="text-gray-400 group-hover:text-[#5CB800] transition-colors" size={22} />
                             </div>
-                            <p className="text-sm font-semibold text-gray-700 group-hover:text-[#1976D2] transition-colors">
+                            <p className="text-sm font-semibold text-gray-700 group-hover:text-[#5CB800] transition-colors">
                                 Click to upload or drag & drop
                             </p>
                             <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP — Max 5MB</p>

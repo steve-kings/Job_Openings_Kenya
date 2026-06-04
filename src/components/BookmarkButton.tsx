@@ -29,8 +29,8 @@ export default function BookmarkButton({ job, className = '', showText = false }
             }}
             className={`flex items-center justify-center transition-all ${className} ${
                 active 
-                    ? 'text-[#1976D2] hover:text-[#1565C0]' 
-                    : 'text-gray-400 hover:text-[#1976D2]'
+                    ? 'text-[#5CB800] hover:text-[#4A9900]' 
+                    : 'text-gray-400 hover:text-[#5CB800]'
             }`}
             title={active ? "Remove Bookmark" : "Save for later"}
         >

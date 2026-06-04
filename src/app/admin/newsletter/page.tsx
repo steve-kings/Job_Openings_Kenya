@@ -67,15 +67,15 @@ export default function NewsletterAdminPage() {
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
-            <Loader2 className="animate-spin text-[#1976D2]" size={40} />
+            <Loader2 className="animate-spin text-[#5CB800]" size={40} />
         </div>
     );
 
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-[#1976D2]">
+            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-[#5CB800]">
                 <div className="flex items-center gap-4 mb-2">
-                    <div className="p-3 bg-[#1976D2]/10 rounded-xl text-[#1976D2]">
+                    <div className="p-3 bg-[#5CB800]/10 rounded-xl text-[#5CB800]">
                         <Mail size={32} />
                     </div>
                     <div>
@@ -89,7 +89,7 @@ export default function NewsletterAdminPage() {
                 <div className="card bg-white shadow-xl">
                     <div className="card-body">
                         <div className="flex items-center gap-3 mb-2">
-                            <Users className="text-[#4CAF50]" size={24} />
+                            <Users className="text-[#5CB800]" size={24} />
                             <h2 className="card-title text-xl">Audience</h2>
                         </div>
                         <p className="text-4xl font-black text-gray-900 mb-1">{subscribersCount}</p>
@@ -107,7 +107,7 @@ export default function NewsletterAdminPage() {
                 <div className="card bg-white shadow-xl">
                     <div className="card-body">
                         <div className="flex items-center gap-3 mb-2">
-                            <Mail className="text-[#1976D2]" size={24} />
+                            <Mail className="text-[#5CB800]" size={24} />
                             <h2 className="card-title text-xl">Content Ready</h2>
                         </div>
                         <p className="text-4xl font-black text-gray-900 mb-1">{activeOppsCount >= 5 ? '5' : activeOppsCount}</p>
@@ -125,7 +125,7 @@ export default function NewsletterAdminPage() {
 
             <div className="card bg-white shadow-xl">
                 <div className="card-body items-center text-center p-8 sm:p-12">
-                    <div className="w-20 h-20 bg-[#4CAF50]/10 rounded-full flex items-center justify-center text-[#4CAF50] mb-6">
+                    <div className="w-20 h-20 bg-[#5CB800]/10 rounded-full flex items-center justify-center text-[#5CB800] mb-6">
                         <Send size={40} />
                     </div>
                     <h2 className="text-2xl font-bold mb-2">Send Weekly Digest</h2>
@@ -143,7 +143,7 @@ export default function NewsletterAdminPage() {
                     <button
                         onClick={handleSendNewsletter}
                         disabled={sending || subscribersCount === 0}
-                        className="btn btn-lg bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-3 shadow-lg px-8"
+                        className="btn btn-lg bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-3 shadow-lg px-8"
                     >
                         {sending ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
                         {sending ? 'Sending...' : 'Dispatch Newsletter Now'}

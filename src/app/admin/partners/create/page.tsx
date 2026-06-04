@@ -53,13 +53,13 @@ export default function CreatePartnerPage() {
         <div className="max-w-4xl mx-auto pb-10">
             {/* Header */}
             <div className="mb-8">
-                <Link href="/admin/partners" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1976D2] transition-colors mb-4">
+                <Link href="/admin/partners" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#5CB800] transition-colors mb-4">
                     <ArrowLeft size={20} />
                     <span className="font-medium">Back to Partners</span>
                 </Link>
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#4CAF50]/10 rounded-xl">
-                        <Building2 className="text-[#4CAF50]" size={32} />
+                    <div className="p-3 bg-[#5CB800]/10 rounded-xl">
+                        <Building2 className="text-[#5CB800]" size={32} />
                     </div>
                     <div>
                         <h1 className="text-4xl font-bold text-gray-900">Add New Partner</h1>
@@ -70,10 +70,10 @@ export default function CreatePartnerPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Partner Information */}
-                <div className="card bg-white shadow-xl border-l-4 border-[#4CAF50]">
+                <div className="card bg-white shadow-xl border-l-4 border-[#5CB800]">
                     <div className="card-body">
                         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <Building2 size={20} className="text-[#4CAF50]" />
+                            <Building2 size={20} className="text-[#5CB800]" />
                             Partner Information
                         </h3>
 
@@ -86,7 +86,7 @@ export default function CreatePartnerPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="input input-bordered focus:border-[#4CAF50] focus:outline-none"
+                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     placeholder="e.g. Google, Microsoft, UNICEF"
@@ -101,7 +101,7 @@ export default function CreatePartnerPage() {
                                 <div className="relative">
                                     <input
                                         type="url"
-                                        className="input input-bordered w-full pl-10 focus:border-[#4CAF50] focus:outline-none"
+                                        className="input input-bordered w-full pl-10 focus:border-[#5CB800] focus:outline-none"
                                         value={formData.website_url}
                                         onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
                                         placeholder="https://partner-website.com"
@@ -117,7 +117,7 @@ export default function CreatePartnerPage() {
                                 </label>
                                 <div className="relative">
                                     <textarea
-                                        className="textarea textarea-bordered h-24 w-full focus:border-[#4CAF50] focus:outline-none"
+                                        className="textarea textarea-bordered h-24 w-full focus:border-[#5CB800] focus:outline-none"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         placeholder="Brief description of the partnership and collaboration..."
@@ -132,17 +132,17 @@ export default function CreatePartnerPage() {
                 </div>
 
                 {/* Logo Upload */}
-                <div className="card bg-white shadow-xl border-t-4 border-[#4CAF50]">
+                <div className="card bg-white shadow-xl border-t-4 border-[#5CB800]">
                     <div className="card-body">
                         <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <ImageIcon size={20} className="text-[#4CAF50]" />
+                            <ImageIcon size={20} className="text-[#5CB800]" />
                             Partner Logo
                         </h3>
 
                         <CloudinaryUpload
                             onUploadComplete={(url) => setLogoUrl(url)}
                             currentImage={logoUrl}
-                            folder="1000jobs-partners"
+                            folder="Job Openings Kenya-partners"
                             label="Upload Logo"
                         />
 
@@ -158,7 +158,7 @@ export default function CreatePartnerPage() {
                     <Link href="/admin/partners" className="btn btn-ghost">Cancel</Link>
                     <button 
                         type="submit" 
-                        className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none w-40 gap-2" 
+                        className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none w-40 gap-2" 
                         disabled={loading}
                     >
                         {loading ? (

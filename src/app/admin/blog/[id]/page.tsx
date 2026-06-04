@@ -21,7 +21,7 @@ export default function EditBlogPostPage() {
         excerpt: '',
         content: '',
         category: 'Success Story',
-        author_name: '1000Jobs Team',
+        author_name: 'Job Openings Kenya Team',
         status: 'draft'
     });
 
@@ -212,22 +212,22 @@ export default function EditBlogPostPage() {
                                 <CloudinaryUpload
                                     onUploadComplete={(url) => setImageUrl(url)}
                                     currentImage={imageUrl}
-                                    folder="1000jobs-blog"
+                                    folder="Job Openings Kenya-blog"
                                     label="Featured Image (Optional)"
                                 />
 
                                 {!imageUrl && (
-                                    <div className="mt-4 rounded-lg overflow-hidden border relative bg-[#1976D2] h-48 flex items-center justify-center">
+                                    <div className="mt-4 rounded-lg overflow-hidden border relative bg-[#5CB800] h-48 flex items-center justify-center">
                                         <div className="text-center text-white">
                                             <ImageIcon size={48} className="mx-auto mb-2 opacity-50" />
-                                            <p className="font-bold text-2xl">1000Jobs</p>
+                                            <p className="font-bold text-2xl">Job Openings Kenya</p>
                                             <p className="text-sm opacity-75">Default placeholder will be used</p>
                                         </div>
                                     </div>
                                 )}
 
                                 <p className="text-xs text-gray-500 mt-2">
-                                    Upload an image or leave empty to use 1000Jobs branded placeholder.
+                                    Upload an image or leave empty to use Job Openings Kenya branded placeholder.
                                 </p>
                             </div>
                         </div>

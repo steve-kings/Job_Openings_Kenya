@@ -3,9 +3,9 @@
 @plugin "daisyui";
 
 @theme {
-  --color-primary: #1976D2;
-  --color-secondary: #D2691E;
-  --color-accent: #4CAF50;
+  --color-primary: #5CB800;
+  --color-secondary: #4A9900;
+  --color-accent: #C8A882;
 }
 
 /* Custom Utilities */

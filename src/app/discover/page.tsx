@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Discover More | 1000Jobs',
+    title: 'Discover More | Job Openings Kenya',
     description: 'Explore remote jobs, grants, success stories, and our latest articles.',
 };
 
@@ -31,7 +31,7 @@ export default async function DiscoverPage() {
     return (
         <div className="bg-gray-50 min-h-screen pb-20">
             {/* Header Hero */}
-            <div className="bg-[#1565C0] text-white py-16">
+            <div className="bg-[#4A9900] text-white py-16">
                 <div className="container mx-auto px-6 lg:px-12 text-center">
                     <Compass className="mx-auto mb-4 text-blue-200" size={64} />
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover More</h1>
@@ -45,23 +45,23 @@ export default async function DiscoverPage() {
                 {/* Categories Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                     <Link href="/?type=Job&q=Remote" className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-2 transition-transform group border border-gray-100">
-                        <div className="w-14 h-14 bg-blue-50 text-[#1976D2] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <div className="w-14 h-14 bg-blue-50 text-[#5CB800] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <Globe size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Remote Jobs</h3>
                         <p className="text-gray-600 text-sm mb-4">Work from anywhere. Explore verified remote opportunities across the globe.</p>
-                        <span className="text-[#1976D2] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        <span className="text-[#5CB800] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Browse Remote <ArrowRight size={16} />
                         </span>
                     </Link>
 
                     <Link href="/?type=Grant" className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-2 transition-transform group border border-gray-100">
-                        <div className="w-14 h-14 bg-green-50 text-[#4CAF50] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <div className="w-14 h-14 bg-green-50 text-[#5CB800] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <Gift size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Grants</h3>
                         <p className="text-gray-600 text-sm mb-4">Funding opportunities for your business, research, or community project.</p>
-                        <span className="text-[#4CAF50] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        <span className="text-[#5CB800] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Find Grants <ArrowRight size={16} />
                         </span>
                     </Link>
@@ -96,9 +96,9 @@ export default async function DiscoverPage() {
                             <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
                                 <Sparkles className="text-yellow-500" /> Success Stories
                             </h2>
-                            <p className="text-gray-600 mt-2">Real stories from the 1000Jobs community.</p>
+                            <p className="text-gray-600 mt-2">Real stories from the Job Openings Kenya community.</p>
                         </div>
-                        <Link href="/dashboard/feedback" className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none hidden sm:flex gap-2 shadow-md">
+                        <Link href="/dashboard/feedback" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none hidden sm:flex gap-2 shadow-md">
                             <Quote size={18} /> Share Your Story
                         </Link>
                     </div>
@@ -109,8 +109,8 @@ export default async function DiscoverPage() {
                                 <Quote className="text-gray-300" size={32} />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">No Stories Yet</h3>
-                            <p className="text-gray-500 max-w-md mx-auto mb-6">Be the first to share how 1000Jobs helped you land an opportunity!</p>
-                            <Link href="/dashboard/feedback" className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none gap-2 shadow-md">
+                            <p className="text-gray-500 max-w-md mx-auto mb-6">Be the first to share how Job Openings Kenya helped you land an opportunity!</p>
+                            <Link href="/dashboard/feedback" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 shadow-md">
                                 <Quote size={18} /> Share Your Story
                             </Link>
                         </div>
@@ -122,13 +122,13 @@ export default async function DiscoverPage() {
                                         {t.user_photo_url ? (
                                             <img src={t.user_photo_url} alt={t.user_name} className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white" />
                                         ) : (
-                                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1976D2] to-[#1565C0] text-white flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
+                                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] text-white flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
                                                 {t.user_name.charAt(0).toUpperCase()}
                                             </div>
                                         )}
                                         <div>
                                             <h4 className="font-bold text-gray-900 text-lg">{t.user_name}</h4>
-                                            <p className="text-xs text-[#4CAF50] font-bold uppercase tracking-wider bg-green-50 px-2 py-0.5 rounded-full inline-block mt-1">
+                                            <p className="text-xs text-[#5CB800] font-bold uppercase tracking-wider bg-green-50 px-2 py-0.5 rounded-full inline-block mt-1">
                                                 Won: {t.opportunity_won}
                                             </p>
                                         </div>
@@ -152,7 +152,7 @@ export default async function DiscoverPage() {
                             <h2 className="text-3xl font-bold text-gray-900">Latest Articles</h2>
                             <p className="text-gray-600 mt-2">Career advice, interview tips, and news.</p>
                         </div>
-                        <Link href="/blog" className="text-[#1976D2] font-semibold hover:underline hidden sm:block">
+                        <Link href="/blog" className="text-[#5CB800] font-semibold hover:underline hidden sm:block">
                             View All Articles &rarr;
                         </Link>
                     </div>
@@ -179,13 +179,13 @@ export default async function DiscoverPage() {
                                         </div>
                                     </div>
                                     <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#1976D2] transition-colors line-clamp-2">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#5CB800] transition-colors line-clamp-2">
                                             {post.title}
                                         </h3>
                                         <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed flex-1">
                                             {post.excerpt}
                                         </p>
-                                        <span className="text-[#1976D2] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all mt-auto pt-4 border-t border-gray-50">
+                                        <span className="text-[#5CB800] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all mt-auto pt-4 border-t border-gray-50">
                                             Read More <ArrowRight size={16} />
                                         </span>
                                     </div>

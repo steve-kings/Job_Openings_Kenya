@@ -9,7 +9,7 @@ const defaultSlides = [
         id: 1,
         title: "Discover Your Next",
         highlight: "Big Opportunity",
-        description: "Access verified jobs, grants, scholarships, and training programs across Africa. All opportunities are hand-picked and verified by our team.",
+        description: "Access verified jobs, grants, scholarships, and training programs across Kenya. All opportunities are hand-picked and verified by our team.",
         image: "/images/img4.jpg",
         cta1: "Browse Opportunities",
         cta2: "Join WhatsApp"
@@ -112,7 +112,7 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                                     alt={s.title}
                                     className="w-full h-full object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-[#1565C0]/90 to-[#1976D2]/85"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-[#4A9900]/90 to-[#5CB800]/85"></div>
                             </>
                         )}
                     </div>
@@ -126,7 +126,7 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                         <div key={slide.id} className="animate-fadeIn">
                             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white">
                                 {slide.title}
-                                <span className="block text-[#4CAF50] mt-2">{'highlight' in slide ? (slide as any).highlight : ''}</span>
+                                <span className="block text-[#5CB800] mt-2">{'highlight' in slide ? (slide as any).highlight : ''}</span>
                             </h1>
                             <p className="text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
                                 {'description' in slide ? (slide as any).description : ''}
@@ -134,7 +134,7 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                             <div>
                                 <a 
                                     href="#opportunities" 
-                                    className="btn bg-[#4CAF50] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
+                                    className="btn bg-[#5CB800] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
                                 >
                                     {'cta1' in slide ? (slide as any).cta1 : 'Learn More'}
                                 </a>
@@ -164,7 +164,7 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                                 onClick={() => goToSlide(index)}
                                 className={`h-3 rounded-full transition-all shadow-sm ${
                                     index === currentSlide 
-                                        ? 'bg-[#4CAF50] w-8' 
+                                        ? 'bg-[#5CB800] w-8' 
                                         : 'bg-white/50 w-3 hover:bg-white/70'
                                 }`}
                                 aria-label={`Go to slide ${index + 1}`}

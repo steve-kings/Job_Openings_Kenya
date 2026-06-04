@@ -201,8 +201,8 @@ export default function AdminSettingsPage() {
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#1976D2]/10 rounded-xl">
-                        <Settings className="text-[#1976D2]" size={32} />
+                    <div className="p-3 bg-[#5CB800]/10 rounded-xl">
+                        <Settings className="text-[#5CB800]" size={32} />
                     </div>
                     <div>
                         <h1 className="text-4xl font-bold text-gray-900">Admin Settings</h1>
@@ -222,11 +222,11 @@ export default function AdminSettingsPage() {
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Add Admin User Form */}
                 <div className="lg:col-span-1">
-                    <div className="card bg-white shadow-xl border-l-4 border-[#1976D2]">
+                    <div className="card bg-white shadow-xl border-l-4 border-[#5CB800]">
                         <div className="card-body">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-[#1976D2]/10 rounded-xl">
-                                    <UserPlus className="text-[#1976D2]" size={24} />
+                                <div className="p-3 bg-[#5CB800]/10 rounded-xl">
+                                    <UserPlus className="text-[#5CB800]" size={24} />
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-bold text-gray-900">Add Admin</h2>
@@ -243,7 +243,7 @@ export default function AdminSettingsPage() {
                                         <input
                                             type="text"
                                             required
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#1976D2] focus:outline-none"
+                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
                                             value={formData.full_name}
                                             onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                             placeholder="John Doe"
@@ -260,10 +260,10 @@ export default function AdminSettingsPage() {
                                         <input
                                             type="email"
                                             required
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#1976D2] focus:outline-none"
+                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            placeholder="admin@1000jobs.org"
+                                            placeholder="admin@Job Openings Kenya.org"
                                         />
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     </div>
@@ -278,7 +278,7 @@ export default function AdminSettingsPage() {
                                             type="password"
                                             required
                                             minLength={6}
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#1976D2] focus:outline-none"
+                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
                                             value={formData.password}
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             placeholder="Min. 6 characters"
@@ -289,7 +289,7 @@ export default function AdminSettingsPage() {
 
                                 <button 
                                     type="submit" 
-                                    className="btn btn-sm bg-[#1976D2] hover:bg-[#1565C0] text-white border-none w-full gap-2" 
+                                    className="btn btn-sm bg-[#5CB800] hover:bg-[#4A9900] text-white border-none w-full gap-2" 
                                     disabled={loading}
                                 >
                                     {loading ? (
@@ -311,13 +311,13 @@ export default function AdminSettingsPage() {
 
                 {/* Admin Users List */}
                 <div className="lg:col-span-2">
-                    <div className="card bg-white shadow-xl border-t-4 border-[#4CAF50]">
+                    <div className="card bg-white shadow-xl border-t-4 border-[#5CB800]">
                         <div className="card-body">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Admin Users</h2>
 
                             {fetchingUsers ? (
                                 <div className="text-center py-8">
-                                    <span className="loading loading-spinner loading-lg text-[#1976D2]"></span>
+                                    <span className="loading loading-spinner loading-lg text-[#5CB800]"></span>
                                     <p className="text-gray-600 mt-2">Loading admin users...</p>
                                 </div>
                             ) : adminUsers.length === 0 ? (
@@ -397,7 +397,7 @@ export default function AdminSettingsPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="input input-bordered focus:border-[#1976D2] focus:outline-none"
+                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
                                     value={editFormData.full_name}
                                     onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
                                 />
@@ -410,7 +410,7 @@ export default function AdminSettingsPage() {
                                 <input
                                     type="email"
                                     required
-                                    className="input input-bordered focus:border-[#1976D2] focus:outline-none"
+                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
                                     value={editFormData.email}
                                     onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                                 />
@@ -426,7 +426,7 @@ export default function AdminSettingsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn bg-[#1976D2] hover:bg-[#1565C0] text-white border-none"
+                                    className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none"
                                     disabled={loading}
                                 >
                                     {loading ? 'Updating...' : 'Update'}
@@ -455,7 +455,7 @@ export default function AdminSettingsPage() {
                                     type="password"
                                     required
                                     minLength={6}
-                                    className="input input-bordered focus:border-[#1976D2] focus:outline-none"
+                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     placeholder="Enter new password (min. 6 characters)"
@@ -475,7 +475,7 @@ export default function AdminSettingsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn bg-[#4CAF50] hover:bg-[#D68910] text-white border-none"
+                                    className="btn bg-[#5CB800] hover:bg-[#D68910] text-white border-none"
                                     disabled={loading}
                                 >
                                     {loading ? 'Resetting...' : 'Reset Password'}

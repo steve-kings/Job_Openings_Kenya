@@ -25,12 +25,12 @@ export default async function MembersPage() {
             <div className="mb-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center shadow-lg">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#5CB800] to-[#4A9900] flex items-center justify-center shadow-lg">
                             <UserCheck className="text-white" size={28} />
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">Registered Members</h1>
-                            <p className="text-gray-500 text-sm mt-0.5">Manage and view all registered users and admins on 1000Jobs.</p>
+                            <p className="text-gray-500 text-sm mt-0.5">Manage and view all registered users and admins on Job Openings Kenya.</p>
                         </div>
                     </div>
                 </div>

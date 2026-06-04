@@ -100,12 +100,12 @@ export default function ThreadDetailPage() {
 
     const getInitials = (name: string) => name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-[#1976D2]" size={40} /></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-[#5CB800]" size={40} /></div>;
     if (!thread) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Thread not found</p></div>;
 
     return (
         <div className="bg-gray-50 min-h-screen pb-16">
-            <div className="bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white py-10">
+            <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white py-10">
                 <div className="container mx-auto px-6 lg:px-12">
                     <Link href="/community" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-4 text-sm group">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -131,7 +131,7 @@ export default function ThreadDetailPage() {
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
                     <div className="p-6 lg:p-8">
                         <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-full bg-[#1976D2] flex items-center justify-center text-white font-bold shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-[#5CB800] flex items-center justify-center text-white font-bold shrink-0">
                                 {getInitials(thread.profiles?.full_name || 'U')}
                             </div>
                             <div className="flex-1">
@@ -144,13 +144,13 @@ export default function ThreadDetailPage() {
                         <button
                             onClick={handleVoteThread}
                             disabled={userVotes.has(id)}
-                            className={`flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition-all ${userVotes.has(id) ? 'bg-[#1976D2] text-white' : 'bg-gray-100 text-gray-600 hover:bg-[#1976D2]/10 hover:text-[#1976D2]'}`}
+                            className={`flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition-all ${userVotes.has(id) ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-600 hover:bg-[#5CB800]/10 hover:text-[#5CB800]'}`}
                         >
                             <ThumbsUp size={16} /> {thread.upvotes} Helpful
                         </button>
                         <button
                             onClick={() => { navigator.clipboard.writeText(window.location.href); }}
-                            className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-[#1976D2] transition-colors"
+                            className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-[#5CB800] transition-colors"
                         >
                             <Share2 size={16} /> Share
                         </button>
@@ -159,7 +159,7 @@ export default function ThreadDetailPage() {
 
                 {/* Comments */}
                 <h2 className="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2">
-                    <MessageSquare size={20} className="text-[#1976D2]" />
+                    <MessageSquare size={20} className="text-[#5CB800]" />
                     {thread.comment_count} {thread.comment_count === 1 ? 'Reply' : 'Replies'}
                 </h2>
 
@@ -172,7 +172,7 @@ export default function ThreadDetailPage() {
                     ) : comments.map((comment, i) => (
                         <div key={comment.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 ${i % 2 === 1 ? 'ml-4' : ''}`}>
                             <div className="flex items-start gap-3">
-                                <div className="w-9 h-9 rounded-full bg-[#4CAF50] flex items-center justify-center text-white text-sm font-bold shrink-0">
+                                <div className="w-9 h-9 rounded-full bg-[#5CB800] flex items-center justify-center text-white text-sm font-bold shrink-0">
                                     {getInitials(comment.profiles?.full_name || 'U')}
                                 </div>
                                 <div className="flex-1">
@@ -184,7 +184,7 @@ export default function ThreadDetailPage() {
                                     <button
                                         onClick={() => handleVoteComment(comment.id, comment.upvotes)}
                                         disabled={userVotes.has(comment.id)}
-                                        className={`mt-2 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${userVotes.has(comment.id) ? 'bg-[#4CAF50] text-white' : 'bg-gray-100 text-gray-500 hover:bg-[#4CAF50]/10 hover:text-[#4CAF50]'}`}
+                                        className={`mt-2 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${userVotes.has(comment.id) ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-500 hover:bg-[#5CB800]/10 hover:text-[#5CB800]'}`}
                                     >
                                         <ThumbsUp size={13} /> {comment.upvotes} Helpful
                                     </button>
@@ -206,14 +206,14 @@ export default function ThreadDetailPage() {
                             value={newComment}
                             onChange={e => setNewComment(e.target.value)}
                             rows={5}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 resize-none transition-all"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 resize-none transition-all"
                             placeholder="Share your thoughts, advice or experience..."
                         />
                         <div className="flex justify-end mt-3">
                             <button
                                 onClick={handlePostComment}
                                 disabled={submittingComment || !newComment.trim()}
-                                className="btn bg-[#1976D2] hover:bg-[#1565C0] text-white border-none gap-2 disabled:opacity-50"
+                                className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 disabled:opacity-50"
                             >
                                 {submittingComment ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                                 {submittingComment ? 'Posting...' : 'Post Reply'}
@@ -223,7 +223,7 @@ export default function ThreadDetailPage() {
                 ) : (
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
                         <p className="text-gray-600 mb-4">Login to join the conversation and share your experience</p>
-                        <Link href={`/login?redirect=/community/${id}`} className="btn bg-[#1976D2] text-white border-none">
+                        <Link href={`/login?redirect=/community/${id}`} className="btn bg-[#5CB800] text-white border-none">
                             Login to Reply
                         </Link>
                     </div>

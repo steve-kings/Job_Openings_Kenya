@@ -11,8 +11,8 @@ import RichTextEditor from '@/components/RichTextEditor';
 const TYPES = ['Job', 'Grant', 'Scholarship', 'Training', 'Banner'];
 
 const TYPE_COLORS: Record<string, string> = {
-    Job: 'from-[#1976D2] to-[#1565C0]',
-    Grant: 'from-[#4CAF50] to-[#388E3C]',
+    Job: 'from-[#5CB800] to-[#4A9900]',
+    Grant: 'from-[#5CB800] to-[#4A9900]',
     Scholarship: 'from-[#7B1FA2] to-[#6A1B9A]',
     Training: 'from-[#F57C00] to-[#E65100]',
     Banner: 'from-[#E91E63] to-[#C2185B]',
@@ -60,7 +60,7 @@ const ListEditor = ({
                         value={item}
                         onChange={(e) => updateItem(i, e.target.value, setter, items)}
                         placeholder={placeholder}
-                        className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all"
+                        className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all"
                     />
                     {items.length > 1 && (
                         <button type="button" onClick={() => removeItem(i, setter, items)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
@@ -187,7 +187,7 @@ export default function CreateOpportunityPage() {
         }
     };
 
-    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 bg-white transition-all";
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 bg-white transition-all";
 
     const selectedColor = TYPE_COLORS[formData.type] || TYPE_COLORS['Job'];
 
@@ -195,7 +195,7 @@ export default function CreateOpportunityPage() {
         <div className="max-w-6xl mx-auto pb-16">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#4CAF50]' : 'bg-red-500'}`}>
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
                     {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                     {toast.msg}
                 </div>
@@ -203,7 +203,7 @@ export default function CreateOpportunityPage() {
 
             {/* Header */}
             <div className="mb-8">
-                <Link href="/admin/opportunities" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1976D2] transition-colors text-sm mb-5 group">
+                <Link href="/admin/opportunities" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#5CB800] transition-colors text-sm mb-5 group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                     Back to Opportunities
                 </Link>
@@ -225,27 +225,27 @@ export default function CreateOpportunityPage() {
                     <div className="lg:col-span-2 space-y-5">
 
                         {/* AI Extractor Box */}
-                        <div className="bg-gradient-to-r from-[#1976D2]/10 to-[#1976D2]/5 rounded-2xl border border-[#1976D2]/20 p-6 space-y-3 shadow-sm">
+                        <div className="bg-gradient-to-r from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border border-[#5CB800]/20 p-6 space-y-3 shadow-sm">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-[#1976D2]">
+                                <div className="flex items-center gap-2 text-[#5CB800]">
                                     <Sparkles size={20} />
-                                    <h3 className="font-bold text-sm uppercase tracking-widest">1000Jobs AI Auto-Fill</h3>
+                                    <h3 className="font-bold text-sm uppercase tracking-widest">Job Openings Kenya AI Auto-Fill</h3>
                                 </div>
-                                <span className="text-xs text-[#1976D2]/70 bg-white px-2 py-1 rounded-md border border-[#1976D2]/20 shadow-sm font-semibold">Paste raw text here</span>
+                                <span className="text-xs text-[#5CB800]/70 bg-white px-2 py-1 rounded-md border border-[#5CB800]/20 shadow-sm font-semibold">Paste raw text here</span>
                             </div>
                             <div className="space-y-3">
                                 <textarea 
                                     value={aiText}
                                     onChange={(e) => setAiText(e.target.value)}
                                     placeholder="Paste job description, scholarship details, or grant text here, and AI will read them and fill out the form below automatically..."
-                                    className="w-full px-4 py-3 rounded-xl border border-white focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/20 outline-none text-sm text-gray-700 transition-all shadow-sm resize-none h-24"
+                                    className="w-full px-4 py-3 rounded-xl border border-white focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all shadow-sm resize-none h-24"
                                 />
                                 <div className="flex justify-end">
                                     <button 
                                         type="button"
                                         onClick={handleAIExtract}
                                         disabled={!aiText.trim() || extractingAi}
-                                        className="px-6 py-2.5 bg-[#1976D2] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#1565C0] disabled:opacity-50 transition-colors shadow-sm"
+                                        className="px-6 py-2.5 bg-[#5CB800] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#4A9900] disabled:opacity-50 transition-colors shadow-sm"
                                     >
                                         {extractingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                                         Auto-Fill Form
@@ -323,8 +323,8 @@ export default function CreateOpportunityPage() {
                         {formData.type !== 'Banner' && (
                         <div className="grid md:grid-cols-3 gap-5">
                             {[
-                                { label: 'Requirements', color: 'from-[#1976D2] to-[#1565C0]', items: requirements, setter: setRequirements, placeholder: 'e.g. 3+ years of experience' },
-                                { label: 'Responsibilities', color: 'from-[#4CAF50] to-[#388E3C]', items: responsibilities, setter: setResponsibilities, placeholder: 'e.g. Lead the dev team' },
+                                { label: 'Requirements', color: 'from-[#5CB800] to-[#4A9900]', items: requirements, setter: setRequirements, placeholder: 'e.g. 3+ years of experience' },
+                                { label: 'Responsibilities', color: 'from-[#5CB800] to-[#4A9900]', items: responsibilities, setter: setResponsibilities, placeholder: 'e.g. Lead the dev team' },
                                 { label: 'Benefits', color: 'from-[#7B1FA2] to-[#6A1B9A]', items: benefits, setter: setBenefits, placeholder: 'e.g. Health insurance' },
                             ].map((list) => (
                                 <div key={list.label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -350,7 +350,7 @@ export default function CreateOpportunityPage() {
                                         onClick={() => setFormData({ ...formData, status: s })}
                                         className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${formData.status === s
                                             ? s === 'active'
-                                                ? 'bg-[#4CAF50] text-white border-[#4CAF50] shadow'
+                                                ? 'bg-[#5CB800] text-white border-[#5CB800] shadow'
                                                 : 'bg-gray-900 text-white border-gray-900 shadow'
                                             : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                                         }`}
@@ -373,7 +373,7 @@ export default function CreateOpportunityPage() {
                                     type="checkbox" 
                                     checked={keepCompany} 
                                     onChange={(e) => setKeepCompany(e.target.checked)}
-                                    className="w-4 h-4 rounded border-gray-300 text-[#1976D2] focus:ring-[#1976D2]"
+                                    className="w-4 h-4 rounded border-gray-300 text-[#5CB800] focus:ring-[#5CB800]"
                                 />
                                 <span>Keep company & location for next post (for multiple positions)</span>
                             </label>
@@ -401,7 +401,7 @@ export default function CreateOpportunityPage() {
                             <CloudinaryUpload
                                 onUploadComplete={(url) => setThumbnailUrl(url)}
                                 currentImage={thumbnailUrl}
-                                folder="1000jobs-opportunities"
+                                folder="Job Openings Kenya-opportunities"
                                 label="Upload Thumbnail"
                             />
                             <p className="text-xs text-gray-400">Optional — default placeholder used if empty.</p>

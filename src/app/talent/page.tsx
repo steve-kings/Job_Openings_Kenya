@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import { MapPin, Search, Users, CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-    title: 'Talent Directory | 1000Jobs - Find African Youth Talent',
-    description: 'Browse a directory of talented African youth open to work. Discover skilled professionals in tech, business, healthcare and more.',
+    title: 'Talent Directory | Job Openings Kenya — Find Kenyan Talent',
+    description: 'Browse a directory of talented Kenyan professionals open to work. Discover skilled candidates in tech, business, healthcare and more.',
 };
 
 export const revalidate = 300;
@@ -37,7 +37,7 @@ export default async function TalentDirectoryPage({
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Hero */}
-            <div className="bg-gradient-to-br from-[#1976D2] via-[#1565C0] to-[#0D47A1] text-white py-14 lg:py-20">
+            <div className="bg-gradient-to-br from-[#5CB800] via-[#4A9900] to-[#0D47A1] text-white py-14 lg:py-20">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-12 text-center">
                     <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold mb-5">
                         <Users size={16} />
@@ -45,10 +45,10 @@ export default async function TalentDirectoryPage({
                     </div>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black mb-4 leading-tight">
                         Discover Africa's<br />
-                        <span className="text-[#4CAF50]">Next Generation</span> Talent
+                        <span className="text-[#5CB800]">Next Generation</span> Talent
                     </h1>
                     <p className="text-base sm:text-xl text-white/85 mb-8 max-w-2xl mx-auto px-2">
-                        Browse talented youth open to work across Africa. Connect directly with skilled professionals in tech, business, healthcare, and more.
+                        Browse talented youth open to work across Kenya. Connect directly with skilled professionals in tech, business, healthcare, and more.
                     </p>
 
                     {/* Search */}
@@ -63,7 +63,7 @@ export default async function TalentDirectoryPage({
                                 className="flex-1 outline-none text-gray-800 font-medium bg-transparent text-sm sm:text-base min-w-0"
                             />
                         </div>
-                        <button type="submit" className="btn bg-[#4CAF50] hover:bg-[#388E3C] text-white border-none px-4 sm:px-8 py-3 h-auto min-h-0 rounded-2xl font-bold shadow-2xl text-base w-full sm:w-auto shrink-0 flex items-center justify-center">
+                        <button type="submit" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none px-4 sm:px-8 py-3 h-auto min-h-0 rounded-2xl font-bold shadow-2xl text-base w-full sm:w-auto shrink-0 flex items-center justify-center">
                             Search
                         </button>
                     </form>
@@ -76,7 +76,7 @@ export default async function TalentDirectoryPage({
                     <p className="text-gray-600 font-medium">
                         <span className="font-black text-gray-900">{talents?.length || 0}</span> talented individuals found
                     </p>
-                    <Link href="/dashboard/profile" className="text-[#1976D2] font-semibold hover:underline">
+                    <Link href="/dashboard/profile" className="text-[#5CB800] font-semibold hover:underline">
                         Add your profile →
                     </Link>
                 </div>
@@ -89,7 +89,7 @@ export default async function TalentDirectoryPage({
                         <Users size={56} className="text-gray-200 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-900 mb-2">No Talent Found</h3>
                         <p className="text-gray-500 mb-6 text-sm">Be the first to make your profile public!</p>
-                        <Link href="/dashboard/profile" className="btn bg-[#1976D2] text-white border-none">
+                        <Link href="/dashboard/profile" className="btn bg-[#5CB800] text-white border-none">
                             Create Your Public Profile
                         </Link>
                     </div>
@@ -104,10 +104,10 @@ export default async function TalentDirectoryPage({
                                     className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 group flex flex-col"
                                 >
                                     {/* Card Header */}
-                                    <div className="bg-gradient-to-br from-[#1976D2] to-[#1565C0] py-5 px-3 relative">
+                                    <div className="bg-gradient-to-br from-[#5CB800] to-[#4A9900] py-5 px-3 relative">
                                         {talent.open_to_work && (
                                             <div className="flex justify-center mb-3">
-                                                <span className="bg-[#4CAF50] text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <span className="bg-[#5CB800] text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                                                     <CheckCircle size={9} /> Open to Work
                                                 </span>
                                             </div>
@@ -125,7 +125,7 @@ export default async function TalentDirectoryPage({
 
                                     {/* Card Body */}
                                     <div className="p-3 sm:p-5 flex-1 flex flex-col">
-                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center group-hover:text-[#1976D2] transition-colors line-clamp-1">{talent.full_name}</h3>
+                                        <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center group-hover:text-[#5CB800] transition-colors line-clamp-1">{talent.full_name}</h3>
                                         {talent.headline && (
                                             <p className="text-xs text-gray-500 text-center mt-1 line-clamp-2">{talent.headline}</p>
                                         )}
@@ -137,7 +137,7 @@ export default async function TalentDirectoryPage({
                                         {talent.skills && talent.skills.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mt-3 justify-center">
                                                 {talent.skills.slice(0, 2).map((skill: string, i: number) => (
-                                                    <span key={i} className="px-2 py-0.5 bg-[#1976D2]/10 text-[#1976D2] text-[10px] sm:text-xs font-semibold rounded-lg">
+                                                    <span key={i} className="px-2 py-0.5 bg-[#5CB800]/10 text-[#5CB800] text-[10px] sm:text-xs font-semibold rounded-lg">
                                                         {skill}
                                                     </span>
                                                 ))}
@@ -149,7 +149,7 @@ export default async function TalentDirectoryPage({
                                             </div>
                                         )}
                                         <div className="mt-auto pt-3">
-                                            <div className="w-full py-1.5 sm:py-2 text-center text-xs sm:text-sm font-bold text-[#1976D2] border border-[#1976D2]/30 rounded-xl group-hover:bg-[#1976D2] group-hover:text-white transition-all">
+                                            <div className="w-full py-1.5 sm:py-2 text-center text-xs sm:text-sm font-bold text-[#5CB800] border border-[#5CB800]/30 rounded-xl group-hover:bg-[#5CB800] group-hover:text-white transition-all">
                                                 View Profile
                                             </div>
                                         </div>
