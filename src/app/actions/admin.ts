@@ -5,6 +5,18 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function createAdminUser(email: string, password: string, fullName: string) {
     try {
+        // Input validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return { success: false, message: 'Invalid email address' };
+        }
+        if (password.length < 8) {
+            return { success: false, message: 'Password must be at least 8 characters' };
+        }
+        if (!fullName.trim()) {
+            return { success: false, message: 'Full name is required' };
+        }
+
         const supabase = await createClient();
 
         // Check if current user is admin
@@ -64,11 +76,11 @@ export async function createAdminUser(email: string, password: string, fullName:
             message: `Admin user created successfully! Email: ${email}` 
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error creating admin user:', error);
-        return { 
-            success: false, 
-            message: error.message || 'An unexpected error occurred' 
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'An unexpected error occurred'
         };
     }
 }
@@ -126,11 +138,11 @@ export async function getAdminUsers() {
             data: adminUsersWithEmail
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error fetching admin users:', error);
         return { 
             success: false, 
-            message: error.message || 'An unexpected error occurred',
+            message: error instanceof Error ? error.message : 'An unexpected error occurred',
             data: []
         };
     }
@@ -188,11 +200,11 @@ export async function updateAdminUser(userId: string, fullName: string, email: s
             message: 'Admin user updated successfully!' 
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating admin user:', error);
         return { 
             success: false, 
-            message: error.message || 'An unexpected error occurred' 
+            message: error instanceof Error ? error.message : 'An unexpected error occurred'
         };
     }
 }
@@ -227,7 +239,10 @@ export async function deleteAdminUser(userId: string) {
         // Use admin client for deletion
         const adminClient = createAdminClient();
 
-        // Delete user using admin API
+        // Delete profile row first (no FK cascade guarantee)
+        await adminClient.from('profiles').delete().eq('id', userId);
+
+        // Delete auth user
         const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
 
         if (deleteError) {
@@ -239,11 +254,11 @@ export async function deleteAdminUser(userId: string) {
             message: 'Admin user deleted successfully!' 
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error deleting admin user:', error);
         return { 
             success: false, 
-            message: error.message || 'An unexpected error occurred' 
+            message: error instanceof Error ? error.message : 'An unexpected error occurred'
         };
     }
 }
@@ -288,11 +303,11 @@ export async function resetAdminPassword(userId: string, newPassword: string) {
             message: 'Password reset successfully!' 
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error resetting password:', error);
-        return { 
-            success: false, 
-            message: error.message || 'An unexpected error occurred' 
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'An unexpected error occurred'
         };
     }
 }

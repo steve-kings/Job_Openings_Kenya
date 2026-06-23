@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, FileText, Save, Link2, Eye, EyeOff, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileText, Save, Link2, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import RichTextEditor from '@/components/RichTextEditor';
@@ -75,8 +75,8 @@ export default function CreateBlogPostPage() {
             } else {
                 throw new Error(data.error || 'Failed to generate');
             }
-        } catch (error: any) {
-            showToast('error', error.message || 'Error generating AI content.');
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error generating AI content.');
         } finally {
             setGeneratingAi(false);
         }
@@ -94,8 +94,8 @@ export default function CreateBlogPostPage() {
             if (error) throw error;
             showToast('success', 'Post created successfully!');
             setTimeout(() => { router.push('/admin/blog'); router.refresh(); }, 1500);
-        } catch (error: any) {
-            showToast('error', error?.message || 'Error creating post. Please try again.');
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error creating post. Please try again.');
         } finally {
             setLoading(false);
         }

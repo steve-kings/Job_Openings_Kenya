@@ -56,8 +56,8 @@ export async function seedDatabase() {
         if (blogError) throw new Error(`Blog Posts Error: ${blogError.message}`);
 
         return { success: true, message: 'Database seeded successfully!' };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Seed Error:', error);
-        return { success: false, message: error.message };
+        return { success: false, message: error instanceof Error ? error.message : 'Seed failed' };
     }
 }

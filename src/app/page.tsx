@@ -1,374 +1,667 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
-import { MapPin, Calendar, Building, Briefcase, Clock, ExternalLink, AlertCircle } from 'lucide-react';
-import JobsFilter from '@/components/JobsFilter';
-import JobsHeroSlider from '@/components/JobsHeroSlider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import BookmarkButton from '@/components/BookmarkButton';
-import HiringNowSlider from '@/components/HiringNowSlider';
-import { faBriefcase, faHandHoldingDollar, faGraduationCap, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
+import {
+    ArrowRight, BellRing, BookOpen, Briefcase, Building2, Calendar,
+    CheckCircle, Clock, ExternalLink, Eye, Home, Layers,
+    MapPin, MessageCircle, Search, Shield, ShieldCheck, Sparkles,
+    TrendingUp, Users, Wallet, X, Zap, Star, Clock3, ArrowUpRight,
+} from 'lucide-react';
 import type { Metadata } from 'next';
+import JobsFilter from '@/components/JobsFilter';
+import NoJobsSubscribe from '@/components/NoJobsSubscribe';
+import ExternalJobFeed from '@/components/ExternalJobFeed';
+import HeroSlider from '@/components/HeroSlider';
+import ListingsView from '@/components/ListingsView';
+import ScrollReveal from '@/components/ScrollReveal';
+import WeatherWidget from '@/components/WeatherWidget';
+import { createClient } from '@/lib/supabase/server';
+import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
 export const metadata: Metadata = {
-    title: 'Job Openings Kenya | Latest Jobs, Grants, Scholarships & Training in Kenya',
-    description: 'Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.',
-    openGraph: {
-        title: 'Job Openings Kenya | Latest Jobs, Grants & Scholarships in Kenya',
-        description: 'Your Portal for the latest Job Openings in Kenya. Verified listings updated daily.',
-        images: ['/images/img2.jpg'],
-        type: 'website',
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'Job Openings Kenya | Kenya Jobs Portal',
-        description: 'Your Portal for the latest Job Openings in Kenya. Verified listings updated daily.',
-        images: ['/images/img2.jpg'],
-    },
+    title: 'Job Openings Kenya | Verified Jobs & Training in Kenya',
+    description: 'Kenya\'s trusted portal for verified job openings, internships, and professional training. Every listing hand-picked and scam-free.',
 };
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
 
-export default async function HomePage({
-    searchParams,
-}: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+type Timeframe = 'any' | '24h' | 'week' | '2weeks';
+
+function buildUrl(f: Record<string, string | undefined>) {
+    const p = new URLSearchParams();
+    Object.entries(f).forEach(([k, v]) => { if (v) p.set(k, v); });
+    return p.toString() ? `/?${p.toString()}` : '/';
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const supabase = await createClient();
     const today = new Date().toISOString().split('T')[0];
     const params = await searchParams;
-    const filterType = typeof params.type === 'string' ? params.type : 'All';
-    const filterQuery = typeof params.q === 'string' ? params.q : '';
-    const isUrgent = params.urgent === 'true';
+    const ft = typeof params.type === 'string' ? params.type : 'All';
+    const fq = typeof params.q === 'string' ? params.q : '';
+    const fl = typeof params.location === 'string' ? params.location : '';
+    const fmin = typeof params.salary_min === 'string' ? params.salary_min : '';
+    const fmax = typeof params.salary_max === 'string' ? params.salary_max : '';
+    const urgent = params.urgent === 'true';
+    const timeframe = (typeof params.timeframe === 'string' ? params.timeframe : 'any') as Timeframe;
 
-    const { data: bannersData } = await supabase
-        .from('opportunities')
-        .select('*')
-        .eq('type', 'Banner')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+    const { count: totalCount } = await supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('status', 'active');
+    const { count: compCount } = await supabase.from('opportunities').select('company', { count: 'exact', head: true }).eq('status', 'active');
 
-    let query = supabase
-        .from('opportunities')
-        .select('*')
-        .neq('type', 'Banner')
-        .or(`deadline.gte.${today},deadline.is.null`) // Show active/future deadlines or rolling basis
-        .eq('status', 'active');
+    // Timeframe filter
+    const now = new Date();
+    let timeFilterDate: Date | null = null;
+    if (timeframe === '24h') { timeFilterDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); }
+    else if (timeframe === 'week') { timeFilterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); }
+    else if (timeframe === '2weeks') { timeFilterDate = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000); }
 
-    if (isUrgent) {
-        const threeDaysDate = new Date();
-        threeDaysDate.setDate(threeDaysDate.getDate() + 3);
-        const maxDate = threeDaysDate.toISOString().split('T')[0];
-        query = query.lte('deadline', maxDate).order('deadline', { ascending: true });
-    } else {
-        query = query.order('created_at', { ascending: false });
-    }
+    let q = supabase.from('opportunities').select('*').neq('type', 'Banner').or(`deadline.gte.${today},deadline.is.null`).eq('status', 'active');
+    if (timeFilterDate) q = q.gte('created_at', timeFilterDate.toISOString());
+    if (urgent) { const d = new Date(); d.setDate(d.getDate() + 3); q = q.lte('deadline', d.toISOString().split('T')[0]).order('deadline', { ascending: true }); }
+    else { q = q.order('created_at', { ascending: false }); }
+    if (ft !== 'All') q = q.eq('type', ft);
+    if (fq) q = q.or(`title.ilike.%${fq}%,company.ilike.%${fq}%,location.ilike.%${fq}%`);
+    if (fl) q = q.ilike('location', `%${fl}%`);
+    if (fmin) q = q.gte('salary_max', parseInt(fmin, 10));
+    if (fmax) q = q.lte('salary_min', parseInt(fmax, 10));
 
-    if (filterType !== 'All') {
-        query = query.eq('type', filterType);
-    }
-    
-    if (filterQuery) {
-        query = query.or(`title.ilike.%${filterQuery}%,company.ilike.%${filterQuery}%,location.ilike.%${filterQuery}%`);
-    }
+    const { data: opps } = await q;
+    const jobs = (opps || []) as JobData[];
+    const companies = [...new Set(jobs.map(o => o.company))].filter(Boolean).slice(0, 8);
+    const urgentJobs = jobs.filter(j => { const d = getDaysLeft(j.deadline); return d !== null && d <= 3 && d > 0; });
+    const featuredUrgent = urgentJobs.slice(0, 3);
 
-    const { data: opportunities, error } = await query;
+    // Category sections — fetch top jobs per category for WWR-style discovery
+    const { data: catJobs } = await supabase.from('opportunities').select('*').eq('type', 'Job').neq('type', 'Banner').or(`deadline.gte.${today},deadline.is.null`).eq('status', 'active').order('created_at', { ascending: false }).limit(6);
+    const { data: catTrainings } = await supabase.from('opportunities').select('*').eq('type', 'Training').neq('type', 'Banner').or(`deadline.gte.${today},deadline.is.null`).eq('status', 'active').order('created_at', { ascending: false }).limit(6);
+    const { count: jobCount } = await supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('type', 'Job').eq('status', 'active');
+    const { count: trainingCount } = await supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('type', 'Training').eq('status', 'active');
+    const categoryJobs = (catJobs || []) as JobData[];
+    const categoryTrainings = (catTrainings || []) as JobData[];
 
-    if (error) {
-        console.warn('Could not fetch opportunities (database tables might not be set up):', error.message || error);
-    }
+    const isFiltered = ft !== 'All' || fq || fl || urgent || fmin || fmax || timeframe !== 'any';
 
-    // Count by type
-    const jobsCount = opportunities?.filter(o => o.type === 'Job').length || 0;
-    const grantsCount = opportunities?.filter(o => o.type === 'Grant').length || 0;
-    const scholarshipsCount = opportunities?.filter(o => o.type === 'Scholarship').length || 0;
-    const trainingsCount = opportunities?.filter(o => o.type === 'Training').length || 0;
-
-    const uniqueCompanies = Array.from(new Set(opportunities?.map((o: any) => o.company))).filter(Boolean).slice(0, 12);
+    const timeframeLinks = [
+        { value: 'any', label: 'Any Time', icon: Clock3 },
+        { value: '24h', label: 'Past 24 Hours', icon: Zap },
+        { value: 'week', label: 'Past Week', icon: Calendar },
+        { value: '2weeks', label: 'Past 2 Weeks', icon: Clock },
+    ];
 
     return (
         <div className="bg-white">
-            {/* Hero Slider */}
-            <JobsHeroSlider customSlides={bannersData || undefined} />
+            {/* ═══════ HERO ═══════ */}
+            <section className="relative overflow-hidden min-h-[560px] sm:min-h-[640px] flex items-center">
+                {/* Background image slider */}
+                <div className="absolute inset-0">
+                    <HeroSlider />
+                </div>
 
-            {/* Expiring Soon Alert */}
-            {isUrgent && (
-                <div className="bg-red-50 py-4 border-b border-red-100">
-                    <div className="container mx-auto px-6 lg:px-12 flex items-start sm:items-center gap-3">
-                        <div className="p-2 bg-red-100 text-red-600 rounded-lg shrink-0">
-                            <AlertCircle size={24} />
-                        </div>
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+                    <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                        {/* Left: Content */}
                         <div>
-                            <h3 className="text-red-800 font-bold text-lg">Urgent Opportunities</h3>
-                            <p className="text-red-700 text-sm">These selected opportunities are expiring in the next 3 days! Apply immediately.</p>
+                            <h1 className="text-[38px] sm:text-5xl lg:text-[56px] font-black text-white leading-[1.06] tracking-tight drop-shadow-lg">
+                                Find your{' '}
+                                <span className="relative inline-block">
+                                    <span className="text-emerald-300">dream job</span>
+                                    <svg className="absolute -bottom-1 left-0 w-full h-3 text-emerald-300/40" viewBox="0 0 240 12" preserveAspectRatio="none">
+                                        <path d="M0,6 Q30,12 60,6 Q90,0 120,6 Q150,12 180,6 Q210,0 240,6" fill="none" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                </span>{' '}
+                                in Kenya
+                            </h1>
+                            <p className="mt-4 text-base sm:text-lg text-white/75 max-w-md leading-relaxed">
+                                Browse verified jobs and training programs — hand-picked and scam-free.
+                            </p>
+
+                            {/* Search bar */}
+                            <div className="mt-6 max-w-lg"><JobsFilter /></div>
+
+                            {/* Trending keyword tags */}
+                            <div className="flex flex-wrap items-center gap-2 mt-5">
+                                <span className="text-[11px] font-bold text-white/50">Trending:</span>
+                                {['Nairobi', 'Remote', 'Technology', 'Finance', 'Entry Level', 'Internships'].map(tag => (
+                                    <a key={tag} href={`/?q=${encodeURIComponent(tag)}`}
+                                        className="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-white/10 backdrop-blur-sm text-white/80 hover:bg-white/20 hover:text-white transition-colors border border-white/10">
+                                        {tag}
+                                    </a>
+                                ))}
+                            </div>
+
+                            {/* Trust badges */}
+                            <div className="flex items-center gap-8 sm:gap-10 mt-8 pt-6 border-t border-white/10">
+                                {[
+                                    { number: (totalCount || 0).toLocaleString(), label: 'Live Jobs' },
+                                    { number: (compCount ?? 10) + '+', label: 'Companies' },
+                                    { number: '100%', label: 'Verified' },
+                                ].map(s => (
+                                    <div key={s.label} className="text-center">
+                                        <p className="text-xl sm:text-2xl font-black text-white">{s.number}</p>
+                                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider">{s.label}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Right: Lead Image */}
+                        <div className="hidden lg:flex items-center justify-center relative">
+                            <div className="relative w-full max-w-md">
+                                {/* Glow behind image */}
+                                <div className="absolute inset-0 bg-emerald-400/20 rounded-3xl blur-3xl scale-75" />
+                                <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border-2 border-white/20">
+                                    <Image
+                                        src="/images/advance-your-career.png"
+                                        alt="Professional job seeker in Kenya"
+                                        width={500}
+                                        height={400}
+                                        className="w-full h-auto object-cover aspect-[5/4]"
+                                        priority
+                                    />
+                                    {/* Floating badge */}
+                                    <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 shadow-lg">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            <p className="text-xs font-extrabold text-slate-800">{totalCount || 0}+ Active Jobs</p>
+                                        </div>
+                                    </div>
+                                    {/* Floating card top-right */}
+                                    <div className="absolute -top-3 -right-3 bg-white rounded-xl px-3.5 py-2 shadow-xl">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Updated</p>
+                                        <p className="text-sm font-extrabold text-emerald-600">Daily</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            )}
+            </section>
 
-            {/* Quick Stats — horizontal scroll on mobile, grid on desktop */}
-            <div className="py-8 bg-white">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-12">
-                    {/* Mobile: scrollable row */}
-                    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide lg:hidden">
+            {/* ═══════ STATS BAR ═══════ */}
+            <section className="bg-emerald-600">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-white">
                         {[
-                            { icon: faBriefcase,        count: jobsCount,        label: 'Active Jobs',        bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
-                            { icon: faHandHoldingDollar, count: grantsCount,      label: 'Grants',             bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
-                            { icon: faGraduationCap,    count: scholarshipsCount, label: 'Scholarships',       bg: 'from-[#4A9900]/10 to-[#4A9900]/5', border: 'border-[#4A9900]/20', color: 'text-[#4A9900]' },
-                            { icon: faChalkboardTeacher, count: trainingsCount,   label: 'Training',           bg: 'from-[#5CB800]/10 to-[#5CB800]/5', border: 'border-[#5CB800]/20', color: 'text-[#5CB800]' },
-                        ].map(({ icon, count, label, bg, border, color }) => (
-                            <div key={label} className={`snap-start shrink-0 w-32 text-center p-4 bg-gradient-to-br ${bg} rounded-2xl border-2 ${border}`}>
-                                <div className={`text-2xl mb-2 ${color}`}>
-                                    <FontAwesomeIcon icon={icon} />
-                                </div>
-                                <div className="text-2xl font-bold text-gray-900 mb-0.5">{count}</div>
-                                <div className="text-xs text-gray-600 leading-tight">{label}</div>
+                            { value: (totalCount || 0).toLocaleString(), label: 'Active Jobs', sub: 'Hand-verified' },
+                            { value: (compCount ?? 10) + '+', label: 'Top Employers', sub: 'Hiring now' },
+                            { value: 'Trusted', label: 'Verified Platform', sub: 'Manual screening' },
+                            { value: 'Daily', label: 'Fresh Updates', sub: 'New listings' },
+                        ].map((s) => (
+                            <div key={s.label} className="text-left sm:text-center">
+                                <p className="text-xl sm:text-2xl font-black">{s.value}</p>
+                                <p className="text-sm font-bold">{s.label}</p>
+                                <p className="text-[11px] text-white/70">{s.sub}</p>
                             </div>
                         ))}
                     </div>
-
-                    {/* Desktop: 4-col grid */}
-                    <div className="hidden lg:grid grid-cols-4 gap-6">
-                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faBriefcase} /></div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">{jobsCount}</div>
-                            <div className="text-sm text-gray-600">Active Jobs</div>
-                        </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faHandHoldingDollar} /></div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">{grantsCount}</div>
-                            <div className="text-sm text-gray-600">Grants Available</div>
-                        </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#4A9900]/10 to-[#4A9900]/5 rounded-2xl border-2 border-[#4A9900]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#4A9900]"><FontAwesomeIcon icon={faGraduationCap} /></div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">{scholarshipsCount}</div>
-                            <div className="text-sm text-gray-600">Scholarships</div>
-                        </div>
-                        <div className="text-center p-6 bg-gradient-to-br from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border-2 border-[#5CB800]/20 hover:shadow-lg transition-all">
-                            <div className="text-4xl mb-3 text-[#5CB800]"><FontAwesomeIcon icon={faChalkboardTeacher} /></div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">{trainingsCount}</div>
-                            <div className="text-sm text-gray-600">Training Programs</div>
-                        </div>
-                    </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Hiring Now Companies */}
-            {uniqueCompanies && uniqueCompanies.length > 0 && (
-                <div className="py-12 bg-gray-50 border-t border-gray-200">
-                    <div className="container mx-auto px-6 lg:px-12">
+            {/* ═══════ BROWSE BY CATEGORY ═══════ */}
+            {!isFiltered && (
+                <section className="py-10 sm:py-14 bg-white border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Hiring Now</h2>
-                            <p className="text-gray-600">Top companies actively recruiting on Job Openings Kenya</p>
+                            <span className="inline-block text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-2">Popular Categories</span>
+                            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Browse by Industry</h2>
+                            <p className="mt-2 text-gray-500 max-w-lg mx-auto">Find opportunities in your field of expertise</p>
                         </div>
-                        <HiringNowSlider companies={uniqueCompanies as string[]} />
+                        <div className="flex flex-wrap justify-center gap-2.5">
+                            {[
+                                { label: 'Technology', icon: Zap },
+                                { label: 'Finance', icon: Wallet },
+                                { label: 'Healthcare', icon: ShieldCheck },
+                                { label: 'Education', icon: BookOpen },
+                                { label: 'Engineering', icon: Building2 },
+                                { label: 'Marketing', icon: TrendingUp },
+                                { label: 'Hospitality', icon: Users },
+                                { label: 'Agriculture', icon: Layers },
+                            ].map((cat) => (
+                                <Link key={cat.label} href={`/?q=${encodeURIComponent(cat.label)}`}
+                                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-50 border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 transition-all text-sm font-semibold text-gray-700">
+                                    <cat.icon size={15} />
+                                    {cat.label}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </section>
             )}
 
-            {/* Latest Jobs Slider */}
-            {!isUrgent && filterType === 'All' && !filterQuery && opportunities && opportunities.length > 0 && (
-                <div className="py-12 bg-white border-t border-gray-200">
-                    <div className="container mx-auto px-6 lg:px-12">
+            {/* ═══════ FEATURED URGENT JOBS ═══════ */}
+            {featuredUrgent.length > 0 && !isFiltered && (
+                <section className="py-10 sm:py-14 bg-gray-50/50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Jobs in Kenya 2026</h2>
-                                <p className="text-gray-600">Swipe to discover the newest opportunities</p>
+                                <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-red-600 mb-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Closing Soon
+                                </span>
+                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Urgent Opportunities</h2>
                             </div>
+                            <Link href="/?urgent=true" className="hidden sm:flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                                View all urgent <ArrowRight size={15} />
+                            </Link>
                         </div>
-                        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-hide">
-                            {opportunities.slice(0, 8).map((job) => {
-                                const typeColors = {
-                                    'Job': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
-                                    'Grant': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#4A9900]' },
-                                    'Scholarship': { badge: 'bg-[#4A9900]', gradient: 'from-[#4A9900] to-[#5D4037]' },
-                                    'Training': { badge: 'bg-[#5CB800]', gradient: 'from-[#5CB800] to-[#e08d0a]' },
-                                };
-                                const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
-                                const daysLeft = job.deadline ? Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))) : null;
-
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {featuredUrgent.map((job: JobData) => {
+                                const dl = getDaysLeft(job.deadline);
                                 return (
-                                    <Link 
-                                        key={job.id} 
-                                        href={`/jobs/${job.id}`}
-                                        className="snap-start shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-xl hover:border-[#5CB800]/30 transition-all hover:-translate-y-1 block group"
-                                    >
+                                    <Link key={job.id} href={`/jobs/${job.id}`} className="group block bg-white rounded-2xl border border-gray-100 hover:border-red-200 hover:shadow-xl transition-all duration-300 overflow-hidden">
                                         <div className="p-5">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-sm bg-gradient-to-br ${colors.gradient}`}>
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
                                                     {job.company.charAt(0).toUpperCase()}
                                                 </div>
-                                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${daysLeft === 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'} flex items-center gap-1`}>
-                                                    <Clock size={12} />
-                                                    {daysLeft === null ? 'Rolling' : daysLeft === 0 ? 'Expired' : `${daysLeft}d left`}
-                                                </span>
+                                                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-100 text-red-600">{dl} days left</span>
                                             </div>
-                                            <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#5CB800] transition-colors line-clamp-2 md:h-14">
-                                                {job.title}
-                                            </h3>
-                                            <p className="text-gray-600 text-sm mb-4 line-clamp-1">{job.company}</p>
-                                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium pt-4 border-t border-gray-50">
-                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
-                                                    <Building size={12} className="text-gray-400" />
-                                                    {job.type}
-                                                </span>
-                                                <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
-                                                    <MapPin size={12} className="text-gray-400" />
-                                                    <span className="truncate max-w-[100px]">{job.location}</span>
-                                                </span>
+                                            <h3 className="font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-2">{job.title}</h3>
+                                            <p className="text-sm text-gray-500 line-clamp-2 mb-4">{cleanSummary(job)}</p>
+                                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                                                <span className="flex items-center gap-1 font-semibold text-slate-700"><Building2 size={12} /> {job.company}</span>
+                                                <span className="flex items-center gap-1"><MapPin size={12} /> {job.location || 'Kenya'}</span>
+                                                <span className="flex items-center gap-1"><Calendar size={12} /> {fmtDate(job.deadline)}</span>
                                             </div>
+                                        </div>
+                                        <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                            <span className="text-xs font-bold text-emerald-600">Apply Now</span>
+                                            <ArrowUpRight size={14} className="text-emerald-600" />
                                         </div>
                                     </Link>
                                 );
                             })}
                         </div>
                     </div>
-                </div>
+                </section>
             )}
 
-            {/* Filter Section */}
-            <div id="opportunities" className="py-8 bg-gray-50 border-y border-gray-200">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                {filterType === 'All' ? 'All Opportunities' : `${filterType}s`}
-                            </h2>
-                            <p className="text-gray-600">
-                                {opportunities?.length || 0} active opportunities available
-                            </p>
-                        </div>
-                        <JobsFilter />
-                    </div>
-                </div>
-            </div>
-
-            {/* Opportunities Grid */}
-            <div className="py-12 bg-gray-50">
-                <div className="container mx-auto px-6 lg:px-12">
-                    {!opportunities || opportunities.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-2xl shadow-lg">
-                            <div className="text-6xl mb-4 text-gray-300">
-                                <Briefcase className="mx-auto" size={80} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Opportunities Found</h3>
-                            <p className="text-gray-500 mb-6">Check back soon for new opportunities!</p>
-                            <Link href="/" className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none">
-                                View All Opportunities
+            {/* ═══════ LISTINGS ═══════ */}
+            <section className="py-8 sm:py-12 bg-gray-50/50">
+                <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
+                    <main>
+                        {/* Breadcrumb */}
+                        <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-6">
+                            <Link href="/" className="flex items-center gap-1 hover:text-emerald-600 transition-colors">
+                                <Home size={12} /> Home
                             </Link>
+                            {isFiltered && (
+                                <>
+                                    <span>/</span>
+                                    <span className="text-emerald-600">
+                                        {urgent ? '⚡ Closing Soon' : ft !== 'All' ? ft + 's' : timeframe !== 'any' ? timeframeLinks.find(t => t.value === timeframe)?.label : 'Search'}
+                                    </span>
+                                </>
+                            )}
                         </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {opportunities.map((job) => {
-                                const typeColors = {
-                                    'Job': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
-                                    'Grant': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
-                                    'Scholarship': { bg: 'bg-[#4A9900]/10', border: 'border-[#4A9900]/30', text: 'text-[#4A9900]', badge: 'bg-[#4A9900]' },
-                                    'Training': { bg: 'bg-[#5CB800]/10', border: 'border-[#5CB800]/30', text: 'text-[#5CB800]', badge: 'bg-[#5CB800]' },
-                                };
-                                const colors = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
 
+                        {/* Section Header */}
+                        <div className="mb-6">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1 h-5 rounded-full bg-emerald-500" />
+                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-600">{ft === 'All' ? 'All Opportunities' : ft + 's'}</span>
+                            </div>
+                            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{urgent ? '⚡ Closing Soon' : 'Latest Listings'}</h2>
+                            <p className="mt-1 text-sm text-gray-500">{jobs.length} {jobs.length === 1 ? 'opportunity' : 'opportunities'}{fq ? ` for "${fq}"` : ''}{timeframe !== 'any' ? ` (${timeframeLinks.find(t => t.value === timeframe)?.label})` : ''}</p>
+                        </div>
+
+                        {/* Active Filters (Chips) */}
+                        {(ft !== 'All' || fq || fl || urgent || fmin || fmax) && (
+                            <div className="mb-4 flex flex-wrap gap-2">
+                                {urgent && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, q: fq || undefined, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-red-50 text-red-600 border-red-100 hover:bg-red-100">Closing Soon <X size={11} /></Link>}
+                                {ft !== 'All' && <Link href={buildUrl({ q: fq || undefined, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100">{ft} <X size={11} /></Link>}
+                                {fq && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100">&ldquo;{fq}&rdquo; <X size={11} /></Link>}
+                                {fl && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, q: fq || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100"><MapPin size={11} /> {fl} <X size={11} /></Link>}
+                                <Link href="/" className="text-xs font-semibold text-gray-400 hover:text-gray-600 ml-1">Clear all</Link>
+                            </div>
+                        )}
+
+                        {/* Timeframe Quick-Filter Tabs (WWR-style) */}
+                        <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+                            <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mr-2 shrink-0">Time:</span>
+                            {timeframeLinks.map(tf => {
+                                const Icon = tf.icon;
+                                const active = timeframe === tf.value;
                                 return (
-                                    <div 
-                                        key={job.id} 
-                                        className={`bg-white rounded-2xl flex flex-col shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 ${colors.border} group hover:-translate-y-1`}
+                                    <Link
+                                        key={tf.value}
+                                        href={buildUrl({
+                                            type: ft === 'All' ? undefined : ft,
+                                            q: fq || undefined,
+                                            location: fl || undefined,
+                                            timeframe: tf.value === 'any' ? undefined : tf.value,
+                                        })}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                                            active
+                                                ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
+                                                : 'bg-white text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200'
+                                        }`}
                                     >
-                                        {job.thumbnail_url ? (
-                                            <div className="w-full h-48 overflow-hidden relative shrink-0">
-                                                <div className={`absolute top-0 inset-x-0 h-1 ${colors.badge} z-10`}></div>
-                                                <img src={job.thumbnail_url} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                            </div>
-                                        ) : (
-                                            <div className={`h-2 ${colors.badge} shrink-0`}></div>
-                                        )}
-                                        <div className="p-6 flex-1 flex flex-col">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center justify-between mb-2 min-w-0">
-                                                        <div className="flex items-center gap-2 min-w-0 flex-shrink">
-                                                            <span className={`${colors.badge} text-white px-2 py-1 rounded-full text-xs font-semibold shrink-0`}>
-                                                                {job.type}
-                                                            </span>
-                                                            <span className="flex items-center gap-1 text-xs text-gray-500 truncate">
-                                                                <Clock size={12} className="shrink-0" />
-                                                                {job.deadline ? `${Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days left` : 'Rolling Basis'}
-                                                            </span>
-                                                        </div>
-                                                        <BookmarkButton 
-                                                            job={{
-                                                                id: job.id,
-                                                                title: job.title,
-                                                                company: job.company,
-                                                                type: job.type,
-                                                                location: job.location
-                                                            }}
-                                                            className="p-1 z-20 bg-white/80 rounded-full hover:bg-white"
-                                                        />
-                                                    </div>
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#5CB800] transition-colors line-clamp-2">
-                                                        {job.title}
-                                                    </h3>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-2 mb-4">
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <Building size={16} className={colors.text} />
-                                                    <span className="font-medium">{job.company}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <MapPin size={16} className={colors.text} />
-                                                    <span>{job.location}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <Calendar size={16} className={colors.text} />
-                                                    <span>Deadline: {job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Rolling Basis'}</span>
-                                                </div>
-                                            </div>
-
-                                            <p className="text-gray-600 text-sm mb-6 line-clamp-2 leading-relaxed">
-                                                {job.short_description}
-                                            </p>
-
-                                            <div className="mt-auto pt-4">
-                                                <Link 
-                                                    href={`/jobs/${job.id}`} 
-                                                    className={`btn ${colors.badge} text-white hover:opacity-90 w-full border-none gap-2 group/btn`}
-                                                >
-                                                    View Full Details
-                                                    <ExternalLink size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <Icon size={12} />
+                                        {tf.label}
+                                    </Link>
                                 );
                             })}
+                            <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-gray-500 border border-gray-200 shadow-sm ml-auto shrink-0">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {urgent ? 'Soonest first' : 'Newest'}
+                            </span>
                         </div>
-                    )}
-                </div>
-            </div>
 
-            {/* CTA Section */}
-            <div className="py-20 bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white">
-                <div className="container mx-auto px-6 lg:px-12 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className="text-4xl font-bold mb-6">Don&apos;t Miss the Latest Job Openings in Kenya</h2>
-                        <p className="text-xl text-white/90 mb-8">
-                            Join our WhatsApp channel to get instant notifications whenever new jobs, grants, and scholarships are posted. Be the first to apply!
-                        </p>
-                        <a 
-                            href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] btn-lg border-none w-full sm:w-auto px-6 sm:px-10 gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                            </svg>
-                            Join WhatsApp Channel
-                        </a>
+                        {/* Job Listings — using client component for grid/list toggle */}
+                        {!jobs.length ? (
+                            <div className="rounded-3xl border-2 border-dashed border-gray-200 bg-white px-8 py-20 text-center">
+                                <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-6"><Search size={32} className="text-gray-300" /></div>
+                                <h3 className="text-xl font-black text-gray-900 mb-2">No matches yet</h3>
+                                <p className="text-gray-500 max-w-md mx-auto text-sm mb-8">We don&apos;t have any listings matching your criteria right now. New opportunities are added daily.</p>
+                                <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                                    <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
+                                        className="group flex flex-col items-center gap-3 rounded-2xl border-2 border-green-200 bg-green-50 p-6 hover:border-green-400 hover:shadow-lg transition-all">
+                                        <div className="w-14 h-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform"><MessageCircle size={24} /></div>
+                                        <p className="font-extrabold text-green-800 text-sm">WhatsApp Alerts</p>
+                                        <p className="text-xs text-green-600">Get jobs on your phone instantly</p>
+                                    </a>
+                                    <div className="flex flex-col items-center gap-3 rounded-2xl border-2 border-blue-200 bg-blue-50 p-6">
+                                        <div className="w-14 h-14 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25"><BellRing size={24} /></div>
+                                        <p className="font-extrabold text-blue-800 text-sm">Email Alerts</p>
+                                        <div className="w-full"><NoJobsSubscribe query={fq} type={ft} location={fl} /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <ListingsView jobs={jobs} urgent={urgent} />
+                        )}
+                    </main>
+
+                    {/* ═══════ SIDEBAR ═══════ */}
+                    <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+                        {/* Weather Widget */}
+                        <WeatherWidget />
+
+                        <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 shadow-[0_20px_50px_-12px_rgba(16,185,129,0.3)]">
+                            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4"><MessageCircle size={24} /></div>
+                            <h3 className="text-lg font-extrabold mb-1">WhatsApp Job Alerts</h3>
+                            <p className="text-sm text-white/75 mb-5 leading-relaxed">Get jobs delivered to your phone. Instant, no spam.</p>
+                            <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
+                                className="block w-full text-center rounded-full bg-white px-5 py-3 text-sm font-extrabold text-emerald-700 hover:bg-gray-50 transition-all">Join Channel →</a>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            {[
+                                { label: 'Jobs', icon: Briefcase, href: '/?type=Job', c: 'emerald' },
+                                { label: 'Training', icon: BookOpen, href: '/?type=Training', c: 'violet' },
+                            ].map(({ label, icon: Ic, href, c }) => (
+                                <Link key={label} href={href}
+                                    className={`flex flex-col items-center gap-2.5 rounded-2xl border border-gray-100 bg-white p-5 hover:shadow-lg hover:border-${c}-200 hover:-translate-y-0.5 transition-all duration-300 group`}>
+                                    <div className={`w-12 h-12 rounded-2xl bg-${c}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                                        <Ic size={22} className={`text-${c}-600`} />
+                                    </div>
+                                    <span className="text-sm font-extrabold text-gray-700">{label}</span>
+                                </Link>
+                            ))}
+                        </div>
+
+                        {urgentJobs.length > 0 && (
+                            <div className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+                                <h3 className="flex items-center gap-2 text-sm font-extrabold text-red-700 mb-4">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Closing Soon
+                                </h3>
+                                <div className="space-y-3">
+                                    {urgentJobs.slice(0, 4).map(j => (
+                                        <Link key={j.id} href={`/jobs/${j.id}`} className="block pb-3 border-b border-red-50 last:border-0 last:pb-0 group">
+                                            <p className="font-bold text-sm text-gray-900 group-hover:text-emerald-700 line-clamp-2">{j.title}</p>
+                                            <p className="mt-1 text-xs font-semibold text-red-500">{getDaysLeft(j.deadline)} days left</p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                            <h3 className="flex items-center gap-2 text-sm font-extrabold text-gray-900 mb-4"><ShieldCheck size={16} className="text-emerald-500" /> Why Choose Us?</h3>
+                            <div className="space-y-3.5">
+                                {[
+                                    { i: Shield, t: 'Every listing manually verified', c: 'text-emerald-500' },
+                                    { i: Zap, t: 'Updated daily — fresh opportunities', c: 'text-amber-500' },
+                                    { i: CheckCircle, t: 'No fees for job seekers', c: 'text-green-500' },
+                                    { i: Eye, t: 'Scam-free guarantee', c: 'text-blue-500' },
+                                ].map(({ i: Ic, t, c }) => (
+                                    <div key={t} className="flex items-start gap-3">
+                                        <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0`}><Ic size={14} className={c} /></div>
+                                        <span className="text-sm text-gray-600 leading-5">{t}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {companies.length > 0 && (
+                            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="flex items-center gap-2 text-sm font-extrabold text-gray-900"><Building2 size={16} className="text-emerald-500" /> Hiring Now</h3>
+                                    <Link href="/companies" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">All →</Link>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {companies.map(c => (
+                                        <Link key={c} href={`/?q=${encodeURIComponent(c)}`}
+                                            className="px-3 py-1.5 rounded-full bg-gray-50 text-xs font-semibold text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all border border-gray-100 hover:border-emerald-200">{c}</Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </aside>
+                </div>
+            </section>
+
+            {/* ═══════ CATEGORY DISCOVERY SECTIONS (WWR-Style) ═══════ */}
+            <section className="py-12 sm:py-16 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <ScrollReveal>
+                        <div className="text-center mb-10">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-700 mb-4">
+                                <Layers size={13} /> Browse by Category
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">Explore Opportunities</h2>
+                            <p className="mt-3 text-gray-500 max-w-xl mx-auto">Find exactly what you&apos;re looking for across every sector and region.</p>
+                        </div>
+                    </ScrollReveal>
+
+                    <div className="space-y-10">
+                        {/* Jobs Section */}
+                        {categoryJobs.length > 0 && (
+                            <div>
+                                <ScrollReveal>
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                                                <Briefcase size={20} className="text-emerald-600" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-extrabold text-gray-900">Latest Jobs</h3>
+                                                <p className="text-xs text-gray-400">Latest posting {getPostedDaysAgo(categoryJobs[0]?.created_at) || 'recently'}</p>
+                                            </div>
+                                        </div>
+                                        <Link href="/?type=Job" className="flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                                            View all {(jobCount || 0).toLocaleString()} jobs <ArrowRight size={15} />
+                                        </Link>
+                                    </div>
+                                </ScrollReveal>
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {categoryJobs.slice(0, 6).map((job, idx) => {
+                                        const cfg = typeConfig[job.type as OpportunityType] || typeConfig.Job;
+                                        const showNew = isNew(job.created_at);
+                                        const dl = getDaysLeft(job.deadline);
+                                        return (
+                                            <ScrollReveal key={job.id} delay={idx * 80}>
+                                                <Link href={`/jobs/${job.id}`}
+                                                    className="group block bg-white rounded-xl border border-gray-100 p-5 hover:shadow-lg hover:border-emerald-200 hover:-translate-y-0.5 transition-all duration-300">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white font-extrabold shadow-sm`}>
+                                                            {job.company.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {showNew && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-100 text-amber-700">New</span>}
+                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-600">{dl}d left</span>}
+                                                        </div>
+                                                    </div>
+                                                    <h4 className="font-extrabold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2 text-sm leading-snug mb-2">{job.title}</h4>
+                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                                        <span className="flex items-center gap-1 font-semibold text-gray-700"><Building2 size={11} /> {job.company}</span>
+                                                        <span className="flex items-center gap-1"><MapPin size={11} /> {job.location || 'Kenya'}</span>
+                                                        {(job.salary_min || job.salary_max) && (
+                                                            <span className="font-bold text-emerald-700">{job.salary_currency || 'KES'} {(job.salary_min || 0).toLocaleString()}+</span>
+                                                        )}
+                                                    </div>
+                                                </Link>
+                                            </ScrollReveal>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Training Section */}
+                        {categoryTrainings.length > 0 && (
+                            <div>
+                                <ScrollReveal>
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                                                <BookOpen size={20} className="text-violet-600" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-extrabold text-gray-900">Training & Courses</h3>
+                                                <p className="text-xs text-gray-400">Latest posting {getPostedDaysAgo(categoryTrainings[0]?.created_at) || 'recently'}</p>
+                                            </div>
+                                        </div>
+                                        <Link href="/?type=Training" className="flex items-center gap-1 text-sm font-bold text-violet-600 hover:text-violet-700 transition-colors">
+                                            View all {(trainingCount || 0).toLocaleString()} training <ArrowRight size={15} />
+                                        </Link>
+                                    </div>
+                                </ScrollReveal>
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {categoryTrainings.slice(0, 6).map((job, idx) => {
+                                        const cfg = typeConfig[job.type as OpportunityType] || typeConfig.Training;
+                                        const showNew = isNew(job.created_at);
+                                        const dl = getDaysLeft(job.deadline);
+                                        return (
+                                            <ScrollReveal key={job.id} delay={idx * 80}>
+                                                <Link href={`/jobs/${job.id}`}
+                                                    className="group block bg-white rounded-xl border border-gray-100 p-5 hover:shadow-lg hover:border-violet-200 hover:-translate-y-0.5 transition-all duration-300">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center text-white font-extrabold shadow-sm`}>
+                                                            {job.company.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {showNew && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-100 text-amber-700">New</span>}
+                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-600">{dl}d left</span>}
+                                                        </div>
+                                                    </div>
+                                                    <h4 className="font-extrabold text-gray-900 group-hover:text-violet-700 transition-colors line-clamp-2 text-sm leading-snug mb-2">{job.title}</h4>
+                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                                        <span className="flex items-center gap-1 font-semibold text-gray-700"><Building2 size={11} /> {job.company}</span>
+                                                        <span className="flex items-center gap-1"><MapPin size={11} /> {job.location || 'Kenya'}</span>
+                                                    </div>
+                                                </Link>
+                                            </ScrollReveal>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
+            </section>
+
+            {/* ═══════ FEATURES ═══════ */}
+            <section className="py-16 sm:py-20 bg-gray-50/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <ScrollReveal>
+                        <div className="text-center mb-12">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-700 mb-4">
+                                <Star size={13} /> Why Job Seekers Love Us
+                            </div>
+                            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">Everything you need to land your next role</h2>
+                            <p className="mt-3 text-gray-500 max-w-2xl mx-auto">We make finding jobs in Kenya simple and safe.</p>
+                        </div>
+                    </ScrollReveal>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[
+                            { i: Shield, t: 'Verified Listings', d: 'Every job is manually reviewed before being published. No scams, no ghost jobs.', c: 'emerald' },
+                            { i: BellRing, t: 'Instant Alerts', d: 'Get notified on WhatsApp and email the moment new jobs matching your criteria are posted.', c: 'amber' },
+                            { i: Eye, t: 'Track Applications', d: 'Save jobs, track your applications with a visual kanban board, and never miss a deadline.', c: 'blue' },
+                            { i: Zap, t: 'Daily Updates', d: 'New opportunities added every single day. Fresh listings from companies across Kenya.', c: 'violet' },
+                            { i: Users, t: 'For Everyone', d: 'Jobs for all levels — from entry-level to executive. Plus training programs and scholarships.', c: 'orange' },
+                            { i: MessageCircle, t: 'AI-Powered Help', d: 'Get AI-generated cover letters, interview prep, and CV tips tailored to each job.', c: 'teal' },
+                        ].map(({ i: Ic, t, d, c }, idx: number) => (
+                            <ScrollReveal key={t} delay={idx * 100}>
+                                <div className="group bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.10)] hover:-translate-y-1 transition-all duration-300">
+                                    <div className={`w-12 h-12 rounded-2xl bg-${c}-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                                        <Ic size={22} className={`text-${c}-600`} />
+                                    </div>
+                                    <h3 className="font-extrabold text-gray-900 mb-2">{t}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{d}</p>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════ NEWSLETTER CTA ═══════ */}
+            <section className="py-16 sm:py-20 bg-emerald-600">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <ScrollReveal>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-5 py-2 text-sm font-extrabold border border-white/20 mb-6 text-white">
+                            <BellRing size={16} /> Weekly Newsletter
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-white">
+                            Get the best jobs delivered to your inbox
+                        </h2>
+                        <p className="mx-auto mt-4 max-w-lg text-lg text-white/80 leading-relaxed">
+                            Join our newsletter for curated job listings, career tips, and exclusive opportunities every week.
+                        </p>
+                        <form action="/api/newsletter/subscribe" method="POST" className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                placeholder="your@email.com"
+                                className="flex-1 px-5 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 outline-none focus:border-white/40 transition-colors text-sm"
+                            />
+                            <button
+                                type="submit"
+                                className="px-6 py-3.5 rounded-xl bg-white text-emerald-700 font-bold text-sm hover:bg-gray-100 transition-colors shadow-lg"
+                            >
+                                Subscribe
+                            </button>
+                        </form>
+                        <p className="mt-4 text-sm text-white/50">Unsubscribe anytime • No spam</p>
+                    </ScrollReveal>
+                </div>
+            </section>
+
+            {/* ═══════ WHATSAPP CTA ═══════ */}
+            <section className="py-16 sm:py-20 bg-gradient-to-br from-[#0a0f1a] via-[#0f1724] to-emerald-950 text-white">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <ScrollReveal>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-white/8 px-5 py-2 text-sm font-extrabold backdrop-blur-sm border border-white/10 mb-6">
+                            <Sparkles size={16} className="text-amber-400" /> Never Miss an Opportunity
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                            Latest Kenyan jobs,{' '}
+                            <span className="text-amber-400">straight to your phone.</span>
+                        </h2>
+                        <p className="mx-auto mt-4 max-w-lg text-lg text-white/65 leading-relaxed">
+                            Join thousands of Kenyan youth getting instant job alerts via WhatsApp. Fast and spam-free.
+                        </p>
+                        <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
+                            className="mt-8 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-extrabold text-emerald-700 shadow-xl hover:bg-gray-50 hover:shadow-2xl transition-all active:scale-[0.98]">
+                            <MessageCircle size={22} /> Join WhatsApp <ExternalLink size={18} />
+                        </a>
+                        <p className="mt-4 text-sm text-white/40">No Spam • Instant Delivery</p>
+                    </ScrollReveal>
+                </div>
+            </section>
+
+            {/* ═══════ EXTERNAL FEED ═══════ */}
+            <ExternalJobFeed keywords="jobs" location="Nairobi, Kenya" />
         </div>
     );
 }

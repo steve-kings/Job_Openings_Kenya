@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { Bookmark, X, Trash2, ExternalLink, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -25,71 +25,80 @@ interface BookmarkContextType {
 const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined);
 
 export function BookmarkProvider({ children }: { children: React.ReactNode }) {
-    const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
-    const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
+
+    // Hydrate from localStorage after mount to avoid SSR mismatch
+    useEffect(() => {
+        setMounted(true);
+        try {
+            const stored = localStorage.getItem('jobopeningskenya_bookmarks');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setSavedJobs(parsed);
+                }
+            }
+        } catch {
+            localStorage.removeItem('jobopeningskenya_bookmarks');
+        }
+    }, []);
+    const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [closingJobs, setClosingJobs] = useState<SavedJob[]>([]);
     const [showAlert, setShowAlert] = useState(false);
     const [hasCheckedDeadlines, setHasCheckedDeadlines] = useState(false);
-    
-    const supabase = createClient();
 
-    useEffect(() => {
-        setMounted(true);
-        // Migrate old key if present
-        const oldData = localStorage.getItem('1000jobs_bookmarks');
-        const newData = localStorage.getItem('jobopeningskenya_bookmarks');
-        if (oldData && !newData) {
-            localStorage.setItem('jobopeningskenya_bookmarks', oldData);
-            localStorage.removeItem('1000jobs_bookmarks');
-        }
-        const stored = localStorage.getItem('jobopeningskenya_bookmarks');
-        if (stored) {
-            try { setSavedJobs(JSON.parse(stored)); } catch(e) {}
-        }
-    }, []);
+    // Memoize the Supabase client so it's not recreated on every render
+    const supabaseRef = useRef(createClient());
 
+    // Persist to localStorage whenever savedJobs changes
     useEffect(() => {
         if (mounted) {
             localStorage.setItem('jobopeningskenya_bookmarks', JSON.stringify(savedJobs));
         }
     }, [savedJobs, mounted]);
 
-    // Check for expiring jobs
+    // Check for expiring jobs (runs once when mounted and savedJobs are hydrated)
     useEffect(() => {
         if (!mounted || savedJobs.length === 0 || hasCheckedDeadlines) return;
+        let cancelled = false;
 
         const checkDeadlines = async () => {
-            setHasCheckedDeadlines(true);
             const ids = savedJobs.map(j => j.id);
-            
-            const { data, error } = await supabase
+            const { data, error } = await supabaseRef.current
                 .from('opportunities')
                 .select('id, deadline')
                 .in('id', ids);
+            if (cancelled || !data || error) return null;
 
-            if (data && !error) {
-                const now = new Date();
-                const fortyEightHoursFromNow = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-                
-                const expiringIds = data.filter(job => {
-                    if (!job.deadline) return false;
-                    const deadlineDate = new Date(job.deadline);
-                    return deadlineDate > now && deadlineDate <= fortyEightHoursFromNow;
-                }).map(job => job.id);
+            const now = new Date();
+            const fortyEightHoursFromNow = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+            const expiringIds = data.filter(job => {
+                if (!job.deadline) return false;
+                const deadlineDate = new Date(job.deadline);
+                return deadlineDate > now && deadlineDate <= fortyEightHoursFromNow;
+            }).map(job => job.id);
 
-                if (expiringIds.length > 0) {
-                    const expiringSavedJobs = savedJobs.filter(sj => expiringIds.includes(sj.id));
-                    setClosingJobs(expiringSavedJobs);
-                    setShowAlert(true);
-                }
+            if (expiringIds.length > 0) {
+                return savedJobs.filter(sj => expiringIds.includes(sj.id));
             }
+            return null;
         };
 
-        checkDeadlines();
-    }, [mounted, savedJobs, hasCheckedDeadlines, supabase]);
+        const timer = setTimeout(() => {
+            setHasCheckedDeadlines(true);
+            checkDeadlines().then(expiring => {
+                if (!cancelled && expiring) {
+                    setClosingJobs(expiring);
+                    setShowAlert(true);
+                }
+            });
+        }, 0);
 
-    const toggleBookmark = (job: SavedJob) => {
+        return () => { cancelled = true; clearTimeout(timer); };
+    }, [mounted, savedJobs, hasCheckedDeadlines]);
+
+    const toggleBookmark = useCallback((job: SavedJob) => {
         setSavedJobs(prev => {
             const exists = prev.find(j => j.id === job.id);
             if (exists) {
@@ -99,27 +108,36 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                 return [job, ...prev];
             }
         });
-    };
+    }, []);
 
-    const removeBookmark = (id: string) => {
+    const removeBookmark = useCallback((id: string) => {
         setSavedJobs(prev => prev.filter(j => j.id !== id));
-    };
+    }, []);
 
-    const isBookmarked = (id: string) => {
+    const isBookmarked = useCallback((id: string) => {
         return savedJobs.some(j => j.id === id);
-    };
+    }, [savedJobs]);
+
+    const contextValue = useMemo(() => ({
+        savedJobs,
+        toggleBookmark,
+        removeBookmark,
+        isBookmarked,
+        isDrawerOpen,
+        setDrawerOpen,
+    }), [savedJobs, toggleBookmark, removeBookmark, isBookmarked, isDrawerOpen]);
 
     return (
-        <BookmarkContext.Provider value={{ savedJobs, toggleBookmark, removeBookmark, isBookmarked, isDrawerOpen, setDrawerOpen }}>
+        <BookmarkContext.Provider value={contextValue}>
             {children}
-            
-            {/* Bookmark Drawer & Alerts globally injected */}
+
+            {/* Bookmark Drawer & Alerts — only rendered client-side */}
             {mounted && (
                 <>
                     {/* Closing Soon Alert */}
                     {showAlert && closingJobs.length > 0 && (
-                        <div className="toast toast-top toast-center z-[10000] w-full sm:w-auto px-4 mt-16 sm:mt-0">
-                            <div className="alert bg-orange-50 border-l-4 border-orange-500 shadow-2xl relative pr-12 flex-row sm:flex-row items-center gap-4">
+                        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] w-full sm:w-auto px-4 mt-16 sm:mt-0">
+                            <div className="bg-orange-50 border-l-4 border-orange-500 shadow-2xl rounded-xl p-4 relative pr-12 flex flex-row items-center gap-4 max-w-lg">
                                 <AlertCircle className="text-orange-500 flex-shrink-0" size={28} />
                                 <div className="flex-1">
                                     <h3 className="font-bold text-orange-900 text-lg">Action Required</h3>
@@ -128,16 +146,16 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                                    <button 
-                                        onClick={() => { setShowAlert(false); setDrawerOpen(true); }} 
-                                        className="btn btn-sm bg-orange-500 hover:bg-orange-600 text-white border-none"
+                                    <button
+                                        onClick={() => { setShowAlert(false); setDrawerOpen(true); }}
+                                        className="inline-flex items-center px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-colors"
                                     >
                                         View
                                     </button>
                                 </div>
-                                <button 
-                                    onClick={() => setShowAlert(false)} 
-                                    className="btn btn-ghost btn-xs btn-circle absolute top-2 right-2 text-orange-800 hover:bg-orange-200"
+                                <button
+                                    onClick={() => setShowAlert(false)}
+                                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-orange-800 hover:bg-orange-200 transition-colors"
                                 >
                                     <X size={14} />
                                 </button>
@@ -147,14 +165,14 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
 
                     {/* Backdrop */}
                     {isDrawerOpen && (
-                        <div 
+                        <div
                             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] transition-opacity"
                             onClick={() => setDrawerOpen(false)}
                         />
                     )}
-                    
+
                     {/* Drawer */}
-                    <div 
+                    <div
                         className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white shadow-2xl z-[9999] transform transition-transform duration-300 ease-in-out flex flex-col ${
                             isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
                         }`}
@@ -164,7 +182,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                                 <Bookmark size={24} className="fill-current" />
                                 <h2 className="text-xl font-bold text-gray-900">Saved Jobs</h2>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setDrawerOpen(false)}
                                 className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-200 rounded-full transition-colors"
                             >
@@ -192,7 +210,7 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
                                                     </div>
                                                 </Link>
                                             </div>
-                                            <button 
+                                            <button
                                                 onClick={() => removeBookmark(job.id)}
                                                 className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors p-1"
                                                 title="Remove"
@@ -207,10 +225,10 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
 
                         {savedJobs.length > 0 && (
                             <div className="p-6 bg-white border-t border-gray-100">
-                                <Link 
-                                    href="/jobs" 
+                                <Link
+                                    href="/jobs"
                                     onClick={() => setDrawerOpen(false)}
-                                    className="btn w-full bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2"
+                                    className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-[#5CB800] hover:bg-[#4A9900] text-white font-semibold text-sm transition-colors gap-2"
                                 >
                                     Browse More Jobs
                                     <ExternalLink size={16} />

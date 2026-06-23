@@ -1,198 +1,217 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
-import { CheckCircle, Building2, Users, Clock, ArrowRight, FileText, Eye, Zap } from 'lucide-react';
+import { CheckCircle, Building2, Users, ArrowRight, FileText, Eye, Zap, Shield, Clock, Sparkles } from 'lucide-react';
+import HeroSlider from '@/components/HeroSlider';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export const metadata: Metadata = {
-    title: 'Employer Portal — Post a Job | Job Openings Kenya',
+    title: 'Post a Job — Hire Top Talent | Job Openings Kenya',
     description: 'Post your job openings on Job Openings Kenya and reach thousands of qualified Kenyan job seekers. Fast, simple, and reviewed by our team.',
 };
 
 const steps = [
-    {
-        number: '01',
-        icon: Building2,
-        title: 'Create Your Account',
-        description: 'Sign up as an employer in under 2 minutes. No credit card required.',
-        color: '#5CB800',
-    },
-    {
-        number: '02',
-        icon: FileText,
-        title: 'Fill the Job Form',
-        description: 'Describe the role, requirements, location, and how to apply.',
-        color: '#4A9900',
-    },
-    {
-        number: '03',
-        icon: Eye,
-        title: 'Admin Reviews',
-        description: 'Our team reviews your posting within 24 hours to ensure quality.',
-        color: '#5CB800',
-    },
-    {
-        number: '04',
-        icon: Zap,
-        title: 'Goes Live!',
-        description: 'Your job reaches thousands of active job seekers across Kenya.',
-        color: '#4A9900',
-    },
+    { number: '1', icon: Building2, title: 'Create Account', desc: 'Sign up as an employer in under 2 minutes.' },
+    { number: '2', icon: FileText, title: 'Post Your Job', desc: 'Fill in the role details, requirements, and how to apply.' },
+    { number: '3', icon: Eye, title: 'We Review', desc: 'Our team verifies within 24 hours for quality.' },
+    { number: '4', icon: Zap, title: 'Goes Live', desc: 'Your listing reaches thousands of active job seekers.' },
 ];
 
 const benefits = [
-    'Reach thousands of active Kenyan job seekers daily',
-    'Free job posting — no hidden fees',
-    'Jobs reviewed & published within 24 hours',
-    'Listings appear on homepage & search results',
-    'Access to talent directory to find candidates',
-    'Manage all your postings from your dashboard',
+    { icon: Users, title: '10,000+ Job Seekers', desc: 'Active, motivated Kenyan talent browsing daily.' },
+    { icon: Clock, title: '24hr Review', desc: 'Fast turnaround — your job goes live quickly.' },
+    { icon: Shield, title: 'Verified Platform', desc: 'Trusted by top employers across Kenya.' },
+    { icon: Zap, title: 'Simple Process', desc: 'One form, submit, done. No hassle.' },
 ];
 
 export default function EmployerLandingPage() {
     return (
         <div className="bg-white">
-            {/* Hero */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-20 w-64 h-64 bg-[#5CB800] rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-10 right-10 w-48 h-48 bg-[#4A9900] rounded-full blur-2xl"></div>
-                </div>
-                <div className="container mx-auto px-6 lg:px-12 py-20 lg:py-32 relative z-10">
-                    <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 bg-[#5CB800]/20 border border-[#5CB800]/30 text-[#5CB800] px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                            <Building2 size={16} />
-                            Employer Portal
-                        </div>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                            Hire the Best Talent in <span className="text-[#5CB800]">Kenya</span>
-                        </h1>
-                        <p className="text-xl text-white/80 leading-relaxed mb-10">
-                            Post your job openings on Job Openings Kenya and connect with thousands of qualified, motivated job seekers. Free to post. Live in 24 hours.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Link
-                                href="/login?role=employer"
-                                className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none btn-lg gap-2 shadow-xl"
-                            >
-                                Create Employer Account
-                                <ArrowRight size={20} />
-                            </Link>
-                            <Link
-                                href="/login?redirect=/employer/dashboard"
-                                className="btn btn-outline border-white text-white hover:bg-white hover:text-gray-900 btn-lg gap-2"
-                            >
-                                Sign In to Dashboard
-                            </Link>
-                        </div>
+            {/* ═══════ HERO ═══════ */}
+            <section className="relative overflow-hidden min-h-[500px] sm:min-h-[560px] flex items-center text-white">
+                <div className="absolute inset-0"><HeroSlider /></div>
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        {/* Left: Content */}
+                        <ScrollReveal>
+                            <div>
+                                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white mb-6">
+                                    <Building2 size={14} /> For Employers
+                                </div>
+                                <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black leading-[1.06] tracking-tight drop-shadow-lg">
+                                    Hire the best{' '}
+                                    <span className="text-emerald-300">talent</span> in Kenya
+                                </h1>
+                                <p className="mt-4 text-lg text-white/75 max-w-lg leading-relaxed">
+                                    Post your job openings and connect with thousands of qualified, motivated job seekers. Fast, simple, and reviewed by our team.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                                    <Link href="/login?role=employer"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-emerald-700 px-6 py-3.5 text-sm font-extrabold hover:bg-gray-100 transition-all shadow-xl">
+                                        <Sparkles size={17} /> Create Employer Account
+                                    </Link>
+                                    <Link href="/login?redirect=/employer/dashboard"
+                                        className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 text-white px-6 py-3.5 text-sm font-extrabold hover:bg-white/10 transition-all">
+                                        Sign In <ArrowRight size={16} />
+                                    </Link>
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Right: Preview card */}
+                        <ScrollReveal direction="right" variant="scale">
+                            <div className="hidden lg:block relative">
+                                <div className="absolute inset-0 bg-emerald-400/20 rounded-3xl blur-3xl scale-75" />
+                                <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl">
+                                    <div className="flex items-center gap-3 mb-5">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-sm">J</div>
+                                        <div>
+                                            <p className="text-sm font-extrabold text-white">Senior Developer</p>
+                                            <p className="text-xs text-white/60">Your Company Name</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <div className="flex items-center gap-2 text-xs text-white/70">
+                                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 text-[10px] font-bold">Full-time</span>
+                                            <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-bold">Nairobi</span>
+                                        </div>
+                                        <div className="h-2 bg-white/10 rounded-full w-3/4" />
+                                        <div className="h-2 bg-white/10 rounded-full w-1/2" />
+                                        <div className="h-2 bg-white/10 rounded-full w-5/6" />
+                                    </div>
+                                    <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
+                                        <span className="text-[10px] text-white/50">Live in 24 hours</span>
+                                        <span className="text-[10px] font-bold text-emerald-300">✓ Verified</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ScrollReveal>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Stats bar */}
-            <div className="bg-[#5CB800] text-white py-8">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                        {[
-                            { value: '10,000+', label: 'Active Job Seekers' },
-                            { value: '24hrs', label: 'Average Review Time' },
-                            { value: 'Free', label: 'Cost to Post' },
-                            { value: '100%', label: 'Kenya Focused' },
-                        ].map(({ value, label }) => (
-                            <div key={label}>
-                                <p className="text-3xl font-black">{value}</p>
-                                <p className="text-white/80 text-sm mt-1">{label}</p>
-                            </div>
+            {/* ═══════ BENEFITS BAR ═══════ */}
+            <section className="border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-gray-50">
+                        {benefits.map(({ icon: Icon, title, desc }, i) => (
+                            <ScrollReveal key={title} delay={100 + i * 80} variant="fade">
+                                <div className="py-8 px-4 sm:px-6 text-center">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
+                                        <Icon size={20} className="text-emerald-600" />
+                                    </div>
+                                    <p className="font-extrabold text-sm text-slate-900">{title}</p>
+                                    <p className="text-xs text-slate-400 mt-1">{desc}</p>
+                                </div>
+                            </ScrollReveal>
                         ))}
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* How it Works */}
-            <div className="py-20 bg-gray-50">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Getting your job in front of the right candidates takes just 4 simple steps
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {steps.map((step) => {
-                            const Icon = step.icon;
-                            return (
-                                <div key={step.number} className="relative">
-                                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-100 h-full">
-                                        <div className="text-5xl font-black text-gray-100 mb-4">{step.number}</div>
-                                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: `${step.color}15` }}>
-                                            <Icon size={28} style={{ color: step.color }} />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                                        <p className="text-gray-600 leading-relaxed">{step.description}</p>
+            {/* ═══════ HOW IT WORKS ═══════ */}
+            <section className="py-20 lg:py-28 bg-slate-50/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <ScrollReveal>
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">How it works</h2>
+                            <p className="mt-3 text-slate-500 max-w-lg mx-auto">Four simple steps to reach thousands of job seekers</p>
+                        </div>
+                    </ScrollReveal>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {steps.map((step, i) => (
+                            <ScrollReveal key={step.number} delay={150 + i * 100} variant="scale">
+                                <div className="relative bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-sm mb-4">
+                                        {step.number}
                                     </div>
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+                                        <step.icon size={20} className="text-emerald-600" />
+                                    </div>
+                                    <h3 className="font-extrabold text-slate-900 mb-1">{step.title}</h3>
+                                    <p className="text-sm text-slate-500">{step.desc}</p>
+                                    {/* Connector arrow */}
+                                    {i < steps.length - 1 && (
+                                        <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                                            <ArrowRight size={20} className="text-slate-300" />
+                                        </div>
+                                    )}
                                 </div>
-                            );
-                        })}
+                            </ScrollReveal>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Benefits */}
-            <div className="py-20 bg-white">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div>
-                            <h2 className="text-4xl font-bold text-gray-900 mb-6">Why Post on Job Openings Kenya?</h2>
-                            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                                We connect Kenya's top employers with motivated, qualified job seekers who are actively looking for their next opportunity.
-                            </p>
-                            <ul className="space-y-4">
-                                {benefits.map((benefit, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle size={22} className="text-[#5CB800] shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 font-medium">{benefit}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="bg-gradient-to-br from-[#5CB800] to-[#4A9900] rounded-3xl p-10 text-white shadow-2xl">
-                            <Users size={48} className="mb-6 opacity-90" />
-                            <h3 className="text-3xl font-bold mb-4">Ready to Find Your Next Hire?</h3>
-                            <p className="text-white/80 mb-8 text-lg leading-relaxed">
-                                Join hundreds of Kenyan companies already posting on our platform. Create your free employer account today.
-                            </p>
-                            <Link
-                                href="/login?role=employer"
-                                className="btn bg-white text-[#5CB800] hover:bg-gray-100 border-none btn-lg gap-2 w-full font-bold shadow-lg"
-                            >
-                                Get Started — It's Free
-                                <ArrowRight size={20} />
-                            </Link>
-                            <p className="text-center text-white/60 text-sm mt-4">
-                                Already have an account?{' '}
-                                <Link href="/login?redirect=/employer/dashboard" className="text-white underline">
-                                    Sign in
+            {/* ═══════ WHY POST HERE ═══════ */}
+            <section className="py-20 lg:py-28">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid lg:grid-cols-2 gap-14 items-center">
+                        <ScrollReveal>
+                            <div>
+                                <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-6">
+                                    Why employers choose{' '}
+                                    <span className="text-emerald-600">Job Openings Kenya</span>
+                                </h2>
+                                <div className="space-y-4">
+                                    {[
+                                        'Reach thousands of active Kenyan job seekers daily',
+                                        'Jobs reviewed & published within 24 hours',
+                                        'Listings appear on homepage, search, and category pages',
+                                        'Access to talent directory to proactively find candidates',
+                                        'Simple dashboard to manage all your postings',
+                                        'No hidden fees — transparent and straightforward',
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-start gap-3">
+                                            <CheckCircle size={20} className="text-emerald-500 shrink-0 mt-0.5" />
+                                            <span className="text-slate-600">{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        <ScrollReveal direction="right" variant="scale">
+                            <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-3xl p-8 sm:p-10 text-white shadow-2xl shadow-emerald-500/20">
+                                <Users size={40} className="mb-5 opacity-80" />
+                                <h3 className="text-2xl font-extrabold mb-3">Ready to find your next hire?</h3>
+                                <p className="text-white/80 mb-8 leading-relaxed">
+                                    Join hundreds of Kenyan companies already posting on our platform. Create your employer account today.
+                                </p>
+                                <Link href="/login?role=employer"
+                                    className="inline-flex items-center justify-center gap-2 bg-white text-emerald-700 hover:bg-gray-100 w-full py-3.5 rounded-xl font-extrabold text-sm transition-all shadow-lg">
+                                    Get Started <ArrowRight size={17} />
                                 </Link>
-                            </p>
-                        </div>
+                                <p className="text-center text-white/60 text-xs mt-4">
+                                    Already have an account?{' '}
+                                    <Link href="/login?redirect=/employer/dashboard" className="text-white underline font-semibold">Sign in</Link>
+                                </p>
+                            </div>
+                        </ScrollReveal>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* CTA Footer */}
-            <div className="bg-gray-900 text-white py-16">
-                <div className="container mx-auto px-6 lg:px-12 text-center">
-                    <h2 className="text-3xl font-bold mb-4">Start Hiring Today</h2>
-                    <p className="text-gray-400 mb-8 text-lg max-w-xl mx-auto">
-                        Post your first job for free and see why Kenya's top companies choose Job Openings Kenya.
-                    </p>
-                    <Link
-                        href="/login?role=employer"
-                        className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none btn-lg gap-2"
-                    >
-                        Post a Job Now
-                        <ArrowRight size={20} />
-                    </Link>
-                </div>
-            </div>
+            {/* ═══════ BOTTOM CTA ═══════ */}
+            <section className="py-16 bg-slate-900">
+                <ScrollReveal>
+                    <div className="max-w-2xl mx-auto px-4 text-center">
+                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">Start hiring today</h2>
+                        <p className="text-slate-400 mb-8">Post your first job and reach Kenya&apos;s best talent.</p>
+                        <div className="flex flex-col sm:flex-row justify-center gap-3">
+                            <Link href="/login?role=employer"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 text-sm font-extrabold transition-all">
+                                <Sparkles size={17} /> Create Account
+                            </Link>
+                            <Link href="/employer/post"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 px-6 py-3.5 text-sm font-extrabold transition-all">
+                                Post a Job <ArrowRight size={16} />
+                            </Link>
+                        </div>
+                    </div>
+                </ScrollReveal>
+            </section>
         </div>
     );
 }

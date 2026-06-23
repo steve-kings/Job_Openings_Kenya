@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, User, Bookmark, FileText, Home, Menu, X, LogOut, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useBookmarks } from '@/contexts/BookmarkContext';
 
 export default function DashboardLayout({
     children,
@@ -16,16 +16,11 @@ export default function DashboardLayout({
     const router = useRouter();
     const supabase = createClient();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { setDrawerOpen } = useBookmarks();
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push('/');
     };
-
-    useEffect(() => {
-        setIsMobileMenuOpen(false);
-    }, [pathname]);
 
     useEffect(() => {
         if (isMobileMenuOpen) {
@@ -50,13 +45,13 @@ export default function DashboardLayout({
             <div className="lg:hidden sticky top-0 z-50 bg-[#5CB800] text-white shadow-lg">
                 <div className="flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-3">
-                        <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" className="h-10 w-10 object-cover rounded-lg" />
+                        <Image src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" width={40} height={40} className="h-10 w-10 object-cover rounded-lg" />
                         <div>
                             <h1 className="text-lg font-bold">Job Openings Kenya</h1>
                             <p className="text-xs text-white/80">Job Seeker Portal</p>
                         </div>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="btn btn-ghost btn-square text-white" aria-label="Toggle menu">
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-10 h-10 flex items-center justify-center rounded-lg text-white hover:bg-white/20 transition-colors" aria-label="Toggle menu">
                         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
@@ -71,13 +66,13 @@ export default function DashboardLayout({
                 <div className="flex flex-col h-full p-6 overflow-y-auto">
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
-                            <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" className="h-12 w-12 object-cover rounded-lg" />
+                            <Image src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" width={48} height={48} className="h-12 w-12 object-cover rounded-lg" />
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900">Job Seeker Portal</h2>
                                 <p className="text-xs text-gray-500">Job Openings Kenya</p>
                             </div>
                         </div>
-                        <button onClick={() => setIsMobileMenuOpen(false)} className="btn btn-ghost btn-sm btn-circle lg:hidden text-gray-500">
+                        <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
                             <X size={20} />
                         </button>
                     </div>
@@ -99,10 +94,10 @@ export default function DashboardLayout({
                     </nav>
 
                     <div className="space-y-3 pt-6 border-t border-gray-100">
-                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="btn btn-outline border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 w-full gap-2">
+                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 hover:border-gray-300 transition-colors">
                             <Home size={16} /> Back to Home
                         </Link>
-                        <button onClick={handleLogout} className="btn bg-red-50 text-red-600 hover:bg-red-100 border-none w-full gap-2">
+                        <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors">
                             <LogOut size={16} /> Sign Out
                         </button>
                     </div>

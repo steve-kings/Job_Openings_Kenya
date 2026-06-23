@@ -1,177 +1,134 @@
 'use client'
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings, Home, Menu, X, UserCheck, Mail, Quote, ClipboardList } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import {
+    LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings,
+    Home, Menu, UserCheck, Mail, Quote, ClipboardList, Sparkles,
+    GraduationCap, Star,
+} from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-export default function AdminLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
-    const supabase = createClient();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const supabase = useMemo(() => createClient(), []);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [pendingCount, setPendingCount] = useState(0);
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        router.push('/');
-    };
+    const [user, setUser] = useState<{ email?: string } | null>(null);
 
     useEffect(() => {
-        setIsMobileMenuOpen(false);
-    }, [pathname]);
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+        supabase.from('employer_job_submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+            .then(({ count }) => setPendingCount(count || 0));
+    }, [pathname, supabase]);
 
-    useEffect(() => {
-        if (isMobileMenuOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => { document.body.style.overflow = 'unset'; };
-    }, [isMobileMenuOpen]);
-
-    // Fetch pending job submissions count
-    useEffect(() => {
-        const fetchPending = async () => {
-            const { count } = await supabase
-                .from('employer_job_submissions')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'pending');
-            setPendingCount(count || 0);
-        };
-        fetchPending().catch(() => {});
-    }, [pathname]);
+    const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
 
     const menuItems = [
-        { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-        { name: 'Members', href: '/admin/members', icon: UserCheck },
-        { name: 'Opportunities', href: '/admin/opportunities', icon: Briefcase },
-        { name: 'Job Submissions', href: '/admin/job-submissions', icon: ClipboardList, badge: pendingCount },
-        { name: 'Testimonials', href: '/admin/testimonials', icon: Quote },
-        { name: 'Blog Posts', href: '/admin/blog', icon: FileText },
-        { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
-        { name: 'Partners', href: '/admin/partners', icon: Users },
-        { name: 'Settings', href: '/admin/settings', icon: Settings },
+        { section: 'Main', items: [
+            { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+        ]},
+        { section: 'Content', items: [
+            { name: 'Opportunities', href: '/admin/opportunities', icon: Briefcase },
+            { name: 'Job Submissions', href: '/admin/job-submissions', icon: ClipboardList, badge: pendingCount },
+            { name: 'Blog Posts', href: '/admin/blog', icon: FileText },
+            { name: 'Courses', href: '/admin/courses', icon: GraduationCap },
+            { name: 'Testimonials', href: '/admin/testimonials', icon: Star },
+            { name: 'Partners', href: '/admin/partners', icon: Users },
+        ]},
+        { section: 'Community', items: [
+            { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
+            { name: 'Members', href: '/admin/members', icon: UserCheck },
+            { name: 'Settings', href: '/admin/settings', icon: Settings },
+        ]},
     ];
 
+    const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href + '/'));
+
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Mobile Header */}
-            <div className="lg:hidden sticky top-0 z-50 bg-[#5CB800] text-white shadow-lg">
-                <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                        <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" className="h-10 w-10 object-cover rounded-lg" />
-                        <div>
-                            <h1 className="text-lg font-bold">Job Openings Kenya Admin</h1>
-                            <p className="text-xs text-white/80">CMS Dashboard</p>
-                        </div>
-                    </div>
-                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="btn btn-ghost btn-square text-white" aria-label="Toggle menu">
-                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
-            </div>
-
-            {isMobileMenuOpen && (
-                <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
-            )}
-
-            {/* Mobile Sidebar */}
-            <div className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="flex flex-col h-full p-6 overflow-y-auto">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                            <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" className="h-12 w-12 object-cover rounded-lg" />
+        <div className="min-h-screen bg-slate-50 flex">
+            {/* Sidebar */}
+            <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="flex flex-col h-full">
+                    {/* Logo */}
+                    <div className="px-4 py-5 border-b border-slate-100">
+                        <Link href="/admin" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
+                            <Image src="/job_openings_kenya_logo.jpeg" alt="Logo" width={36} height={36} className="h-9 w-9 rounded-lg object-cover" />
                             <div>
-                                <h2 className="text-xl font-bold">Job Openings Kenya Admin</h2>
-                                <p className="text-xs text-white/70">Content Management</p>
+                                <p className="font-extrabold text-sm text-slate-900">Job Openings Kenya</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Admin</p>
                             </div>
-                        </div>
-                        <button onClick={() => setIsMobileMenuOpen(false)} className="btn btn-ghost btn-sm btn-circle text-white">
-                            <X size={20} />
-                        </button>
+                        </Link>
                     </div>
 
-                    <nav className="flex-1 space-y-2">
-                        {menuItems.map((item) => {
-                            const Icon = item.icon;
-                            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'));
-                            return (
-                                <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 p-4 rounded-xl transition-all ${isActive ? 'bg-[#5CB800] text-white shadow-lg scale-105' : 'hover:bg-white/10 text-white/90 hover:text-white active:scale-95'}`}
-                                >
-                                    <Icon size={22} />
-                                    <span className="font-medium text-base flex-1">{item.name}</span>
-                                    {item.badge ? (
-                                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{item.badge}</span>
-                                    ) : null}
-                                </Link>
-                            );
-                        })}
+                    {/* Nav */}
+                    <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
+                        {menuItems.map(({ section, items }) => (
+                            <div key={section}>
+                                <p className="px-3 mb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">{section}</p>
+                                <div className="space-y-0.5">
+                                    {items.map(({ name, href, icon: Icon, badge }) => (
+                                        <Link key={href} href={href} onClick={() => setSidebarOpen(false)}
+                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                                                isActive(href)
+                                                    ? 'bg-emerald-50 text-emerald-700'
+                                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                            }`}>
+                                            <Icon size={18} className={isActive(href) ? 'text-emerald-600' : 'text-slate-400'} />
+                                            <span className="flex-1">{name}</span>
+                                            {badge ? <span className="bg-red-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full leading-none">{badge}</span> : null}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </nav>
 
-                    <div className="space-y-3 pt-6 border-t border-white/20">
-                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#5CB800] w-full gap-2">
+                    {/* Footer */}
+                    <div className="p-3 border-t border-slate-100 space-y-1">
+                        <Link href="/" className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all">
                             <Home size={16} /> Back to Website
                         </Link>
-                        <button onClick={handleLogout} className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
-                            <LogOut size={16} /> Logout
+                        <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-all">
+                            <LogOut size={16} /> Sign Out
                         </button>
                     </div>
                 </div>
-            </div>
+            </aside>
 
-            <div className="flex">
-                {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-72 bg-gray-900 text-white min-h-screen sticky top-0 h-screen overflow-y-auto">
-                    <div className="flex flex-col h-full p-6">
-                        <div className="mb-8 text-center">
-                            <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya Logo" className="h-16 w-16 object-cover rounded-xl mx-auto mb-4 shadow-lg" />
-                            <h1 className="text-2xl font-bold text-white mb-1">Job Openings Kenya Admin</h1>
-                            <p className="text-sm text-white/70">Content Management System</p>
-                        </div>
+            {/* Overlay */}
+            {sidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-                        <nav className="flex-1 space-y-2">
-                            {menuItems.map((item) => {
-                                const Icon = item.icon;
-                                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'));
-                                return (
-                                    <Link key={item.href} href={item.href}
-                                        className={`flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-[#5CB800] text-white shadow-lg' : 'hover:bg-white/10 text-white/90 hover:text-white'}`}
-                                    >
-                                        <Icon size={20} />
-                                        <span className="font-medium flex-1">{item.name}</span>
-                                        {item.badge ? (
-                                            <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{item.badge}</span>
-                                        ) : null}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
-
-                        <div className="space-y-3 pt-6 border-t border-white/20">
-                            <Link href="/" className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-[#5CB800] w-full gap-2">
-                                <Home size={16} /> Back to Website
-                            </Link>
-                            <button onClick={handleLogout} className="btn bg-red-600 hover:bg-red-700 text-white btn-sm w-full gap-2 border-none">
-                                <LogOut size={16} /> Logout
-                            </button>
+            {/* Main */}
+            <main className="flex-1 min-w-0">
+                {/* Top bar */}
+                <div className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/60 px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-slate-100 transition-colors">
+                        <Menu size={20} className="text-slate-600" />
+                    </button>
+                    <div className="hidden sm:flex items-center gap-2">
+                        <Sparkles size={14} className="text-emerald-500" />
+                        <span className="text-xs text-slate-400 font-medium">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Link href="/admin/opportunities/create"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-sm">
+                            <Sparkles size={13} /> New Listing
+                        </Link>
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-extrabold text-xs ring-2 ring-emerald-100">
+                            {user?.email?.[0]?.toUpperCase() || 'A'}
                         </div>
                     </div>
-                </aside>
+                </div>
 
-                {/* Main Content */}
-                <main className="flex-1 min-h-screen min-w-0 flex flex-col overflow-x-hidden">
-                    <div className="p-4 sm:p-6 lg:p-8 flex-1 max-w-full">
-                        {children}
-                    </div>
-                </main>
-            </div>
+                {/* Content */}
+                <div className="p-4 sm:p-6 lg:p-8">
+                    {children}
+                </div>
+            </main>
         </div>
     );
 }

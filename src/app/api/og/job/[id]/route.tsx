@@ -49,6 +49,7 @@ export async function GET(
             >
                 {/* Header Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', position: 'absolute', top: '40px', left: '80px' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (Satori) only supports raw <img>, not next/image */}
                     <img src={logoUrl} alt="Job Openings Kenya" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
                     <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#5CB800' }}>Job Openings Kenya</span>
                 </div>
@@ -62,6 +63,7 @@ export async function GET(
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '48px' }}>
                         {/* Company Logo or Icon */}
                         {companyImageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element -- ImageResponse (Satori) only supports raw <img>, not next/image
                             <img src={companyImageUrl} alt={job.company} width="50" height="50" style={{ borderRadius: '8px', marginRight: '20px', objectFit: 'cover' }} />
                         )}
                         <span style={{ fontSize: '40px', color: '#334155', fontWeight: '600' }}>

@@ -10,23 +10,24 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function FooterInstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [canInstall, setCanInstall] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [canInstall, setCanInstall] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: boolean }).MSStream;
+    return isIOSDevice && !isInStandaloneMode;
+  });
+  const [isIOS] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: boolean }).MSStream;
+  });
+  const [isStandalone, setIsStandalone] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone;
+  });
 
   useEffect(() => {
-    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone;
-
-    setIsStandalone(isInStandaloneMode);
-
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    setIsIOS(isIOSDevice);
-
-    if (isIOSDevice && !isInStandaloneMode) {
-      setCanInstall(true);
-    }
-
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -37,6 +38,7 @@ export default function FooterInstallButton() {
     window.addEventListener('appinstalled', () => {
       setCanInstall(false);
       setDeferredPrompt(null);
+      setIsStandalone(true);
     });
 
     return () => {
@@ -70,7 +72,7 @@ export default function FooterInstallButton() {
   return (
     <button
       onClick={handleInstallClick}
-      className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] gap-2 px-6"
+      className="inline-flex items-center justify-center bg-[#5CB800] text-white hover:bg-[#4A9900] gap-2 px-6 py-2.5 rounded-lg font-medium"
     >
       <Download size={20} />
       Install App

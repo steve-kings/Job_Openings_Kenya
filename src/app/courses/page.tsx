@@ -23,7 +23,7 @@ export default function CoursesPage() {
                         Redirecting to Learning Platform
                     </h1>
                     <p className="text-lg text-gray-600">
-                        Taking you to Job Openings Kenya's learning management system...
+                        Taking you to Job Openings Kenya&apos;s learning management system...
                     </p>
                 </div>
 

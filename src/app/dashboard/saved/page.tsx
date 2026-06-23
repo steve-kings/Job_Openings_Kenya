@@ -10,8 +10,6 @@ export default function SavedJobsPage() {
 
     const typeColors = {
         'Job': 'bg-[#5CB800]/10 text-[#5CB800] border-[#5CB800]/20',
-        'Grant': 'bg-[#5CB800]/10 text-[#5CB800] border-[#5CB800]/20',
-        'Scholarship': 'bg-[#4A9900]/10 text-[#4A9900] border-[#4A9900]/20',
         'Training': 'bg-[#FF9800]/10 text-[#FF9800] border-[#FF9800]/20',
     };
 
@@ -26,7 +24,7 @@ export default function SavedJobsPage() {
                             <Bookmark size={32} className="fill-white" />
                             My Saved Opportunities
                         </h1>
-                        <p className="text-white/80 mt-2 text-lg">Keep track of the jobs, grants, and scholarships you love.</p>
+                        <p className="text-white/80 mt-2 text-lg">Keep track of the jobs and training programs you love.</p>
                     </div>
                 </div>
             </div>
@@ -41,7 +39,7 @@ export default function SavedJobsPage() {
                     <p className="text-gray-500 mb-8 max-w-md">
                         Start exploring the opportunities directory! Whenever you see something interesting, hit the bookmark icon to save it here for later.
                     </p>
-                    <Link href="/jobs" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none px-8 rounded-xl shadow-lg shadow-[#5CB800]/20">
+                    <Link href="/jobs" className="inline-flex items-center justify-center gap-2 bg-[#5CB800] hover:bg-[#4A9900] text-white px-8 py-2.5 rounded-xl shadow-lg shadow-[#5CB800]/20 font-medium">
                         Explore Opportunities <ArrowRight size={18} />
                     </Link>
                 </div>
@@ -78,7 +76,7 @@ export default function SavedJobsPage() {
                                 </div>
                             </div>
 
-                            <Link href={`/jobs/${job.id}`} className="btn w-full bg-gray-50 hover:bg-[#5CB800] hover:text-white text-gray-700 border-none transition-colors mt-auto group/btn">
+                            <Link href={`/jobs/${job.id}`} className="inline-flex items-center justify-center gap-2 w-full bg-gray-50 hover:bg-[#5CB800] hover:text-white text-gray-700 transition-colors mt-auto group/btn px-4 py-2.5 rounded-lg font-medium">
                                 View Details <ExternalLink size={16} className="text-gray-400 group-hover/btn:text-white" />
                             </Link>
                         </div>

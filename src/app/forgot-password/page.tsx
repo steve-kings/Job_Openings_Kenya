@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
+import { Mail, ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { getBaseUrl } from '@/lib/utils/url';
 
 export default function ForgotPassword() {
@@ -28,87 +28,83 @@ export default function ForgotPassword() {
             if (error) throw error;
 
             setSuccess(true);
-        } catch (error: any) {
-            setError(error.message || 'Failed to send reset email. Please try again.');
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : 'Failed to send reset email. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    const inputCls = "w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white";
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40 py-12 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#5CB800]">
+                <div className="bg-white rounded-2xl shadow-xl shadow-emerald-900/5 overflow-hidden border border-gray-100">
                     {/* Logo */}
-                    <div className="flex justify-center pt-8">
-                        <img
+                    <div className="flex justify-center pt-8 pb-2">
+                        <Image
                             src="/job_openings_kenya_logo.jpeg"
                             alt="Job Openings Kenya Logo"
-                            className="h-20 w-auto object-contain"
+                            width={160}
+                            height={64}
+                            className="h-16 w-auto object-contain"
                         />
                     </div>
 
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-[#5CB800] via-[#5CB800] to-[#4A9900] p-6 mt-4">
-                        <h2 className="text-2xl font-bold text-white text-center">
+                    <div className="bg-gradient-to-r from-emerald-600 to-green-700 px-6 pt-5 pb-6">
+                        <h2 className="text-2xl font-black text-white text-center tracking-tight">
                             Forgot Password?
                         </h2>
-                        <p className="text-white/90 text-center text-sm mt-2">
-                            No worries! Enter your email and we'll send you a reset link.
+                        <p className="text-white/85 text-center text-sm mt-2 font-medium">
+                            No worries! Enter your email and we&apos;ll send you a reset link.
                         </p>
                     </div>
 
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                         {success ? (
                             <div className="text-center">
-                                <div className="w-20 h-20 mx-auto mb-6 bg-[#5CB800]/10 rounded-full flex items-center justify-center">
-                                    <svg className="w-10 h-10 text-[#5CB800]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
+                                <div className="w-16 h-16 mx-auto mb-4 bg-emerald-50 rounded-full flex items-center justify-center">
+                                    <CheckCircle2 size={32} className="text-emerald-600" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Check Your Email</h3>
-                                <p className="text-gray-600 mb-6">
-                                    We've sent a password reset link to <strong>{email}</strong>. 
+                                <h3 className="text-lg font-bold text-gray-900 mb-1">Check Your Email</h3>
+                                <p className="text-gray-600 text-sm mb-4">
+                                    We&apos;ve sent a password reset link to <strong>{email}</strong>.
                                     Please check your inbox and follow the instructions.
                                 </p>
-                                <p className="text-sm text-gray-500 mb-6">
-                                    Didn't receive the email? Check your spam folder or try again.
+                                <p className="text-xs text-gray-400 mb-6 font-medium">
+                                    Didn&apos;t receive it? Check your spam folder or try again.
                                 </p>
-                                <div className="space-y-3">
+                                <div className="space-y-2.5">
                                     <button
                                         onClick={() => setSuccess(false)}
-                                        className="btn btn-outline border-[#5CB800] text-[#5CB800] hover:bg-[#5CB800] hover:text-white w-full"
+                                        className="w-full py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-700 text-sm font-bold hover:bg-emerald-50 transition-all"
                                     >
                                         Try Another Email
                                     </button>
-                                    <Link href="/login" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full">
+                                    <Link href="/login" className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white text-sm font-bold text-center shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all">
                                         Back to Login
                                     </Link>
                                 </div>
                             </div>
                         ) : (
-                            <form onSubmit={handleResetPassword} className="space-y-6">
+                            <form onSubmit={handleResetPassword} className="space-y-5">
                                 {error && (
-                                    <div className="alert bg-red-50 border border-red-300 text-red-700">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <div className="flex items-start gap-2.5 rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-red-700 text-sm font-semibold">
+                                        <AlertCircle size={16} className="shrink-0 mt-0.5" />
                                         <span>{error}</span>
                                     </div>
                                 )}
 
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold">Email Address</span>
-                                    </label>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email Address</label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                            <FontAwesomeIcon icon={faEnvelope} />
-                                        </span>
+                                        <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <input
                                             type="email"
                                             placeholder="e.g., wanjiku@example.com"
-                                            className="input input-bordered w-full pl-10 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20"
+                                            className={inputCls}
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
@@ -118,24 +114,17 @@ export default function ForgotPassword() {
 
                                 <button
                                     type="submit"
-                                    className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none w-full btn-lg"
                                     disabled={loading}
+                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <span className="loading loading-spinner"></span>
-                                            Sending...
-                                        </>
-                                    ) : (
-                                        'Send Reset Link'
-                                    )}
+                                    {loading ? <><Loader2 size={16} className="animate-spin" /> Sending...</> : 'Send Reset Link'}
                                 </button>
 
                                 <Link
                                     href="/login"
-                                    className="flex items-center justify-center gap-2 text-[#5CB800] hover:text-[#4A9900] font-semibold transition-colors"
+                                    className="flex items-center justify-center gap-1.5 text-emerald-600 hover:text-emerald-700 text-sm font-bold transition-colors"
                                 >
-                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                    <ArrowLeft size={14} />
                                     Back to Login
                                 </Link>
                             </form>

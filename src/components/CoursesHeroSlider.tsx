@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const slides = [
@@ -9,8 +10,8 @@ const slides = [
         id: 1,
         title: "Transform Your Future",
         subtitle: "With World-Class Skills",
-        description: "Access 100% free courses designed specifically for Kenyan job seekers. Learn from industry experts and unlock opportunities across Kenya.",
-        image: "/images/img1.jpg",
+        description: "Access free courses designed specifically for Kenyan job seekers. Learn from industry experts and unlock opportunities across Kenya.",
+        image: "/images/shutterstock-2619076999-600x315.jpg",
         gradient: "from-[#5CB800] to-[#4A9900]",
         cta: "Start Learning",
         ctaLink: "https://kings-learn.vercel.app"
@@ -20,7 +21,7 @@ const slides = [
         title: "Master In-Demand Skills",
         subtitle: "Build Your Career",
         description: "From digital marketing to web development, gain practical skills that employers are actively seeking in today's job market.",
-        image: "/images/img2.jpg",
+        image: "/images/shutterstock-2724545487-600x315.jpg",
         gradient: "from-[#5CB800] to-[#5CB800]",
         cta: "Explore Courses",
         ctaLink: "https://kings-learn.vercel.app"
@@ -30,7 +31,7 @@ const slides = [
         title: "Learn at Your Own Pace",
         subtitle: "Anytime, Anywhere",
         description: "Flexible learning designed for busy schedules. Access courses 24/7 and earn certificates recognized across Kenya.",
-        image: "/images/img3.jpg",
+        image: "/images/cover-378x198.png",
         gradient: "from-[#5CB800] to-[#4A9900]",
         cta: "Get Started",
         ctaLink: "https://kings-learn.vercel.app"
@@ -40,7 +41,7 @@ const slides = [
         title: "Join 850+ Students",
         subtitle: "Growing Community",
         description: "Be part of a thriving community of learners. Connect, collaborate, and grow together with peers across Kenya.",
-        image: "/images/img4.jpg",
+        image: "/images/advance-your-career.png",
         gradient: "from-[#4A9900] to-[#5CB800]",
         cta: "Join Now",
         ctaLink: "https://kings-learn.vercel.app"
@@ -92,10 +93,12 @@ export default function CoursesHeroSlider() {
                 >
                     {/* Background Image with Parallax Effect */}
                     <div className="absolute inset-0">
-                        <img
+                        <Image
                             src={slide.image}
                             alt={slide.title}
-                            className="w-full h-full object-cover scale-110"
+                            fill
+                            sizes="100vw"
+                            className="object-cover scale-110"
                             style={{
                                 transform: index === currentSlide ? 'scale(1)' : 'scale(1.1)',
                                 transition: 'transform 8s ease-out'
@@ -146,7 +149,7 @@ export default function CoursesHeroSlider() {
                                             href={slide.ctaLink}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="btn bg-white text-gray-900 hover:bg-gray-100 border-none btn-lg px-10 shadow-2xl font-bold"
+                                            className="inline-flex items-center justify-center bg-white text-gray-900 hover:bg-gray-100 px-10 py-3 text-lg rounded-xl shadow-2xl font-bold"
                                         >
                                             {slide.cta}
                                             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +158,7 @@ export default function CoursesHeroSlider() {
                                         </a>
                                         <Link
                                             href="/about"
-                                            className="btn btn-outline border-2 border-white text-white hover:bg-white hover:text-gray-900 btn-lg px-10"
+                                            className="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-gray-900 px-10 py-3 text-lg rounded-xl font-bold"
                                         >
                                             Learn More
                                         </Link>

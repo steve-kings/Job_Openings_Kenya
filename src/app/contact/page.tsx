@@ -33,7 +33,7 @@ export default function ContactPage() {
                 setFormStatus('error');
                 setErrorMessage(data.message || 'Something went wrong. Please try again.');
             }
-        } catch (error) {
+        } catch {
             setFormStatus('error');
             setErrorMessage('Failed to send message. Please try again later.');
         }
@@ -46,7 +46,7 @@ export default function ContactPage() {
                 <div className="container mx-auto px-4 lg:px-8 text-center">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Get in Touch</h1>
                     <p className="text-lg sm:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto">
-                        We're here to help you succeed. Reach out to us and let's start a conversation.
+                        We&apos;re here to help you succeed. Reach out to us and let&apos;s start a conversation.
                     </p>
                 </div>
             </div>
@@ -63,7 +63,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Send us a Message</h2>
-                                    <p className="text-gray-600">We'll get back to you within 24 hours</p>
+                                    <p className="text-gray-600">We&apos;ll get back to you within 24 hours</p>
                                 </div>
                             </div>
 
@@ -154,7 +154,7 @@ export default function ContactPage() {
                                 {formStatus === 'success' && (
                                     <div className="alert bg-[#5CB800]/10 border border-[#5CB800] text-[#5CB800]">
                                         <CheckCircle size={20} />
-                                        <span className="font-semibold">Message sent successfully! We'll get back to you soon.</span>
+                                        <span className="font-semibold">Message sent successfully! We&apos;ll get back to you soon.</span>
                                     </div>
                                 )}
 
@@ -169,7 +169,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={formStatus === 'loading'}
-                                    className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full btn-lg disabled:opacity-50"
+                                    className="inline-flex items-center justify-center bg-[#5CB800] text-white hover:bg-[#4A9900] w-full disabled:opacity-50 px-6 py-3 text-lg rounded-xl font-bold"
                                 >
                                     {formStatus === 'loading' ? (
                                         <>
@@ -250,7 +250,7 @@ export default function ContactPage() {
                                 href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn bg-white text-[#5CB800] hover:bg-gray-100 border-none w-full"
+                                className="inline-flex items-center justify-center bg-white text-[#5CB800] hover:bg-gray-100 w-full py-2.5 rounded-lg font-medium"
                             >
                                 Join WhatsApp Channel
                             </a>

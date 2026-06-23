@@ -26,8 +26,8 @@ export default function PartnerPage() {
                 <div className="card bg-base-100 shadow-xl border-t-4 border-accent">
                     <div className="card-body text-center">
                         <div className="text-4xl mb-3">🤝</div>
-                        <h3 className="card-title justify-center mb-2">Grant Support</h3>
-                        <p className="text-gray-600">Provide funding for youth-led initiatives, startups, and community projects across Kenya.</p>
+                        <h3 className="card-title justify-center mb-2">Mentorship</h3>
+                        <p className="text-gray-600">Guide young professionals through career development and industry insights.</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@ export default function PartnerPage() {
                             </label>
                             <textarea className="textarea textarea-bordered h-32" placeholder="Tell us about your partnership goals..." required></textarea>
                         </div>
-                        <button type="submit" className="btn btn-primary w-full btn-lg">Submit Partnership Inquiry</button>
+                        <button type="submit" className="inline-flex items-center justify-center w-full bg-[#5CB800] hover:bg-[#4A9900] text-white px-6 py-3 text-lg rounded-xl font-bold">Submit Partnership Inquiry</button>
                     </form>
                 </div>
             </div>

@@ -2,11 +2,24 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, User, Share2, Lock, Eye } from 'lucide-react';
 
+interface BlogPost {
+    title: string;
+    slug: string;
+    category: string;
+    featured_image?: string;
+    author_name: string;
+    created_at: string;
+    views?: number;
+    excerpt: string;
+    content: string;
+}
+
 interface BlogPostClientProps {
-    post: any;
-    user: any;
+    post: BlogPost;
+    user: { id: string } | null;
     slug: string;
 }
 
@@ -18,8 +31,8 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Article Not Found</h2>
-                    <p className="text-gray-600 mb-6">This article may have been removed or doesn't exist.</p>
-                    <Link href="/blog" className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none">
+                    <p className="text-gray-600 mb-6">This article may have been removed or doesn&apos;t exist.</p>
+                    <Link href="/blog" className="inline-flex items-center justify-center bg-[#5CB800] text-white hover:bg-[#4A9900] px-4 py-2 rounded-lg font-medium">
                         Back to Blog
                     </Link>
                 </div>
@@ -76,10 +89,12 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
             {/* Hero Image Section */}
             <div className="relative h-[500px] overflow-hidden">
                 {post.featured_image ? (
-                    <img
+                    <Image
                         src={post.featured_image}
                         alt={post.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="100vw"
+                        className="object-cover"
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#5CB800] to-[#4A9900]"></div>
@@ -151,35 +166,35 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                         <div className="flex flex-wrap gap-2 mb-8">
                             <button 
                                 onClick={handleWhatsAppShare}
-                                className="btn btn-sm bg-[#25D366] text-white hover:bg-[#1da851] border-none gap-2"
+                                className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-[#25D366] text-white hover:bg-[#1da851] gap-2 font-medium"
                             >
                                 <Share2 size={14} />
                                 WhatsApp
                             </button>
                             <button 
                                 onClick={handleFacebookShare}
-                                className="btn btn-sm bg-[#1877F2] text-white hover:bg-[#0c63d4] border-none gap-2"
+                                className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-[#1877F2] text-white hover:bg-[#0c63d4] gap-2 font-medium"
                             >
                                 <Share2 size={14} />
                                 Facebook
                             </button>
                             <button 
                                 onClick={handleTwitterShare}
-                                className="btn btn-sm bg-[#1DA1F2] text-white hover:bg-[#0c8bd9] border-none gap-2"
+                                className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-[#1DA1F2] text-white hover:bg-[#0c8bd9] gap-2 font-medium"
                             >
                                 <Share2 size={14} />
                                 Twitter
                             </button>
                             <button 
                                 onClick={handleLinkedInShare}
-                                className="btn btn-sm bg-[#0A66C2] text-white hover:bg-[#004182] border-none gap-2"
+                                className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-[#0A66C2] text-white hover:bg-[#004182] gap-2 font-medium"
                             >
                                 <Share2 size={14} />
                                 LinkedIn
                             </button>
                             <button 
                                 onClick={handleCopyLink}
-                                className={`btn btn-sm border-none gap-2 ${copySuccess ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                                className={`inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg gap-2 font-medium ${copySuccess ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                             >
                                 <Share2 size={14} />
                                 {copySuccess ? 'Copied!' : 'Copy Link'}
@@ -206,7 +221,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                                         </p>
                                         <Link 
                                             href={`/login?redirect=/blog/${slug}`} 
-                                            className={`btn ${colors.bg} text-white hover:opacity-90 btn-lg border-none px-10`}
+                                            className={`inline-flex items-center justify-center ${colors.bg} text-white hover:opacity-90 px-10 py-3 text-lg rounded-xl font-bold`}
                                         >
                                             Login / Sign Up
                                         </Link>

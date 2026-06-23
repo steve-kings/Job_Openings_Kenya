@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
-import { FileText, TrendingUp, Briefcase, Eye, Calendar, ArrowRight } from 'lucide-react';
+import { FileText, TrendingUp, Briefcase, BookOpen, Eye, Calendar, ArrowRight, Sparkles, Clock, MapPin, Zap } from 'lucide-react';
+import HeroSlider from '@/components/HeroSlider';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export const metadata: Metadata = {
-    title: 'Popular | Job Openings Kenya',
+    title: 'Trending | Job Openings Kenya',
     description: 'Discover the most viewed articles and opportunities on Job Openings Kenya.',
 };
 
@@ -13,164 +16,235 @@ export const revalidate = 3600;
 export default async function PopularPage() {
     const supabase = await createClient();
 
-    // Fetch popular blog posts
     const { data: popularBlogs } = await supabase
         .from('blog_posts')
-        .select('id, title, excerpt, slug, created_at, cover_image, views')
+        .select('id, title, excerpt, slug, created_at, featured_image, views, category')
         .order('views', { ascending: false, nullsFirst: false })
         .limit(9);
 
-    // Fetch popular opportunities
     const { data: popularJobs } = await supabase
         .from('opportunities')
-        .select('id, title, company, type, location, created_at, views')
+        .select('id, title, company, type, location, created_at, views, deadline')
         .order('views', { ascending: false, nullsFirst: false })
         .limit(6);
 
-    return (
-        <div className="bg-gray-50 min-h-screen pb-20">
-            {/* Header */}
-            <div className="bg-gradient-to-br from-gray-900 to-[#4A9900] text-white py-16">
-                <div className="container mx-auto px-6 lg:px-12 text-center">
-                    <TrendingUp className="mx-auto mb-4 text-orange-400" size={64} />
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">Trending Now</h1>
-                    <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                        Explore the most viewed articles, career advice, and opportunities ranked by popularity.
-                    </p>
-                </div>
-            </div>
+    const totalViews = (popularBlogs || []).reduce((s, b) => s + (b.views || 0), 0) +
+        (popularJobs || []).reduce((s, j) => s + (j.views || 0), 0);
 
-            <div className="container mx-auto px-6 lg:px-12 -mt-8 relative z-10">
-                {/* Popular Articles Section */}
-                <div className="mb-20">
-                    <div className="flex items-center gap-3 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 w-fit">
-                        <div className="p-3 bg-orange-100 text-orange-600 rounded-xl">
-                            <FileText size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">Most Read Articles</h2>
-                            <p className="text-gray-500 text-sm">Ranked by highest views</p>
-                        </div>
+    return (
+        <div className="min-h-screen bg-slate-50">
+            {/* ═══════ HERO ═══════ */}
+            <section className="relative overflow-hidden min-h-[380px] sm:min-h-[440px] flex items-center text-white">
+                <div className="absolute inset-0"><HeroSlider /></div>
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+                    <div className="grid lg:grid-cols-2 gap-10 items-center">
+                        <ScrollReveal>
+                            <div>
+                                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white mb-5">
+                                    <TrendingUp size={13} className="text-amber-400" /> What&apos;s Hot
+                                </div>
+                                <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.06] drop-shadow-lg">
+                                    Trending{' '}
+                                    <span className="text-amber-400">Now</span>
+                                </h1>
+                                <p className="mt-4 text-lg text-white/70 max-w-md leading-relaxed">
+                                    The most viewed articles, career tips, and opportunities — ranked by what Kenya&apos;s job seekers are looking at right now.
+                                </p>
+                                <div className="flex items-center gap-6 mt-8">
+                                    <div className="text-center">
+                                        <p className="text-3xl font-black text-white">{totalViews.toLocaleString()}</p>
+                                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Total Views</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-3xl font-black text-white">{(popularBlogs || []).length + (popularJobs || []).length}</p>
+                                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider">Trending Items</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Featured card */}
+                        {(popularBlogs && popularBlogs[0]) && (
+                            <ScrollReveal direction="right" variant="scale">
+                                <div className="hidden lg:block relative">
+                                    <div className="absolute inset-0 bg-amber-400/20 rounded-3xl blur-3xl scale-75" />
+                                    <div className="relative bg-white/10 backdrop-blur-md rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
+                                        <div className="relative h-44 bg-gradient-to-br from-slate-700 to-slate-900">
+                                            {popularBlogs[0].featured_image ? (
+                                                <Image src={popularBlogs[0].featured_image} alt="" fill unoptimized className="object-cover opacity-60" />
+                                            ) : null}
+                                            <div className="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full">#1 Trending</div>
+                                        </div>
+                                        <div className="p-5">
+                                            <p className="text-xs font-bold text-amber-300 mb-1">{popularBlogs[0].category || 'Article'}</p>
+                                            <h3 className="font-extrabold text-white text-lg leading-snug line-clamp-2">{popularBlogs[0].title}</h3>
+                                            <div className="flex items-center gap-3 mt-3 text-xs text-white/50">
+                                                <span className="flex items-center gap-1"><Eye size={11} /> {popularBlogs[0].views || 0} views</span>
+                                                <Link href={`/blog/${popularBlogs[0].slug}`} className="ml-auto text-xs font-bold text-white/80 hover:text-white flex items-center gap-1">Read <ArrowRight size={12} /></Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+                        )}
                     </div>
+                </div>
+            </section>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                {/* ═══════ TRENDING ARTICLES ═══════ */}
+                <section className="mb-16">
+                    <ScrollReveal>
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                                        <FileText size={14} className="text-amber-600" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-slate-900">Most Read Articles</h2>
+                                </div>
+                                <p className="text-sm text-slate-500 ml-10">Ranked by highest views</p>
+                            </div>
+                            <Link href="/blog" className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                                View all articles <ArrowRight size={13} />
+                            </Link>
+                        </div>
+                    </ScrollReveal>
 
                     {(!popularBlogs || popularBlogs.length === 0) ? (
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">No Articles Yet</h3>
-                            <p className="text-gray-500">Check back later when articles gain traction.</p>
+                        <div className="bg-white rounded-3xl border border-slate-100 p-16 text-center">
+                            <FileText size={40} className="text-slate-200 mx-auto mb-3" />
+                            <p className="text-slate-400 font-medium">No articles gaining traction yet.</p>
                         </div>
                     ) : (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {popularBlogs.map((post, index) => (
-                                <Link href={`/blog/${post.slug}`} key={post.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group flex flex-col hover:-translate-y-2 transition-transform relative">
-                                    {/* Rank Badge */}
-                                    <div className="absolute top-4 left-4 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 text-white font-bold text-lg shadow-lg border-2 border-white">
-                                        #{index + 1}
-                                    </div>
-
-                                    <div className="h-48 overflow-hidden bg-gray-100 relative">
-                                        {post.cover_image ? (
-                                            <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                        ) : (
-                                            <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                                                <FileText size={48} />
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {popularBlogs.map((post, i) => (
+                                <ScrollReveal key={post.id} delay={i * 80} variant="scale">
+                                    <Link href={`/blog/${post.slug}`}
+                                        className="group bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                                        {/* Image */}
+                                        <div className="relative h-44 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+                                            {post.featured_image ? (
+                                                <Image src={post.featured_image} alt={post.title} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            ) : (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <FileText size={36} className="text-slate-300" />
+                                                </div>
+                                            )}
+                                            {/* Rank */}
+                                            <div className="absolute top-3 left-3">
+                                                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-extrabold text-white shadow-lg border-2 border-white ${
+                                                    i === 0 ? 'bg-amber-500' : i === 1 ? 'bg-slate-500' : i === 2 ? 'bg-amber-700' : 'bg-slate-400'
+                                                }`}>#{i + 1}</span>
                                             </div>
-                                        )}
-                                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5">
-                                            <Eye size={14} />
-                                            {post.views || 0} views
+                                            {/* Views */}
+                                            <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1">
+                                                <Eye size={10} /> {post.views || 0}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2">
-                                            {post.title}
-                                        </h3>
-                                        <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed flex-1">
-                                            {post.excerpt}
-                                        </p>
-                                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
-                                            <span className="text-gray-400 text-xs flex items-center gap-1.5">
-                                                <Calendar size={14} />
-                                                {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </span>
-                                            <span className="text-orange-600 font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                                                Read <ArrowRight size={16} />
-                                            </span>
+                                        {/* Content */}
+                                        <div className="p-5 flex flex-col flex-1">
+                                            {post.category && (
+                                                <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-2">{post.category}</span>
+                                            )}
+                                            <h3 className="font-extrabold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2 text-sm">
+                                                {post.title}
+                                            </h3>
+                                            {post.excerpt && (
+                                                <p className="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed flex-1">{post.excerpt}</p>
+                                            )}
+                                            <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-50">
+                                                <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                                                    <Calendar size={11} />
+                                                    {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                </span>
+                                                <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1 group-hover:gap-1.5 transition-all">
+                                                    Read <ArrowRight size={11} />
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </ScrollReveal>
                             ))}
                         </div>
                     )}
-                </div>
+                </section>
 
-                {/* Popular Opportunities Section */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 w-fit">
-                        <div className="p-3 bg-blue-100 text-[#5CB800] rounded-xl">
-                            <Briefcase size={24} />
+                {/* ═══════ HOT OPPORTUNITIES ═══════ */}
+                <section>
+                    <ScrollReveal>
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                        <Zap size={14} className="text-emerald-600" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-slate-900">Hot Opportunities</h2>
+                                </div>
+                                <p className="text-sm text-slate-500 ml-10">Jobs and training getting the most attention</p>
+                            </div>
+                            <Link href="/" className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                                Browse all jobs <ArrowRight size={13} />
+                            </Link>
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">Hot Opportunities</h2>
-                            <p className="text-gray-500 text-sm">Jobs and grants getting the most attention</p>
-                        </div>
-                    </div>
+                    </ScrollReveal>
 
                     {(!popularJobs || popularJobs.length === 0) ? (
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">No Opportunities Yet</h3>
-                            <p className="text-gray-500">Check back later.</p>
+                        <div className="bg-white rounded-3xl border border-slate-100 p-16 text-center">
+                            <Briefcase size={40} className="text-slate-200 mx-auto mb-3" />
+                            <p className="text-slate-400 font-medium">No trending opportunities yet.</p>
                         </div>
                     ) : (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {popularJobs.map((job, index) => {
-                                const typeColors = {
-                                    'Job': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
-                                    'Grant': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
-                                    'Scholarship': { text: 'text-[#4A9900]', bg: 'bg-[#4A9900]/10' },
-                                    'Training': { text: 'text-[#5CB800]', bg: 'bg-[#5CB800]/10' },
-                                };
-                                const color = typeColors[job.type as keyof typeof typeColors] || typeColors['Job'];
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {popularJobs.map((job, i) => (
+                                <ScrollReveal key={job.id} delay={i * 100} variant="scale">
+                                    <Link href={`/jobs/${job.id}`}
+                                        className="group relative bg-white rounded-2xl border border-slate-100 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                        {/* Rank */}
+                                        <div className={`absolute -top-2.5 -right-2.5 w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold text-white shadow-md border-2 border-white ${
+                                            i === 0 ? 'bg-emerald-500' : i === 1 ? 'bg-emerald-600' : i === 2 ? 'bg-emerald-700' : 'bg-slate-400'
+                                        }`}>#{i + 1}</div>
 
-                                return (
-                                    <Link 
-                                        href={`/jobs/${job.id}`} 
-                                        key={job.id} 
-                                        className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all group relative"
-                                    >
-                                        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] text-white flex items-center justify-center font-bold text-sm shadow-md border-2 border-white">
-                                            #{index + 1}
-                                        </div>
-                                        
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-sm bg-gradient-to-br from-gray-700 to-gray-900">
+                                        {/* Company avatar */}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-black text-lg shadow-sm">
                                                 {job.company.charAt(0).toUpperCase()}
                                             </div>
-                                            <span className="flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
-                                                <Eye size={12} className="text-gray-400" />
-                                                {job.views || 0}
+                                            <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                                                <Eye size={11} /> {job.views || 0}
                                             </span>
                                         </div>
-                                        
-                                        <h3 className="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#5CB800] transition-colors line-clamp-2">
+
+                                        <h3 className="font-extrabold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2 text-sm mb-2">
                                             {job.title}
                                         </h3>
-                                        <p className="text-gray-600 text-sm mb-4 line-clamp-1">{job.company}</p>
-                                        
-                                        <div className="mt-auto pt-4 flex items-center gap-2 text-xs font-semibold">
-                                            <span className={`${color.bg} ${color.text} px-2 py-1 rounded-md`}>
+                                        <p className="text-xs text-slate-500 mb-4">{job.company}</p>
+
+                                        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center gap-2 flex-wrap">
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-extrabold ${
+                                                job.type === 'Job' ? 'bg-blue-50 text-blue-600' : 'bg-violet-50 text-violet-600'
+                                            }`}>
+                                                {job.type === 'Job' ? <Briefcase size={10} /> : <BookOpen size={10} />}
                                                 {job.type}
                                             </span>
-                                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-md truncate max-w-[120px]">
-                                                {job.location}
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-500">
+                                                <MapPin size={10} /> {job.location}
                                             </span>
+                                            {job.deadline && (
+                                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold bg-red-50 text-red-500 ml-auto">
+                                                    <Clock size={10} /> {Math.max(0, Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000))}d left
+                                                </span>
+                                            )}
                                         </div>
                                     </Link>
-                                );
-                            })}
+                                </ScrollReveal>
+                            ))}
                         </div>
                     )}
-                </div>
+                </section>
             </div>
+
+            <div className="h-12" />
         </div>
     );
 }

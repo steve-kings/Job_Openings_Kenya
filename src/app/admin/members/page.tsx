@@ -1,128 +1,54 @@
 import { createClient } from '@/lib/supabase/server';
-import { UserCheck, Mail, Calendar, ShieldCheck, User } from 'lucide-react';
+import { UserCheck, ShieldCheck } from 'lucide-react';
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function MembersPage() {
-    const supabase = await createClient();
+    const s = await createClient();
+    const { data: profiles } = await s.from('profiles').select('*').order('created_at', { ascending: false });
 
-    // Fetch all members from profiles
-    const { data: members, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching members:', error);
-    }
-
-    const totalMembers = members?.length || 0;
-    const adminCount = members?.filter(m => m.role === 'admin').length || 0;
+    const members = profiles || [];
+    const admins = members.filter(p => p.role === 'admin').length;
+    const employers = members.filter(p => p.role === 'employer').length;
+    const jobseekers = members.filter(p => p.role !== 'admin' && p.role !== 'employer').length;
 
     return (
-        <div className="max-w-6xl mx-auto pb-12">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#5CB800] to-[#4A9900] flex items-center justify-center shadow-lg">
-                            <UserCheck className="text-white" size={28} />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Registered Members</h1>
-                            <p className="text-gray-500 text-sm mt-0.5">Manage and view all registered users and admins on Job Openings Kenya.</p>
-                        </div>
+        <div className="space-y-6">
+            <div><h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Members</h1><p className="text-sm text-gray-500 mt-0.5">{members.length} registered · {admins} admin{admins!==1?'s':''} · {employers} employer{employers!==1?'s':''}</p></div>
+
+            <div className="grid grid-cols-3 gap-4">
+                {[
+                    { label: 'Job Seekers', value: jobseekers, icon: UserCheck, c: 'emerald' },
+                    { label: 'Employers', value: employers, icon: ShieldCheck, c: 'blue' },
+                    { label: 'Admins', value: admins, icon: ShieldCheck, c: 'red' },
+                ].map(({ label, value, icon: Icon, c }) => (
+                    <div key={label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-all">
+                        <div className={`w-10 h-10 rounded-xl bg-${c}-50 flex items-center justify-center mx-auto mb-2`}><Icon size={20} className={`text-${c}-600`}/></div>
+                        <p className="text-3xl font-black text-gray-900">{value}</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">{label}</p>
                     </div>
-                </div>
+                ))}
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <User size={24} />
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Registered Youth</p>
-                        <h3 className="text-2xl font-bold text-gray-900">{totalMembers}</h3>
-                    </div>
-                </div>
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center">
-                        <ShieldCheck size={24} />
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-500 font-medium">Active Administrators</p>
-                        <h3 className="text-2xl font-bold text-gray-900">{adminCount}</h3>
-                    </div>
-                </div>
-            </div>
-
-            {/* Members Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-gray-600">
-                        <thead className="bg-gray-50/50 text-gray-500 font-medium border-b border-gray-100">
-                            <tr>
-                                <th className="px-6 py-4">Full Name</th>
-                                <th className="px-6 py-4">Email Address</th>
-                                <th className="px-6 py-4">Role</th>
-                                <th className="px-6 py-4">Joined Date</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {!members || members.length === 0 ? (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                                        No members found on the platform yet.
-                                    </td>
-                                </tr>
-                            ) : (
-                                members.map((member) => (
-                                    <tr key={member.id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-blue-600 flex items-center justify-center font-bold shadow-sm">
-                                                    {member.full_name?.charAt(0)?.toUpperCase() || member.email?.charAt(0)?.toUpperCase()}
-                                                </div>
-                                                <span className="font-semibold text-gray-900">
-                                                    {member.full_name || 'N/A'}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                                <Mail size={14} className="text-gray-400" />
-                                                {member.email}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {member.role === 'admin' ? (
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-semibold border border-purple-100">
-                                                    <ShieldCheck size={12} /> Admin
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-medium">
-                                                    <User size={12} /> Student
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2 text-gray-500">
-                                                <Calendar size={14} className="text-gray-400" />
-                                                {new Date(member.created_at).toLocaleDateString('en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric'
-                                                })}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100 bg-gray-50/50">
+                    {['Name','Email','Role','Joined'].map(h=><th key={h} className="text-left px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>)}
+                </tr></thead><tbody className="divide-y divide-gray-50">
+                    {members.map(m => (
+                        <tr key={m.id} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-5 py-3.5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-extrabold text-xs">{m.full_name?.[0]?.toUpperCase()||'?'}</div>
+                                    <span className="font-semibold text-gray-900 text-sm">{m.full_name||'Anonymous'}</span>
+                                </div>
+                            </td>
+                            <td className="px-5 py-3.5 text-sm text-gray-500">{m.email||'—'}</td>
+                            <td className="px-5 py-3.5"><span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${m.role==='admin'?'bg-red-50 text-red-700':m.role==='employer'?'bg-blue-50 text-blue-700':'bg-gray-100 text-gray-600'}`}>{m.role||'user'}</span></td>
+                            <td className="px-5 py-3.5 text-sm text-gray-500">{m.created_at?new Date(m.created_at).toLocaleDateString():'—'}</td>
+                        </tr>
+                    ))}
+                </tbody></table></div>
+                {members.length===0&&<div className="text-center py-16 text-gray-400"><UserCheck size={40} className="mx-auto mb-3 opacity-40"/><p className="font-semibold">No members yet</p></div>}
             </div>
         </div>
     );

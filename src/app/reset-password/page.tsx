@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faEye, faEyeSlash, faCheck } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
+import { Lock, Eye, EyeOff, CheckCircle2, Loader2, AlertCircle, ShieldAlert } from 'lucide-react';
 
 export default function ResetPassword() {
     const [password, setPassword] = useState('');
@@ -18,92 +18,71 @@ export default function ResetPassword() {
     const [isValidSession, setIsValidSession] = useState(false);
     const [checkingSession, setCheckingSession] = useState(true);
 
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
 
     useEffect(() => {
-        // Check if user has a valid recovery session
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                setIsValidSession(true);
-            }
+            if (session) setIsValidSession(true);
             setCheckingSession(false);
         };
-
         checkSession();
 
-        // Listen for auth state changes (when user clicks the reset link)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'PASSWORD_RECOVERY') {
-                setIsValidSession(true);
-            }
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+            if (event === 'PASSWORD_RECOVERY') setIsValidSession(true);
         });
-
         return () => subscription.unsubscribe();
-    }, []);
+    }, [supabase]);
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        // Validate passwords match
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
-
-        // Validate password strength
         if (password.length < 6) {
-            setError('Password must be at least 6 characters long');
+            setError('Password must be at least 6 characters');
             return;
         }
 
         setLoading(true);
-
         try {
-            const { error } = await supabase.auth.updateUser({
-                password: password
-            });
-
+            const { error } = await supabase.auth.updateUser({ password });
             if (error) throw error;
-
             setSuccess(true);
-
-            // Redirect to login after 3 seconds
-            setTimeout(() => {
-                router.push('/login');
-            }, 3000);
-        } catch (error: any) {
-            setError(error.message || 'Failed to reset password. Please try again.');
+            setTimeout(() => router.push('/login'), 3000);
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : 'Failed to reset password');
         } finally {
             setLoading(false);
         }
     };
 
-    // Password strength indicator
     const getPasswordStrength = () => {
         if (password.length === 0) return { strength: 0, label: '', color: '' };
-        if (password.length < 6) return { strength: 25, label: 'Weak', color: 'bg-red-500' };
-        if (password.length < 8) return { strength: 50, label: 'Fair', color: 'bg-yellow-500' };
+        if (password.length < 6) return { strength: 25, label: 'Weak', color: 'bg-red-500', text: 'text-red-500' };
+        if (password.length < 8) return { strength: 50, label: 'Fair', color: 'bg-yellow-500', text: 'text-yellow-500' };
         if (password.length < 10 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
-            return { strength: 75, label: 'Good', color: 'bg-blue-500' };
+            return { strength: 75, label: 'Good', color: 'bg-blue-500', text: 'text-blue-500' };
         }
         if (password.length >= 10 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
-            return { strength: 100, label: 'Strong', color: 'bg-green-500' };
+            return { strength: 100, label: 'Strong', color: 'bg-emerald-500', text: 'text-emerald-500' };
         }
-        return { strength: 50, label: 'Fair', color: 'bg-yellow-500' };
+        return { strength: 50, label: 'Fair', color: 'bg-yellow-500', text: 'text-yellow-500' };
     };
+    const strength = getPasswordStrength();
 
-    const passwordStrength = getPasswordStrength();
+    const inputCls = "w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white";
 
     if (checkingSession) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40">
                 <div className="text-center">
-                    <span className="loading loading-spinner loading-lg text-[#5CB800]"></span>
-                    <p className="mt-4 text-gray-600">Verifying your reset link...</p>
+                    <Loader2 size={32} className="animate-spin text-emerald-600 mx-auto" />
+                    <p className="mt-4 text-sm text-gray-500 font-medium">Verifying your reset link...</p>
                 </div>
             </div>
         );
@@ -111,19 +90,18 @@ export default function ResetPassword() {
 
     if (!isValidSession && !checkingSession) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40 py-12 px-4">
                 <div className="w-full max-w-md">
-                    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-red-500 p-8 text-center">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
+                    <div className="bg-white rounded-2xl shadow-xl shadow-emerald-900/5 overflow-hidden border border-gray-100 p-8 text-center">
+                        <div className="flex justify-center pt-4 pb-2">
+                            <Image src="/job_openings_kenya_logo.jpeg" alt="Logo" width={100} height={64} className="h-16 w-auto object-contain" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Invalid or Expired Link</h3>
-                        <p className="text-gray-600 mb-6">
-                            This password reset link is invalid or has expired. Please request a new one.
-                        </p>
-                        <Link href="/forgot-password" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center">
+                            <ShieldAlert size={32} className="text-red-500" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">Invalid or Expired Link</h3>
+                        <p className="text-sm text-gray-500 mb-6">This password reset link is invalid or has expired. Please request a new one.</p>
+                        <Link href="/forgot-password" className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white text-sm font-bold text-center shadow-lg shadow-emerald-500/20 transition-all">
                             Request New Link
                         </Link>
                     </div>
@@ -133,150 +111,97 @@ export default function ResetPassword() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 py-12 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40 py-12 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-4 border-[#5CB800]">
-                    {/* Logo */}
-                    <div className="flex justify-center pt-8">
-                        <img
-                            src="/job_openings_kenya_logo.jpeg"
-                            alt="Job Openings Kenya Logo"
-                            className="h-20 w-auto object-contain"
-                        />
+                <div className="bg-white rounded-2xl shadow-xl shadow-emerald-900/5 overflow-hidden border border-gray-100">
+                    <div className="flex justify-center pt-8 pb-2">
+                        <Image src="/job_openings_kenya_logo.jpeg" alt="Logo" width={100} height={64} className="h-16 w-auto object-contain" />
                     </div>
-
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-[#5CB800] via-[#5CB800] to-[#4A9900] p-6 mt-4">
-                        <h2 className="text-2xl font-bold text-white text-center">
-                            Create New Password
-                        </h2>
-                        <p className="text-white/90 text-center text-sm mt-2">
-                            Enter your new password below
-                        </p>
+                    <div className="bg-gradient-to-r from-emerald-600 to-green-700 px-6 pt-5 pb-6">
+                        <h2 className="text-2xl font-black text-white text-center tracking-tight">Create New Password</h2>
+                        <p className="text-white/85 text-center text-sm mt-2 font-medium">Enter your new password below</p>
                     </div>
-
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                         {success ? (
                             <div className="text-center">
-                                <div className="w-20 h-20 mx-auto mb-6 bg-[#5CB800]/10 rounded-full flex items-center justify-center">
-                                    <FontAwesomeIcon icon={faCheck} className="text-4xl text-[#5CB800]" />
+                                <div className="w-16 h-16 mx-auto mb-4 bg-emerald-50 rounded-full flex items-center justify-center">
+                                    <CheckCircle2 size={32} className="text-emerald-600" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Password Reset Successful!</h3>
-                                <p className="text-gray-600 mb-6">
-                                    Your password has been updated. Redirecting you to login...
-                                </p>
-                                <Link href="/login" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full">
+                                <h3 className="text-lg font-bold text-gray-900 mb-1">Password Reset Successful!</h3>
+                                <p className="text-sm text-gray-500 mb-6">Your password has been updated. Redirecting to login...</p>
+                                <Link href="/login" className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white text-sm font-bold text-center shadow-lg shadow-emerald-500/20 transition-all">
                                     Go to Login
                                 </Link>
                             </div>
                         ) : (
-                            <form onSubmit={handleResetPassword} className="space-y-6">
+                            <form onSubmit={handleResetPassword} className="space-y-5">
                                 {error && (
-                                    <div className="alert bg-red-50 border border-red-300 text-red-700">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <div className="flex items-start gap-2.5 rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-red-700 text-sm font-semibold">
+                                        <AlertCircle size={16} className="shrink-0 mt-0.5" />
                                         <span>{error}</span>
                                     </div>
                                 )}
 
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold">New Password</span>
-                                    </label>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">New Password</label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                            <FontAwesomeIcon icon={faLock} />
-                                        </span>
+                                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <input
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="Enter new password"
-                                            className="input input-bordered w-full pl-10 pr-10 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20"
+                                            className={inputCls}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
                                             minLength={6}
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        >
-                                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" tabIndex={-1}>
+                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
                                     </div>
-                                    {/* Password Strength Indicator */}
                                     {password.length > 0 && (
                                         <div className="mt-2">
-                                            <div className="flex justify-between text-xs mb-1">
-                                                <span className="text-gray-500">Password strength</span>
-                                                <span className={`font-semibold ${passwordStrength.color.replace('bg-', 'text-')}`}>
-                                                    {passwordStrength.label}
-                                                </span>
+                                            <div className="flex justify-between text-[11px] mb-1">
+                                                <span className="text-gray-400 font-semibold">Password strength</span>
+                                                <span className={`font-bold ${strength.text}`}>{strength.label}</span>
                                             </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div
-                                                    className={`h-2 rounded-full transition-all ${passwordStrength.color}`}
-                                                    style={{ width: `${passwordStrength.strength}%` }}
-                                                ></div>
+                                            <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                                <div className={`h-1.5 rounded-full transition-all ${strength.color}`} style={{ width: `${strength.strength}%` }} />
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold">Confirm Password</span>
-                                    </label>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Confirm Password</label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                            <FontAwesomeIcon icon={faLock} />
-                                        </span>
+                                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <input
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             placeholder="Confirm new password"
-                                            className={`input input-bordered w-full pl-10 pr-10 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 ${
-                                                confirmPassword && password !== confirmPassword ? 'border-red-500' : ''
-                                            }`}
+                                            className={`${inputCls} ${confirmPassword && password !== confirmPassword ? 'border-red-300 focus:border-red-400 focus:ring-red-200' : ''}`}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             required
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        >
-                                            <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" tabIndex={-1}>
+                                            {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
                                     </div>
                                     {confirmPassword && password !== confirmPassword && (
-                                        <label className="label">
-                                            <span className="label-text-alt text-red-500">Passwords do not match</span>
-                                        </label>
+                                        <p className="text-[11px] text-red-500 mt-1 font-semibold">Passwords do not match</p>
                                     )}
                                     {confirmPassword && password === confirmPassword && (
-                                        <label className="label">
-                                            <span className="label-text-alt text-green-500 flex items-center gap-1">
-                                                <FontAwesomeIcon icon={faCheck} /> Passwords match
-                                            </span>
-                                        </label>
+                                        <p className="text-[11px] text-emerald-600 mt-1 font-semibold flex items-center gap-1"><CheckCircle2 size={12} /> Passwords match</p>
                                     )}
                                 </div>
 
                                 <button
                                     type="submit"
-                                    className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none w-full btn-lg"
                                     disabled={loading || password !== confirmPassword}
+                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <span className="loading loading-spinner"></span>
-                                            Resetting...
-                                        </>
-                                    ) : (
-                                        'Reset Password'
-                                    )}
+                                    {loading ? <><Loader2 size={16} className="animate-spin" /> Resetting...</> : 'Reset Password'}
                                 </button>
                             </form>
                         )}

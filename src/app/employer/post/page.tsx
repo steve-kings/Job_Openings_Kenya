@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Building2, MapPin, Calendar, Link as LinkIcon, FileText, CheckCircle, AlertCircle, Loader2, Send, ArrowLeft } from 'lucide-react';
+import { Building2, Calendar, Link as LinkIcon, FileText, CheckCircle, AlertCircle, Loader2, Send, ArrowLeft, Briefcase, MapPin, Clock, Shield } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
+import ScrollReveal from '@/components/ScrollReveal';
 
 interface FormState {
     job_title: string;
@@ -35,11 +36,13 @@ const initialForm: FormState = {
     logo_url: '',
 };
 
+const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'];
+
 export default function PostJobPage() {
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+    const [profile, setProfile] = useState<{ id: string; role: string; company_name?: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
@@ -48,36 +51,18 @@ export default function PostJobPage() {
     useEffect(() => {
         const init = async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login?redirect=/employer/post');
-                return;
-            }
-
-            const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            // Allow employer or admin
+            if (!user) { router.push('/login?redirect=/employer/post'); return; }
+            const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
             if (profileData?.role !== 'employer' && profileData?.role !== 'admin') {
-                setLoading(false);
-                setProfile(profileData);
-                setUser(user);
-                return;
+                setLoading(false); setProfile(profileData); setUser(user); return;
             }
-
             setUser(user);
             setProfile(profileData);
-            setForm(prev => ({
-                ...prev,
-                contact_email: user.email || '',
-                company_name: profileData?.company_name || '',
-            }));
+            setForm(prev => ({ ...prev, contact_email: user.email || '', company_name: profileData?.company_name || '' }));
             setLoading(false);
         };
         init();
-    }, []);
+    }, [router, supabase]);
 
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
@@ -88,186 +73,217 @@ export default function PostJobPage() {
         e.preventDefault();
         if (!user) return;
         setSubmitting(true);
-
         try {
             const { error } = await supabase.from('employer_job_submissions').insert({
-                employer_id: user.id,
-                job_title: form.job_title,
-                company_name: form.company_name,
-                contact_email: form.contact_email,
-                job_type: form.job_type,
-                location: form.location,
-                deadline: form.deadline || null,
-                short_description: form.short_description,
-                description: form.description,
-                requirements: form.requirements,
-                apply_url: form.apply_url,
-                logo_url: form.logo_url || null,
-                status: 'pending',
+                employer_id: user.id, job_title: form.job_title, company_name: form.company_name,
+                contact_email: form.contact_email, job_type: form.job_type, location: form.location,
+                deadline: form.deadline || null, short_description: form.short_description,
+                description: form.description, requirements: form.requirements,
+                apply_url: form.apply_url, logo_url: form.logo_url || null, status: 'pending',
             });
-
             if (error) throw error;
-
-            showToast('success', 'Job posted successfully! It will go live within 24 hours after review.');
+            showToast('success', 'Job posted! It will go live within 24 hours after review.');
             setTimeout(() => router.push('/employer/dashboard'), 2000);
-        } catch (err: any) {
-            showToast('error', err.message || 'Failed to submit job posting.');
-        } finally {
-            setSubmitting(false);
-        }
+        } catch (err: unknown) {
+            showToast('error', err instanceof Error ? err.message : 'Failed to submit.');
+        } finally { setSubmitting(false); }
     };
 
-    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all bg-white";
+    const set = (k: keyof FormState, v: string) => setForm(f => ({ ...f, [k]: v }));
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-sm text-slate-700 transition-all bg-white placeholder:text-slate-400";
+    const labelCls = "block text-sm font-bold text-slate-700 mb-1.5";
 
-    if (loading) {
+    // Non-employer
+    if (!loading && profile && profile.role !== 'employer' && profile.role !== 'admin') {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 size={40} className="animate-spin text-[#5CB800]" />
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+                <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md text-center">
+                    <Building2 size={48} className="text-slate-200 mx-auto mb-4" />
+                    <h2 className="text-2xl font-extrabold text-slate-900 mb-3">Employer Access Only</h2>
+                    <p className="text-slate-500 mb-6">This area is for employers. Create an employer account to post jobs.</p>
+                    <Link href="/login?role=employer" className="inline-flex items-center justify-center bg-emerald-600 text-white hover:bg-emerald-700 w-full py-2.5 rounded-xl font-bold text-sm">Create Employer Account</Link>
+                </div>
             </div>
         );
     }
 
-    // Non-employer trying to access
-    if (profile && profile.role !== 'employer' && profile.role !== 'admin') {
+    if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <div className="bg-white rounded-2xl shadow-xl p-10 max-w-md text-center">
-                    <Building2 size={56} className="text-gray-300 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">Employer Access Only</h2>
-                    <p className="text-gray-600 mb-6">
-                        This area is for employers. Create an employer account to post jobs.
-                    </p>
-                    <Link href="/login?role=employer" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] w-full">
-                        Create Employer Account
-                    </Link>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Loader2 size={36} className="animate-spin text-emerald-500" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-slate-50">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
-                    {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                    {toast.msg}
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`}>
+                    {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}{toast.msg}
                 </div>
             )}
 
-            <div className="max-w-3xl mx-auto px-4 py-8 lg:py-12">
+            <div className="max-w-4xl mx-auto px-4 py-8 lg:py-12">
                 {/* Header */}
-                <div className="mb-8">
-                    <Link href="/employer/dashboard" className="flex items-center gap-2 text-gray-500 hover:text-[#5CB800] transition-colors mb-4 text-sm font-medium">
-                        <ArrowLeft size={16} /> Back to Dashboard
+                <ScrollReveal>
+                    <Link href="/employer/dashboard" className="inline-flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors mb-6 text-sm font-medium">
+                        <ArrowLeft size={15} /> Back to Dashboard
                     </Link>
-                    <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white p-8 rounded-3xl shadow-xl">
-                        <h1 className="text-3xl font-bold mb-2">Post a New Job</h1>
-                        <p className="text-white/80">Fill in the details below. Your posting will be reviewed and go live within 24 hours.</p>
-                    </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Company Info */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <Building2 size={16} /> Company Information
-                        </h3>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-gray-700">Company Name <span className="text-red-500">*</span></label>
-                                <input type="text" value={form.company_name} onChange={e => setForm({ ...form, company_name: e.target.value })} className={inputCls} placeholder="e.g. Safaricom PLC" required />
+                    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 mb-8">
+                        <div className="flex items-center gap-4 mb-3">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                                <Send size={22} className="text-emerald-600" />
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-gray-700">Contact Email <span className="text-red-500">*</span></label>
-                                <input type="email" value={form.contact_email} onChange={e => setForm({ ...form, contact_email: e.target.value })} className={inputCls} placeholder="hr@company.co.ke" required />
+                            <div>
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Post a New Job</h1>
+                                <p className="text-sm text-slate-500 mt-0.5">Fill in the details — we&apos;ll review and publish within 24 hours</p>
                             </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">Company Logo (optional)</label>
-                            <CloudinaryUpload
-                                onUploadComplete={(url) => setForm({ ...form, logo_url: url })}
-                                currentImage={form.logo_url}
-                                folder="jobopeningskenya-employer-logos"
-                                label="Upload Company Logo"
-                            />
+                        {/* Progress dots */}
+                        <div className="flex items-center gap-2 mt-5 pt-5 border-t border-slate-100">
+                            {['Details', 'Description', 'Submit'].map((step, i) => (
+                                <div key={step} className="flex items-center gap-2">
+                                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-extrabold">{i + 1}</span>
+                                    <span className="text-xs font-bold text-slate-400">{step}</span>
+                                    {i < 2 && <span className="text-slate-200 mx-1">→</span>}
+                                </div>
+                            ))}
                         </div>
                     </div>
+                </ScrollReveal>
 
-                    {/* Job Details */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <FileText size={16} /> Job Details
-                        </h3>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-sm font-semibold text-gray-700">Job Title <span className="text-red-500">*</span></label>
-                                <input type="text" value={form.job_title} onChange={e => setForm({ ...form, job_title: e.target.value })} className={inputCls} placeholder="e.g. Software Engineer" required />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Section 1: Company Info */}
+                    <ScrollReveal delay={100}>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-50 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center"><Building2 size={15} className="text-emerald-600" /></div>
+                                <h2 className="font-extrabold text-slate-900 text-sm">Company Information</h2>
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-gray-700">Job Type <span className="text-red-500">*</span></label>
-                                <select value={form.job_type} onChange={e => setForm({ ...form, job_type: e.target.value })} className={inputCls} required>
-                                    {['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'].map(t => (
-                                        <option key={t} value={t}>{t}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-semibold text-gray-700">Location <span className="text-red-500">*</span></label>
-                                <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className={inputCls} placeholder="e.g. Nairobi, Kenya" required />
-                            </div>
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                    <Calendar size={14} /> Application Deadline
-                                </label>
-                                <input type="date" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} className={inputCls} min={new Date().toISOString().split('T')[0]} />
+                            <div className="p-6 space-y-4">
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className={labelCls}>Company Name <span className="text-red-400">*</span></label>
+                                        <input type="text" value={form.company_name} onChange={e => set('company_name', e.target.value)} className={inputCls} placeholder="e.g. Safaricom PLC" required />
+                                    </div>
+                                    <div>
+                                        <label className={labelCls}>Contact Email <span className="text-red-400">*</span></label>
+                                        <input type="email" value={form.contact_email} onChange={e => set('contact_email', e.target.value)} className={inputCls} placeholder="hr@company.co.ke" required />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Company Logo <span className="text-slate-400 font-normal">(optional)</span></label>
+                                    <CloudinaryUpload onUploadComplete={(url) => set('logo_url', url)} currentImage={form.logo_url} folder="jobopeningskenya-employer-logos" label="Upload Logo" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </ScrollReveal>
 
-                    {/* Description */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Job Description</h3>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">Short Description <span className="text-red-500">*</span> <span className="text-gray-400 font-normal">(max 200 chars)</span></label>
-                            <input type="text" value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value.slice(0, 200) })} className={inputCls} placeholder="One-line summary shown in search results" required maxLength={200} />
-                            <p className="text-xs text-gray-400 text-right">{form.short_description.length}/200</p>
+                    {/* Section 2: Job Details */}
+                    <ScrollReveal delay={150}>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-50 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center"><Briefcase size={15} className="text-blue-600" /></div>
+                                <h2 className="font-extrabold text-slate-900 text-sm">Job Details</h2>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div>
+                                    <label className={labelCls}>Job Title <span className="text-red-400">*</span></label>
+                                    <input type="text" value={form.job_title} onChange={e => set('job_title', e.target.value)} className={inputCls} placeholder="e.g. Senior Software Engineer" required />
+                                </div>
+                                <div className="grid sm:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className={labelCls}>Job Type <span className="text-red-400">*</span></label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {jobTypes.map(t => (
+                                                <button key={t} type="button" onClick={() => set('job_type', t)}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                                                        form.job_type === t
+                                                            ? 'bg-emerald-600 text-white border-emerald-600'
+                                                            : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
+                                                    }`}>
+                                                    {t}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className={labelCls}>Location <span className="text-red-400">*</span></label>
+                                        <input type="text" value={form.location} onChange={e => set('location', e.target.value)} className={inputCls} placeholder="e.g. Nairobi, Kenya" required />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}><span className="flex items-center gap-1.5"><Calendar size={14} /> Application Deadline</span></label>
+                                    <input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)} className={inputCls} min={new Date().toISOString().split('T')[0]} />
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">Full Job Description <span className="text-red-500">*</span></label>
-                            <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={8} className={`${inputCls} resize-none`} placeholder="Describe the role, responsibilities, qualifications, benefits, etc." required />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">Requirements <span className="text-gray-400 font-normal">(one per line)</span></label>
-                            <textarea value={form.requirements} onChange={e => setForm({ ...form, requirements: e.target.value })} rows={4} className={`${inputCls} resize-none`} placeholder="Bachelor's degree in related field&#10;3+ years experience&#10;Strong communication skills" />
-                        </div>
-                    </div>
+                    </ScrollReveal>
 
-                    {/* Application */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <LinkIcon size={16} /> How to Apply
-                        </h3>
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">Application URL or Email <span className="text-red-500">*</span></label>
-                            <input type="text" value={form.apply_url} onChange={e => setForm({ ...form, apply_url: e.target.value })} className={inputCls} placeholder="https://careers.company.co.ke/apply or careers@company.co.ke" required />
+                    {/* Section 3: Description */}
+                    <ScrollReveal delay={200}>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-50 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center"><FileText size={15} className="text-violet-600" /></div>
+                                <h2 className="font-extrabold text-slate-900 text-sm">Job Description</h2>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div>
+                                    <label className={labelCls}>Short Summary <span className="text-red-400">*</span> <span className="text-slate-400 font-normal">({form.short_description.length}/200)</span></label>
+                                    <input type="text" value={form.short_description} onChange={e => set('short_description', e.target.value.slice(0, 200))} className={inputCls} placeholder="One-line summary shown in search results" required maxLength={200} />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Full Description <span className="text-red-400">*</span></label>
+                                    <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={8} className={`${inputCls} resize-none`} placeholder="Describe the role, responsibilities, qualifications, benefits, etc." required />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Requirements <span className="text-slate-400 font-normal">(one per line)</span></label>
+                                    <textarea value={form.requirements} onChange={e => set('requirements', e.target.value)} rows={4} className={`${inputCls} resize-none`} placeholder={"Bachelor's degree in related field\n3+ years experience\nStrong communication skills"} />
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </ScrollReveal>
 
-                    {/* Submit */}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <button type="submit" disabled={submitting} className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none btn-lg gap-2 flex-1 shadow-lg">
-                            {submitting ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-                            {submitting ? 'Submitting...' : 'Submit Job Posting'}
-                        </button>
-                        <Link href="/employer/dashboard" className="btn btn-outline border-gray-300 text-gray-600 hover:bg-gray-50 btn-lg">
-                            Cancel
-                        </Link>
-                    </div>
+                    {/* Section 4: How to Apply */}
+                    <ScrollReveal delay={250}>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-50 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center"><LinkIcon size={15} className="text-amber-600" /></div>
+                                <h2 className="font-extrabold text-slate-900 text-sm">How to Apply</h2>
+                            </div>
+                            <div className="p-6">
+                                <label className={labelCls}>Application URL or Email <span className="text-red-400">*</span></label>
+                                <input type="text" value={form.apply_url} onChange={e => set('apply_url', e.target.value)} className={inputCls} placeholder="https://careers.company.co.ke/apply or careers@company.co.ke" required />
+                            </div>
+                        </div>
+                    </ScrollReveal>
 
-                    <p className="text-sm text-gray-500 text-center">
-                        By submitting, you agree that the job posting is legitimate and accurate. Our team will review it within 24 hours.
-                    </p>
+                    {/* Review note + Submit */}
+                    <ScrollReveal delay={300}>
+                        <div className="bg-amber-50 rounded-2xl border border-amber-100 p-4 flex items-start gap-3">
+                            <Clock size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-bold text-amber-800">Review Process</p>
+                                <p className="text-xs text-amber-600 mt-0.5">Our team reviews all postings within 24 hours to ensure quality and legitimacy. You&apos;ll see the status update in your dashboard.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 mt-5">
+                            <button type="submit" disabled={submitting}
+                                className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-4 rounded-xl text-sm font-extrabold transition-all shadow-lg shadow-emerald-200 disabled:opacity-60">
+                                {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                                {submitting ? 'Submitting...' : 'Submit Job Posting'}
+                            </button>
+                            <Link href="/employer/dashboard"
+                                className="inline-flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-600 hover:bg-slate-50 px-6 py-4 rounded-xl text-sm font-extrabold transition-all">
+                                Cancel
+                            </Link>
+                        </div>
+                        <p className="text-xs text-slate-400 text-center mt-4">
+                            By submitting, you confirm this posting is legitimate and accurate.
+                        </p>
+                    </ScrollReveal>
                 </form>
             </div>
         </div>

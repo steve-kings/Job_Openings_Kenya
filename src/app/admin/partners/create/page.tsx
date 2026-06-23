@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Building2, Link2, FileText, Save, Image as ImageIcon, Info } from 'lucide-react';
+import { ArrowLeft, Building2, Link2, Save, Image as ImageIcon, Info } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
@@ -41,9 +41,9 @@ export default function CreatePartnerPage() {
 
             router.push('/admin/partners');
             router.refresh();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error creating partner:', error);
-            alert(`Error creating partner: ${error.message}`);
+            alert(`Error creating partner: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
@@ -155,10 +155,10 @@ export default function CreatePartnerPage() {
 
                 {/* Submit Button */}
                 <div className="flex justify-end gap-4">
-                    <Link href="/admin/partners" className="btn btn-ghost">Cancel</Link>
+                    <Link href="/admin/partners" className="inline-flex items-center justify-center text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium">Cancel</Link>
                     <button 
                         type="submit" 
-                        className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none w-40 gap-2" 
+                        className="inline-flex items-center justify-center bg-[#5CB800] hover:bg-[#4A9900] text-white w-40 gap-2 px-4 py-2.5 rounded-lg font-medium" 
                         disabled={loading}
                     >
                         {loading ? (

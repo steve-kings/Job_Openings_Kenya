@@ -1,10 +1,10 @@
-# 1000Jobs - 1000Jobs
+# Job Openings Kenya
 
-![1000Jobs Logo](public/images/1000jobs%20logo.jpeg)
+![Job Openings Kenya Logo](public/job_openings_kenya_logo.jpeg)
 
-## 🌍 About 1000Jobs
+## 🌍 About Job Openings Kenya
 
-1000Jobs (1000Jobs) is a comprehensive digital platform dedicated to bridging the gap between young Africans and life-changing opportunities. We provide verified opportunities, skills training, and community support to empower the next generation of African leaders.
+Job Openings Kenya is a comprehensive digital platform dedicated to bridging the gap between young Kenyans and life-changing opportunities. We provide verified opportunities, skills training, and community support to empower the next generation of Kenyan leaders.
 
 ### Our Mission
 To bridge the gap between young Africans and life-changing opportunities through verified information and skills training.
@@ -49,7 +49,7 @@ A continent where every young person has access to the resources they need to bu
 
 ## 🎨 Design & Branding
 
-### 1000Jobs Brand Colors
+### Job Openings Kenya Brand Colors
 - **Primary Red**: `#1976D2` - Main brand color
 - **Secondary Brown**: `#1565C0` - Supporting color
 - **Accent Orange**: `#4CAF50` - Call-to-action and highlights
@@ -93,8 +93,8 @@ All pages are fully responsive and optimized for:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/1000jobs-platform.git
-cd 1000jobs-platform
+git clone https://github.com/yourusername/job-openings-kenya.git
+cd job-openings-kenya
 ```
 
 ### 2. Install Dependencies
@@ -141,7 +141,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📁 Project Structure
 
 ```
-1000jobs-platform/
+job-openings-kenya/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── about/             # About page
@@ -254,7 +254,7 @@ WHERE email = 'admin@example.com';
 - Unique verification ID
 - Student name and course name
 - Completion date
-- 1000Jobs branding and signatures
+- Job Openings Kenya branding and signatures
 - Downloadable as image
 - Shareable on social media
 - Public verification page
@@ -292,8 +292,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_anon_key
 
 ## 📞 Contact Information
 
-### 1000Jobs Contact
-- **Email**: info@1000jobs.org
+### Job Openings Kenya Contact
+- **Email**: info@jobopeningskenya.com
 - **Phone**: +254 788 419 041
 - **WhatsApp Channel**: [Join Here](https://whatsapp.com/channel/0029Vb5tFTSK0IBb2oi04V2b)
 
@@ -315,11 +315,11 @@ We welcome contributions! Please follow these steps:
 
 ## 📝 License
 
-This project is proprietary software owned by 1000Jobs (1000Jobs).
+This project is proprietary software owned by Job Openings Kenya.
 
 ## 🙏 Acknowledgments
 
-- **1000Jobs Team**: For the vision and mission
+- **Job Openings Kenya Team**: For the vision and mission
 - **Kings Creation**: For development and design
 - **Supabase**: For the amazing backend platform
 - **Next.js**: For the powerful React framework
@@ -388,6 +388,6 @@ None at the moment! Report issues on GitHub.
 
 ---
 
-**Built with ❤️ by Kings Creation for 1000Jobs**
+**Built with ❤️ by Kings Creation for Job Openings Kenya**
 
 *Empowering Africa's Youth, One Opportunity at a Time*

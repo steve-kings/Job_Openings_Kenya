@@ -68,8 +68,18 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         await supabase.rpc('increment_opportunity_views', { row_id: resolvedParams.id });
     }
 
+    interface SimilarJob {
+        id: string;
+        title: string;
+        company: string;
+        type: string;
+        location: string;
+        thumbnail_url?: string;
+        deadline: string;
+    }
+
     // Fetch similar opportunities
-    let similarJobs: any[] = [];
+    let similarJobs: SimilarJob[] = [];
     if (job) {
         const { data: similar } = await supabase
             .from('opportunities')

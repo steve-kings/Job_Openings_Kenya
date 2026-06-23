@@ -1,13 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     Plus, Briefcase, Clock, CheckCircle2, XCircle, LogOut,
-    Building2, Calendar, MapPin, TrendingUp, Loader2, Home
+    Calendar, MapPin, TrendingUp, Loader2, Home,
+    Users, BarChart3, Sparkles, ExternalLink,
 } from 'lucide-react';
+import DashboardHeroSlider from '@/components/DashboardHeroSlider';
+import ScrollReveal from '@/components/ScrollReveal';
 
 function StatusBadge({ status }: { status: string }) {
     const map: Record<string, string> = {
@@ -22,46 +26,37 @@ function StatusBadge({ status }: { status: string }) {
     };
     return (
         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${map[status] || 'bg-gray-100 text-gray-600'} capitalize`}>
-            {icons[status]}
-            {status}
+            {icons[status]}{status}
         </span>
     );
 }
 
-export default function EmployerDashboardPage() {
-    const supabase = createClient();
-    const router = useRouter();
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
-    const [submissions, setSubmissions] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+interface Submission {
+    id: string;
+    job_title: string;
+    company_name: string;
+    job_type: string;
+    location: string;
+    deadline?: string;
+    status: string;
+    created_at: string;
+}
 
-    const stats = {
-        total: submissions.length,
-        pending: submissions.filter(s => s.status === 'pending').length,
-        approved: submissions.filter(s => s.status === 'approved').length,
-        rejected: submissions.filter(s => s.status === 'rejected').length,
-    };
+export default function EmployerDashboardPage() {
+    const supabase = useMemo(() => createClient(), []);
+    const router = useRouter();
+    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+    const [profile, setProfile] = useState<{ id: string; role: string; full_name?: string; avatar_url?: string } | null>(null);
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
+    const [activeTab, setActiveTab] = useState('all');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const init = async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login?redirect=/employer/dashboard');
-                return;
-            }
-
-            const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (profileData?.role !== 'employer' && profileData?.role !== 'admin') {
-                router.push('/dashboard');
-                return;
-            }
-
+            if (!user) { router.push('/login?redirect=/employer/dashboard'); return; }
+            const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            if (profileData?.role !== 'employer' && profileData?.role !== 'admin') { router.push('/dashboard'); return; }
             setUser(user);
             setProfile(profileData);
 
@@ -74,160 +69,183 @@ export default function EmployerDashboardPage() {
             setLoading(false);
         };
         init();
-    }, []);
+    }, [router, supabase]);
 
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        router.push('/');
+    const stats = {
+        total: submissions.length,
+        pending: submissions.filter(s => s.status === 'pending').length,
+        approved: submissions.filter(s => s.status === 'approved').length,
+        rejected: submissions.filter(s => s.status === 'rejected').length,
     };
+
+    const approvalRate = stats.total > 0 ? Math.round((stats.approved / stats.total) * 100) : 0;
+
+    const filtered = activeTab === 'all'
+        ? submissions
+        : submissions.filter(s => s.status === activeTab);
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 size={40} className="animate-spin text-[#5CB800]" />
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <Loader2 size={40} className="animate-spin text-emerald-600" />
             </div>
         );
     }
 
+    const initials = (profile?.full_name || user?.email || 'E').charAt(0).toUpperCase();
+
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Sidebar + Main layout */}
-            <div className="flex">
-                {/* Sidebar */}
-                <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 min-h-screen flex-col p-6">
-                    <div className="mb-8">
-                        <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya" className="h-12 w-auto object-contain mb-4" />
-                        <h2 className="text-lg font-bold text-gray-900">Employer Portal</h2>
-                        <p className="text-xs text-gray-500 mt-1">{profile?.full_name || user?.email}</p>
-                    </div>
-                    <nav className="flex-1 space-y-1">
-                        {[
-                            { href: '/employer/dashboard', label: 'Dashboard', icon: Building2, active: true },
-                            { href: '/employer/post', label: 'Post a Job', icon: Plus },
-                            { href: '/talent', label: 'Search Resumes', icon: Briefcase },
-                            { href: '/', label: 'Browse Jobs', icon: TrendingUp },
-                        ].map(({ href, label, icon: Icon, active }) => (
-                            <Link key={href} href={href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${active ? 'bg-[#5CB800]/10 text-[#5CB800]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-                            >
-                                <Icon size={20} className={active ? 'text-[#5CB800]' : 'text-gray-400'} />
-                                {label}
-                            </Link>
-                        ))}
-                    </nav>
-                    <div className="space-y-2 pt-6 border-t border-gray-100">
-                        <Link href="/" className="btn btn-outline border-gray-200 text-gray-600 hover:bg-gray-50 w-full gap-2 btn-sm">
-                            <Home size={14} /> Back to Home
-                        </Link>
-                        <button onClick={handleSignOut} className="btn bg-red-50 text-red-600 hover:bg-red-100 border-none w-full gap-2 btn-sm">
-                            <LogOut size={14} /> Sign Out
-                        </button>
-                    </div>
-                </aside>
+            {/* ═══════ HERO WITH SLIDER ═══════ */}
+            <section className="relative h-[320px] sm:h-[380px] overflow-hidden">
+                <DashboardHeroSlider />
 
-                {/* Main */}
-                <main className="flex-1 p-4 lg:p-8 space-y-8 max-w-5xl">
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white p-8 rounded-3xl shadow-xl">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div>
-                                <h1 className="text-3xl font-bold">Employer Dashboard</h1>
-                                <p className="text-white/80 mt-1">Manage your job postings on Job Openings Kenya</p>
+                {/* Employer profile overlay */}
+                <div className="absolute bottom-0 left-0 right-0 z-20">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+                        <ScrollReveal variant="scale">
+                            <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-4 sm:p-5 shadow-2xl border border-white/20 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg shrink-0">
+                                    {profile?.avatar_url ? (
+                                        <Image src={profile.avatar_url} alt="" fill unoptimized className="object-cover rounded-xl" />
+                                    ) : initials}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h1 className="text-xl font-black text-slate-900">Employer Dashboard</h1>
+                                    <p className="text-sm text-slate-500 mt-0.5">{profile?.full_name || user?.email} • Manage your job postings</p>
+                                </div>
+                                <div className="flex items-center gap-2 self-end sm:self-center">
+                                    <Link href="/employer/post" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors shadow-lg">
+                                        <Plus size={16} /> Post New Job
+                                    </Link>
+                                </div>
                             </div>
-                            <Link href="/employer/post" className="btn bg-white text-[#5CB800] hover:bg-gray-50 border-none gap-2 shadow-lg font-bold">
-                                <Plus size={20} /> Post New Job
-                            </Link>
-                        </div>
+                        </ScrollReveal>
                     </div>
+                </div>
+            </section>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                {/* Stats */}
+                <ScrollReveal variant="fade" delay={100}>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                         {[
-                            { label: 'Total Posted', value: stats.total, color: '#5CB800', icon: Briefcase },
-                            { label: 'Pending Review', value: stats.pending, color: '#F59E0B', icon: Clock },
-                            { label: 'Live / Active', value: stats.approved, color: '#5CB800', icon: CheckCircle2 },
-                            { label: 'Rejected', value: stats.rejected, color: '#EF4444', icon: XCircle },
-                        ].map(({ label, value, color, icon: Icon }) => (
-                            <div key={label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                                <div className="flex items-center justify-between mb-3">
-                                    <p className="text-sm text-gray-600 font-medium">{label}</p>
-                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
-                                        <Icon size={16} style={{ color }} />
+                            { label: 'Total Posted', value: stats.total, icon: Briefcase, color: 'emerald' },
+                            { label: 'Live / Active', value: stats.approved, icon: CheckCircle2, color: 'green' },
+                            { label: 'Pending Review', value: stats.pending, icon: Clock, color: 'amber' },
+                            { label: 'Approval Rate', value: `${approvalRate}%`, icon: TrendingUp, color: 'indigo' },
+                        ].map(({ label, value, icon: Icon, color }, i) => (
+                            <ScrollReveal key={label} delay={150 + i * 80} variant="scale">
+                                <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 hover:shadow-md transition-all">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</p>
+                                        <div className={`w-9 h-9 rounded-xl bg-${color}-50 flex items-center justify-center`}>
+                                            <Icon size={18} className={`text-${color}-600`} />
+                                        </div>
+                                    </div>
+                                    <p className="text-2xl sm:text-3xl font-black text-slate-900">{value}</p>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </ScrollReveal>
+
+                {/* Pipeline + Quick Links */}
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <ScrollReveal variant="slide" delay={200} className="lg:col-span-2">
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="font-extrabold text-slate-900 flex items-center gap-2">
+                                    <BarChart3 size={18} className="text-emerald-500" /> Approval Pipeline
+                                </h2>
+                                <div className="flex gap-1">
+                                    {['all', 'pending', 'approved', 'rejected'].map(tab => (
+                                        <button
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab)}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
+                                                activeTab === tab ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-slate-100'
+                                            }`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {stats.total > 0 && (
+                                <div className="mb-4">
+                                    <div className="flex items-center gap-0 h-3 rounded-full overflow-hidden bg-slate-100">
+                                        {stats.approved > 0 && <div className="h-full bg-emerald-500 transition-all" style={{ width: `${(stats.approved / stats.total) * 100}%` }} />}
+                                        {stats.pending > 0 && <div className="h-full bg-amber-400 transition-all" style={{ width: `${(stats.pending / stats.total) * 100}%` }} />}
+                                        {stats.rejected > 0 && <div className="h-full bg-red-400 transition-all" style={{ width: `${(stats.rejected / stats.total) * 100}%` }} />}
+                                    </div>
+                                    <div className="flex items-center gap-5 mt-2 text-[11px] font-semibold text-slate-500">
+                                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" />{stats.approved} approved</span>
+                                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400" />{stats.pending} pending</span>
+                                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-400" />{stats.rejected} rejected</span>
                                     </div>
                                 </div>
-                                <p className="text-3xl font-black text-gray-900">{value}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Submissions Table */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-gray-900">My Job Postings</h2>
-                            <Link href="/employer/post" className="btn btn-sm bg-[#5CB800] text-white border-none hover:bg-[#4A9900] gap-2">
-                                <Plus size={14} /> New Posting
-                            </Link>
+                            )}
+                            {filtered.length === 0 ? (
+                                <div className="text-center py-10 text-slate-400">
+                                    <Briefcase size={32} className="mx-auto mb-2 opacity-30" />
+                                    <p className="text-sm font-medium">No submissions yet</p>
+                                    <Link href="/employer/post" className="text-xs font-bold text-emerald-600 hover:underline mt-1 inline-block">Post your first job →</Link>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {filtered.slice(0, 8).map(sub => (
+                                        <div key={sub.id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center text-emerald-700 font-bold text-sm shrink-0">
+                                                {sub.company_name.charAt(0)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-sm text-slate-900 truncate">{sub.job_title}</p>
+                                                <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-0.5">
+                                                    <span>{sub.company_name}</span>
+                                                    <span className="flex items-center gap-1"><MapPin size={10} />{sub.location}</span>
+                                                </div>
+                                            </div>
+                                            <StatusBadge status={sub.status} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                    </ScrollReveal>
 
-                        {submissions.length === 0 ? (
-                            <div className="p-16 text-center">
-                                <Briefcase size={56} className="mx-auto text-gray-200 mb-4" />
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">No job postings yet</h3>
-                                <p className="text-gray-500 mb-6">Post your first job and reach thousands of Kenyan job seekers</p>
-                                <Link href="/employer/post" className="btn bg-[#5CB800] text-white border-none hover:bg-[#4A9900] gap-2">
-                                    <Plus size={18} /> Post Your First Job
+                    {/* Quick Links */}
+                    <ScrollReveal variant="slide" direction="right" delay={300}>
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+                            <h3 className="font-extrabold text-slate-900 text-sm">Quick Links</h3>
+                            {[
+                                { href: '/employer/post', icon: Plus, label: 'Post a New Job', color: 'emerald' },
+                                { href: '/talent', icon: Users, label: 'Browse Talent', color: 'blue' },
+                                { href: '/', icon: Briefcase, label: 'View Job Board', color: 'violet' },
+                            ].map(({ href, icon: Icon, label, color }) => (
+                                <Link key={href} href={href}
+                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className={`w-9 h-9 rounded-lg bg-${color}-50 flex items-center justify-center group-hover:scale-105 transition-transform`}>
+                                        <Icon size={18} className={`text-${color}-600`} />
+                                    </div>
+                                    <span className="font-semibold text-sm text-slate-700">{label}</span>
+                                    <ExternalLink size={13} className="ml-auto text-slate-300" />
                                 </Link>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead>
-                                        <tr className="border-b border-gray-100 bg-gray-50">
-                                            <th className="text-left px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Job Title</th>
-                                            <th className="text-left px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Location</th>
-                                            <th className="text-left px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Deadline</th>
-                                            <th className="text-left px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                            <th className="text-left px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Submitted</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {submissions.map((sub) => (
-                                            <tr key={sub.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div>
-                                                        <p className="font-semibold text-gray-900 truncate max-w-[200px]">{sub.job_title}</p>
-                                                        <p className="text-sm text-gray-500">{sub.company_name}</p>
-                                                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">{sub.job_type}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 hidden md:table-cell">
-                                                    <span className="flex items-center gap-1 text-sm text-gray-600">
-                                                        <MapPin size={14} className="text-gray-400" /> {sub.location}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 hidden lg:table-cell">
-                                                    <span className="flex items-center gap-1 text-sm text-gray-600">
-                                                        <Calendar size={14} className="text-gray-400" />
-                                                        {sub.deadline ? new Date(sub.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Rolling'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <StatusBadge status={sub.status} />
-                                                    {sub.status === 'pending' && (
-                                                        <p className="text-xs text-gray-400 mt-1">Reviewing within 24h</p>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 hidden md:table-cell text-sm text-gray-500">
-                                                    {new Date(sub.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-                </main>
+                            ))}
+                            <hr className="border-slate-100" />
+                            <button
+                                onClick={async () => { await supabase.auth.signOut(); router.push('/'); }}
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 transition-colors w-full group"
+                            >
+                                <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center">
+                                    <LogOut size={18} className="text-red-500" />
+                                </div>
+                                <span className="font-semibold text-sm text-red-600">Sign Out</span>
+                            </button>
+                        </div>
+                    </ScrollReveal>
+                </div>
             </div>
         </div>
     );

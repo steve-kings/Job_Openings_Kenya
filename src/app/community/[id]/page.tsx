@@ -1,19 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ThumbsUp, MessageSquare, Send, Loader2, Share2, Pin, Lock } from 'lucide-react';
+import { ArrowLeft, ThumbsUp, MessageSquare, Send, Loader2, ArrowUp, Clock } from 'lucide-react';
+import HeroSlider from '@/components/HeroSlider';
+import ScrollReveal from '@/components/ScrollReveal';
+
+interface Profile { full_name?: string; username?: string; avatar_url?: string; }
+interface Thread {
+    id: string; title: string; content: string; created_at: string;
+    upvotes: number; comment_count: number; views: number; is_locked: boolean;
+    profiles?: Profile; forum_categories?: { icon: string; name: string; color?: string };
+}
+interface Comment {
+    id: string; content: string; created_at: string; upvotes: number; profiles?: Profile;
+}
 
 export default function ThreadDetailPage() {
     const { id } = useParams<{ id: string }>();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
 
-    const [user, setUser] = useState<any>(null);
-    const [thread, setThread] = useState<any>(null);
-    const [comments, setComments] = useState<any[]>([]);
+    const [user, setUser] = useState<{ id: string } | null>(null);
+    const [thread, setThread] = useState<Thread | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
     const [newComment, setNewComment] = useState('');
     const [submittingComment, setSubmittingComment] = useState(false);
@@ -23,47 +35,32 @@ export default function ThreadDetailPage() {
         const init = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
-
             const [{ data: threadData }, { data: commentsData }] = await Promise.all([
                 supabase.from('forum_threads').select('*, forum_categories(name, icon, color), profiles(full_name, username, avatar_url)').eq('id', id).single(),
                 supabase.from('forum_comments').select('*, profiles(full_name, username, avatar_url)').eq('thread_id', id).order('created_at', { ascending: true }),
             ]);
-
             setThread(threadData);
             setComments(commentsData || []);
-
             if (user) {
                 const { data: votes } = await supabase.from('forum_votes').select('thread_id, comment_id').eq('user_id', user.id);
-                const voted = new Set(votes?.map(v => v.thread_id || v.comment_id).filter(Boolean) as string[]);
-                setUserVotes(voted);
+                setUserVotes(new Set(votes?.map(v => v.thread_id || v.comment_id).filter(Boolean) as string[]));
             }
-
-            // Increment views
             try { await supabase.rpc('increment_thread_views', { thread_id: id }); } catch {}
-
             setLoading(false);
         };
         init();
-    }, [id]);
+    }, [id, supabase]);
 
-    const handleVoteThread = async () => {
+    const handleVote = async (targetId: string, isThread: boolean, currentVotes: number) => {
         if (!user) { router.push('/login?redirect=/community/' + id); return; }
-        if (userVotes.has(id)) return;
-
-        await supabase.from('forum_votes').insert({ user_id: user.id, thread_id: id, vote_type: 'up' });
-        await supabase.from('forum_threads').update({ upvotes: (thread.upvotes || 0) + 1 }).eq('id', id);
-        setThread((t: any) => ({ ...t, upvotes: (t.upvotes || 0) + 1 }));
-        setUserVotes(prev => new Set([...prev, id]));
-    };
-
-    const handleVoteComment = async (commentId: string, currentVotes: number) => {
-        if (!user) { router.push('/login?redirect=/community/' + id); return; }
-        if (userVotes.has(commentId)) return;
-
-        await supabase.from('forum_votes').insert({ user_id: user.id, comment_id: commentId, vote_type: 'up' });
-        await supabase.from('forum_comments').update({ upvotes: currentVotes + 1 }).eq('id', commentId);
-        setComments(prev => prev.map(c => c.id === commentId ? { ...c, upvotes: c.upvotes + 1 } : c));
-        setUserVotes(prev => new Set([...prev, commentId]));
+        if (userVotes.has(targetId)) return;
+        const table = isThread ? 'forum_threads' : 'forum_comments';
+        const field = isThread ? 'thread_id' : 'comment_id';
+        await supabase.from('forum_votes').insert({ user_id: user.id, [field]: targetId, vote_type: 'up' });
+        await supabase.from(table).update({ upvotes: currentVotes + 1 }).eq('id', targetId);
+        if (isThread) setThread(t => t ? { ...t, upvotes: t.upvotes + 1 } : null);
+        else setComments(prev => prev.map(c => c.id === targetId ? { ...c, upvotes: c.upvotes + 1 } : c));
+        setUserVotes(prev => new Set([...prev, targetId]));
     };
 
     const handlePostComment = async () => {
@@ -71,21 +68,15 @@ export default function ThreadDetailPage() {
         setSubmittingComment(true);
         try {
             const { data: comment, error } = await supabase.from('forum_comments').insert({
-                thread_id: id,
-                user_id: user.id,
-                content: newComment.trim(),
+                thread_id: id, user_id: user.id, content: newComment.trim(),
             }).select('*, profiles(full_name, username, avatar_url)').single();
-
             if (error) throw error;
             setComments(prev => [...prev, { ...comment, upvotes: 0 }]);
-            await supabase.from('forum_threads').update({ comment_count: (thread.comment_count || 0) + 1 }).eq('id', id);
-            setThread((t: any) => ({ ...t, comment_count: (t.comment_count || 0) + 1 }));
+            await supabase.from('forum_threads').update({ comment_count: (thread?.comment_count || 0) + 1 }).eq('id', id);
+            setThread(t => t ? { ...t, comment_count: t.comment_count + 1 } : null);
             setNewComment('');
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setSubmittingComment(false);
-        }
+        } catch (err) { console.error('Failed to post comment:', err); }
+        finally { setSubmittingComment(false); }
     };
 
     const timeAgo = (date: string) => {
@@ -98,137 +89,135 @@ export default function ThreadDetailPage() {
         return `${Math.floor(hrs / 24)}d ago`;
     };
 
-    const getInitials = (name: string) => name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const getInitials = (name?: string) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-[#5CB800]" size={40} /></div>;
-    if (!thread) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Thread not found</p></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><Loader2 className="animate-spin text-emerald-500" size={36} /></div>;
+    if (!thread) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><p className="text-slate-500">Thread not found.</p></div>;
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-16">
-            <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white py-10">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <Link href="/community" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-4 text-sm group">
-                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                        Back to Community
+        <div className="min-h-screen bg-slate-50">
+            {/* Hero */}
+            <section className="relative overflow-hidden min-h-[220px] sm:min-h-[260px] flex items-center text-white">
+                <div className="absolute inset-0"><HeroSlider /></div>
+                <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+                    <Link href="/community" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white mb-4 text-sm font-medium transition-colors">
+                        <ArrowLeft size={15} /> Back to Community
                     </Link>
                     {thread.forum_categories && (
-                        <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-semibold mb-3">
+                        <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold mb-3">
                             {thread.forum_categories.icon} {thread.forum_categories.name}
-                        </div>
+                        </span>
                     )}
-                    <h1 className="text-2xl lg:text-3xl font-black leading-tight max-w-3xl">{thread.title}</h1>
-                    <div className="flex items-center gap-4 mt-3 text-white/70 text-sm flex-wrap">
-                        <span>by <span className="text-white font-semibold">{thread.profiles?.full_name || 'Anonymous'}</span></span>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight drop-shadow-lg max-w-3xl">{thread.title}</h1>
+                    <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-white/60">
+                        <span>by <span className="text-white font-bold">{thread.profiles?.full_name || 'Anonymous'}</span></span>
+                        <span className="w-1 h-1 rounded-full bg-white/30" />
                         <span>{timeAgo(thread.created_at)}</span>
-                        <span className="flex items-center gap-1"><MessageSquare size={14}/> {thread.comment_count} replies</span>
-                        <span className="flex items-center gap-1"><ThumbsUp size={14}/> {thread.upvotes} upvotes</span>
+                        <span className="w-1 h-1 rounded-full bg-white/30" />
+                        <span className="flex items-center gap-1"><MessageSquare size={13} /> {thread.comment_count} replies</span>
+                        <span className="flex items-center gap-1"><ArrowUp size={13} /> {thread.upvotes} upvotes</span>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div className="container mx-auto px-6 lg:px-12 py-8 max-w-3xl">
-                {/* Original Thread */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
-                    <div className="p-6 lg:p-8">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-full bg-[#5CB800] flex items-center justify-center text-white font-bold shrink-0">
-                                {getInitials(thread.profiles?.full_name || 'U')}
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{thread.content}</p>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                {/* Original post */}
+                <ScrollReveal>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="p-6 sm:p-8">
+                            <div className="flex items-start gap-4">
+                                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-extrabold text-sm shrink-0">
+                                    {thread.profiles?.avatar_url ? (
+                                        <img src={thread.profiles.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                                    ) : getInitials(thread.profiles?.full_name)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <p className="font-extrabold text-sm text-slate-900">{thread.profiles?.full_name || 'Anonymous'}</p>
+                                        <span className="text-xs text-slate-400">{timeAgo(thread.created_at)}</span>
+                                    </div>
+                                    <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed">{thread.content}</div>
+                                </div>
                             </div>
                         </div>
+                        <div className="px-6 sm:px-8 py-3 border-t border-slate-50 bg-slate-50/50 flex items-center gap-4">
+                            <button onClick={() => handleVote(thread.id, true, thread.upvotes)}
+                                disabled={userVotes.has(thread.id)}
+                                className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
+                                    userVotes.has(thread.id) ? 'bg-emerald-100 text-emerald-700' : 'text-slate-500 hover:bg-slate-100 hover:text-emerald-600'
+                                }`}>
+                                <ArrowUp size={13} /> {thread.upvotes}
+                            </button>
+                            {thread.is_locked && <span className="text-xs text-amber-600 font-bold ml-auto">🔒 Thread locked</span>}
+                        </div>
                     </div>
-                    {/* Actions */}
-                    <div className="px-6 lg:px-8 py-4 border-t border-gray-100 bg-gray-50 flex items-center gap-4">
-                        <button
-                            onClick={handleVoteThread}
-                            disabled={userVotes.has(id)}
-                            className={`flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition-all ${userVotes.has(id) ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-600 hover:bg-[#5CB800]/10 hover:text-[#5CB800]'}`}
-                        >
-                            <ThumbsUp size={16} /> {thread.upvotes} Helpful
-                        </button>
-                        <button
-                            onClick={() => { navigator.clipboard.writeText(window.location.href); }}
-                            className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-[#5CB800] transition-colors"
-                        >
-                            <Share2 size={16} /> Share
-                        </button>
-                    </div>
-                </div>
+                </ScrollReveal>
 
                 {/* Comments */}
-                <h2 className="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2">
-                    <MessageSquare size={20} className="text-[#5CB800]" />
-                    {thread.comment_count} {thread.comment_count === 1 ? 'Reply' : 'Replies'}
-                </h2>
-
-                <div className="space-y-4 mb-8">
-                    {comments.length === 0 ? (
-                        <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-gray-100">
-                            <MessageSquare size={40} className="text-gray-200 mx-auto mb-2" />
-                            <p className="text-gray-500">No replies yet. Be the first to respond!</p>
-                        </div>
-                    ) : comments.map((comment, i) => (
-                        <div key={comment.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 ${i % 2 === 1 ? 'ml-4' : ''}`}>
-                            <div className="flex items-start gap-3">
-                                <div className="w-9 h-9 rounded-full bg-[#5CB800] flex items-center justify-center text-white text-sm font-bold shrink-0">
-                                    {getInitials(comment.profiles?.full_name || 'U')}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-bold text-gray-900 text-sm">{comment.profiles?.full_name || 'Anonymous'}</span>
-                                        <span className="text-xs text-gray-400">{timeAgo(comment.created_at)}</span>
+                {comments.length > 0 && (
+                    <div className="space-y-3">
+                        <ScrollReveal><h3 className="font-extrabold text-slate-900">{comments.length} {comments.length === 1 ? 'Reply' : 'Replies'}</h3></ScrollReveal>
+                        {comments.map((comment, i) => (
+                            <ScrollReveal key={comment.id} delay={i * 50}>
+                                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-extrabold text-xs shrink-0">
+                                            {getInitials(comment.profiles?.full_name)}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1.5">
+                                                <p className="font-extrabold text-sm text-slate-900">{comment.profiles?.full_name || 'Anonymous'}</p>
+                                                <span className="text-xs text-slate-400">{timeAgo(comment.created_at)}</span>
+                                            </div>
+                                            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{comment.content}</p>
+                                            <button onClick={() => handleVote(comment.id, false, comment.upvotes)}
+                                                disabled={userVotes.has(comment.id)}
+                                                className={`mt-3 flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-all ${
+                                                    userVotes.has(comment.id) ? 'bg-emerald-50 text-emerald-600' : 'text-slate-400 hover:text-emerald-600'
+                                                }`}>
+                                                <ArrowUp size={11} /> {comment.upvotes}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
-                                    <button
-                                        onClick={() => handleVoteComment(comment.id, comment.upvotes)}
-                                        disabled={userVotes.has(comment.id)}
-                                        className={`mt-2 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${userVotes.has(comment.id) ? 'bg-[#5CB800] text-white' : 'bg-gray-100 text-gray-500 hover:bg-[#5CB800]/10 hover:text-[#5CB800]'}`}
-                                    >
-                                        <ThumbsUp size={13} /> {comment.upvotes} Helpful
-                                    </button>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Reply Box */}
-                {thread.is_locked ? (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 text-center flex items-center justify-center gap-2 text-yellow-700 font-bold">
-                        <Lock size={18} /> This thread has been locked
-                    </div>
-                ) : user ? (
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                        <h3 className="font-bold text-gray-900 mb-4">Share Your Reply</h3>
-                        <textarea
-                            value={newComment}
-                            onChange={e => setNewComment(e.target.value)}
-                            rows={5}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 resize-none transition-all"
-                            placeholder="Share your thoughts, advice or experience..."
-                        />
-                        <div className="flex justify-end mt-3">
-                            <button
-                                onClick={handlePostComment}
-                                disabled={submittingComment || !newComment.trim()}
-                                className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 disabled:opacity-50"
-                            >
-                                {submittingComment ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-                                {submittingComment ? 'Posting...' : 'Post Reply'}
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
-                        <p className="text-gray-600 mb-4">Login to join the conversation and share your experience</p>
-                        <Link href={`/login?redirect=/community/${id}`} className="btn bg-[#5CB800] text-white border-none">
-                            Login to Reply
-                        </Link>
+                            </ScrollReveal>
+                        ))}
                     </div>
                 )}
+
+                {/* Reply form */}
+                <ScrollReveal delay={200}>
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
+                        <h3 className="font-extrabold text-sm text-slate-900 mb-3">Leave a Reply</h3>
+                        {user ? (
+                            <div className="flex items-start gap-3">
+                                <textarea
+                                    value={newComment}
+                                    onChange={e => setNewComment(e.target.value)}
+                                    placeholder="Share your thoughts..."
+                                    rows={3}
+                                    disabled={thread.is_locked}
+                                    className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 resize-none disabled:opacity-50"
+                                />
+                                <button onClick={handlePostComment} disabled={submittingComment || !newComment.trim() || thread.is_locked}
+                                    className="shrink-0 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors disabled:opacity-40">
+                                    {submittingComment ? <Loader2 size={17} className="animate-spin" /> : <Send size={17} />}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="text-center py-6 bg-slate-50 rounded-xl">
+                                <p className="text-sm text-slate-500 mb-3">Sign in to join the conversation</p>
+                                <Link href={`/login?redirect=/community/${id}`}
+                                    className="inline-flex items-center gap-2 bg-emerald-600 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-all">
+                                    Login to Reply
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </ScrollReveal>
             </div>
+
+            <div className="h-12" />
         </div>
     );
 }

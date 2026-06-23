@@ -82,7 +82,7 @@ export async function GET(request: Request) {
                 </div>
                 <div class="content">
                     <p class="intro">Hello! Here are the top 5 latest opportunities on Job Openings Kenya this week. Don't wait — deadlines fill up fast!</p>
-                    ${opportunities.map((job: any) => `
+                    ${opportunities.map((job: { id: string; title: string; type: string; company: string; location?: string }) => `
                     <div class="job-card">
                         <span class="job-type">${job.type}</span>
                         <h2 class="job-title">${job.title}</h2>
@@ -112,7 +112,7 @@ export async function GET(request: Request) {
         for (let i = 0; i < bccList.length; i += chunkSize) {
             const chunk = bccList.slice(i, i + chunkSize);
             await sendEmail({
-                to: [{ email: 'info.Job Openings Kenya@gmail.com', name: 'Job Openings Kenya Team' }],
+                to: [{ email: 'info@jobopeningskenya.co.ke', name: 'Job Openings Kenya Team' }],
                 bcc: chunk,
                 subject: `🔥 Your Weekly Top 5 Opportunities - Week of ${weekStr}`,
                 htmlContent,
@@ -127,8 +127,8 @@ export async function GET(request: Request) {
             timestamp: new Date().toISOString()
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[Cron] Newsletter error:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 500 });
     }
 }

@@ -86,7 +86,7 @@ export default async function PartnersSection() {
                     <div className="text-center mt-12">
                         <a 
                             href="/partner" 
-                            className="btn bg-[#5CB800] text-white hover:bg-[#4A9900] border-none px-8"
+                            className="inline-flex items-center justify-center bg-[#5CB800] text-white hover:bg-[#4A9900] px-8 py-2.5 rounded-lg font-medium"
                         >
                             View All Partners
                         </a>

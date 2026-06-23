@@ -1,19 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, ArrowLeft, Camera, Sparkles, FileText } from 'lucide-react';
+import { User, Save, Eye, EyeOff, Plus, X, CheckCircle, AlertCircle, Loader2, ExternalLink, Camera, Sparkles, FileText } from 'lucide-react';
 import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 export default function ProfileEditorPage() {
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string } | null>(null);
     const [skillInput, setSkillInput] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
 
@@ -66,7 +67,7 @@ export default function ProfileEditorPage() {
             setLoading(false);
         };
         init();
-    }, []);
+    }, [router, supabase]);
 
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
@@ -103,8 +104,8 @@ export default function ProfileEditorPage() {
             setForm(prev => ({ ...prev, [type]: data.content.trim() }));
             setAiPrompt({ state: '', open: '' });
             showToast('success', `${type === 'headline' ? 'Headline' : 'Bio'} generated successfully!`);
-        } catch (err: any) {
-            showToast('error', err.message);
+        } catch (err: unknown) {
+            showToast('error', err instanceof Error ? err.message : 'Failed to generate content');
         } finally {
             setGeneratingAi(false);
         }
@@ -112,6 +113,7 @@ export default function ProfileEditorPage() {
 
     const handleSave = async () => {
         setSaving(true);
+        if (!user) return;
         try {
             const { error } = await supabase.from('profiles').update({
                 full_name: form.full_name,
@@ -134,8 +136,8 @@ export default function ProfileEditorPage() {
 
             if (error) throw error;
             showToast('success', 'Profile saved successfully!');
-        } catch (err: any) {
-            showToast('error', err.message || 'Failed to save profile.');
+        } catch (err: unknown) {
+            showToast('error', err instanceof Error ? err.message : 'Failed to save profile.');
         } finally {
             setSaving(false);
         }
@@ -172,7 +174,7 @@ export default function ProfileEditorPage() {
                             <Link
                                 href={`/talent/${form.username}`}
                                 target="_blank"
-                                className="btn bg-white/20 hover:bg-white/30 text-white border border-white/30 gap-2 w-full md:w-auto"
+                                className="inline-flex items-center justify-center bg-white/20 hover:bg-white/30 text-white border border-white/30 gap-2 w-full md:w-auto px-4 py-2 rounded-lg font-medium"
                             >
                                 <ExternalLink size={18} /> Preview
                             </Link>
@@ -180,7 +182,7 @@ export default function ProfileEditorPage() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 w-full md:w-auto shadow-lg"
+                            className="inline-flex items-center justify-center bg-[#5CB800] hover:bg-[#4A9900] text-white gap-2 w-full md:w-auto shadow-lg px-4 py-2 rounded-lg font-medium"
                         >
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Profile'}
@@ -217,7 +219,7 @@ export default function ProfileEditorPage() {
                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
                                 <div>
                                     <h3 className="font-bold text-gray-900">Open to Work</h3>
-                                    <p className="text-sm text-gray-500 mt-1">Show employers you're actively looking</p>
+                                    <p className="text-sm text-gray-500 mt-1">Show employers you&apos;re actively looking</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
@@ -241,7 +243,7 @@ export default function ProfileEditorPage() {
                                 {/* Avatar Preview */}
                                 <div className="relative shrink-0">
                                     {avatarUrl ? (
-                                        <img src={avatarUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover ring-4 ring-[#5CB800]/20 shadow-lg" />
+                                        <Image src={avatarUrl} alt="Avatar" width={96} height={96} unoptimized className="w-24 h-24 rounded-full object-cover ring-4 ring-[#5CB800]/20 shadow-lg" />
                                     ) : (
                                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] flex items-center justify-center ring-4 ring-[#5CB800]/20 shadow-lg">
                                             <span className="text-3xl font-black text-white">
@@ -288,7 +290,7 @@ export default function ProfileEditorPage() {
                                     {aiPrompt.open === 'headline' && (
                                         <div className="mb-2 p-3 bg-[#5CB800]/5 border border-[#5CB800]/20 rounded-xl flex items-stretch gap-2 animate-in fade-in slide-in-from-top-2">
                                             <input type="text" value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="e.g. Frontend developer passionate about React and UI..." className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#5CB800]" />
-                                            <button type="button" onClick={() => handleGenerateAi('headline')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 bg-[#5CB800] hover:bg-[#4A9900] text-white border-none shrink-0 gap-2">
+                                            <button type="button" onClick={() => handleGenerateAi('headline')} disabled={generatingAi} className="inline-flex items-center justify-center py-2 bg-[#5CB800] hover:bg-[#4A9900] text-white shrink-0 gap-2 px-3 rounded-lg font-medium">
                                                 {generatingAi ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />} <span>Gen</span>
                                             </button>
                                         </div>
@@ -313,7 +315,7 @@ export default function ProfileEditorPage() {
                                 <div className="p-3 bg-[#5CB800]/5 border border-[#5CB800]/20 rounded-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
                                     <textarea value={aiPrompt.state} onChange={e => setAiPrompt({...aiPrompt, state: e.target.value})} placeholder="What do you want to highlight? (e.g. Over 3 years experience in digital marketing, passionate about telling African stories...)" className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-[#5CB800] resize-none h-20" />
                                     <div className="flex justify-end">
-                                        <button type="button" onClick={() => handleGenerateAi('bio')} disabled={generatingAi} className="btn min-h-0 h-auto py-2 px-4 bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2">
+                                        <button type="button" onClick={() => handleGenerateAi('bio')} disabled={generatingAi} className="inline-flex items-center justify-center py-2 px-4 bg-[#5CB800] hover:bg-[#4A9900] text-white gap-2 rounded-lg font-medium">
                                             {generatingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} Generate Bio
                                         </button>
                                     </div>
@@ -366,7 +368,7 @@ export default function ProfileEditorPage() {
                                     className={inputCls}
                                     placeholder="Type a skill and press Enter (e.g. React, Python, Excel)"
                                 />
-                                <button type="button" onClick={addSkill} className="btn bg-[#5CB800] text-white border-none">
+                                <button type="button" onClick={addSkill} className="inline-flex items-center justify-center bg-[#5CB800] text-white px-3 py-2 rounded-lg font-medium">
                                     <Plus size={18} />
                                 </button>
                             </div>
@@ -398,7 +400,7 @@ export default function ProfileEditorPage() {
                                         <label className="text-sm font-semibold text-gray-700">{label}</label>
                                         <input
                                             type="url"
-                                            value={(form as any)[key]}
+                                            value={(form as unknown as Record<string, string>)[key]}
                                             onChange={e => setForm({ ...form, [key]: e.target.value })}
                                             className={inputCls}
                                             placeholder={placeholder}
@@ -443,7 +445,7 @@ export default function ProfileEditorPage() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="w-full btn bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white border-none gap-2 py-4"
+                            className="w-full inline-flex items-center justify-center bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white gap-2 py-4 rounded-xl font-bold"
                         >
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Profile'}
@@ -451,7 +453,7 @@ export default function ProfileEditorPage() {
 
                         <Link
                             href="/dashboard/profile/resume"
-                            className="w-full btn bg-gray-900 hover:bg-gray-800 text-white border-none gap-2 py-4 flex items-center justify-center rounded-xl font-bold shadow-lg mt-4"
+                            className="w-full inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white gap-2 py-4 rounded-xl font-bold shadow-lg mt-4"
                         >
                             <FileText size={18} /> Download PDF Resume
                         </Link>

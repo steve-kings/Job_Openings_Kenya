@@ -1,157 +1,55 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { CheckCircle, XCircle, Trash2, User, Quote, Loader2, RefreshCcw, Sparkles } from 'lucide-react';
-import Image from 'next/image';
+import { CheckCircle, XCircle, Trash2, Quote, Loader2 } from 'lucide-react';
+
+interface Testimonial { id: string; name: string; role?: string; company?: string; content: string; status: string; featured: boolean; created_at: string; }
 
 export default function AdminTestimonialsPage() {
-    const supabase = createClient();
-    const [testimonials, setTestimonials] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [items, setItems] = useState<Testimonial[]>([]); const [loading, setLoading] = useState(true);
+    const s = useMemo(() => createClient(), []);
 
-    useEffect(() => {
-        fetchTestimonials();
-    }, []);
+    const loadData = useCallback(async () => { const { data } = await s.from('testimonials').select('*').order('created_at',{ascending:false}); return data||[]; }, [s]);
+    useEffect(() => { loadData().then(d => { setItems(d); setLoading(false); }); }, [loadData]);
 
-    const fetchTestimonials = async () => {
-        setLoading(true);
-        const { data } = await supabase
-            .from('testimonials')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (data) setTestimonials(data);
-        setLoading(false);
-    };
+    const update = async (id: string, vals: Record<string,unknown>) => { await s.from('testimonials').update(vals).eq('id',id); const d = await loadData(); setItems(d); };
+    const del = async (id: string) => { if (!confirm('Delete?')) return; await s.from('testimonials').delete().eq('id',id); const d = await loadData(); setItems(d); };
 
-    const updateStatus = async (id: string, status: 'approved' | 'rejected' | 'pending') => {
-        setActionLoading(id);
-        const { error } = await supabase
-            .from('testimonials')
-            .update({ status })
-            .eq('id', id);
-        
-        if (!error) {
-            setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
-        }
-        setActionLoading(null);
-    };
+    const pending = items.filter(t=>t.status==='pending').length;
+    const approved = items.filter(t=>t.status==='approved').length;
 
-    const deleteTestimonial = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this testimonial?')) return;
-        setActionLoading(id);
-        const { error } = await supabase
-            .from('testimonials')
-            .delete()
-            .eq('id', id);
-        
-        if (!error) {
-            setTestimonials(prev => prev.filter(t => t.id !== id));
-        }
-        setActionLoading(null);
-    };
+    if (loading) return <div className="flex justify-center py-20"><Loader2 size={32} className="animate-spin text-emerald-600" /></div>;
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Testimonials</h1>
-                    <p className="text-gray-600">Review and approve user success stories</p>
-                </div>
-                <button 
-                    onClick={fetchTestimonials}
-                    className="btn btn-sm sm:btn-md bg-white border-gray-200 text-gray-700 hover:bg-gray-50 gap-2"
-                >
-                    <RefreshCcw size={16} /> Refresh
-                </button>
-            </div>
+            <div><h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Testimonials</h1><p className="text-sm text-gray-500 mt-0.5">{approved} approved · {pending} pending review</p></div>
 
-            {loading ? (
-                <div className="flex justify-center py-20">
-                    <Loader2 className="animate-spin text-[#5CB800]" size={40} />
-                </div>
-            ) : testimonials.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-                    <Quote className="mx-auto text-gray-300 mb-4" size={60} />
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">No Testimonials Yet</h3>
-                    <p className="text-gray-500">When users submit success stories, they will appear here.</p>
-                </div>
-            ) : (
-                <div className="grid gap-6">
-                    {testimonials.map(t => (
-                        <div key={t.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row gap-6">
-                            {/* User Info */}
-                            <div className="w-full md:w-64 shrink-0 flex flex-col items-center text-center space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                {t.user_photo_url ? (
-                                    <img src={t.user_photo_url} alt={t.user_name} className="w-20 h-20 rounded-full object-cover shadow-sm border-2 border-white" />
-                                ) : (
-                                    <div className="w-20 h-20 rounded-full bg-[#5CB800]/10 text-[#5CB800] flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
-                                        {t.user_name.charAt(0).toUpperCase()}
-                                    </div>
-                                )}
-                                <div>
-                                    <h4 className="font-bold text-gray-900 leading-tight">{t.user_name}</h4>
-                                    <p className="text-xs text-gray-500 mt-1">{new Date(t.created_at).toLocaleDateString()}</p>
-                                </div>
-                                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                                    t.status === 'approved' ? 'bg-green-100 text-green-700' :
-                                    t.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                    'bg-yellow-100 text-yellow-700'
-                                }`}>
-                                    {t.status}
-                                </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(t => (
+                    <div key={t.id} className={`bg-white rounded-2xl border p-5 transition-all ${t.status==='pending'?'border-amber-200 bg-amber-50/30':'border-gray-100'} hover:shadow-md`}>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${t.status==='approved'?'bg-emerald-50 text-emerald-700':t.status==='rejected'?'bg-red-50 text-red-600':'bg-amber-50 text-amber-700'}`}>{t.status}</span>
+                            <div className="flex gap-1">
+                                {t.status !== 'approved' && <button onClick={()=>update(t.id,{status:'approved'})} className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all" title="Approve"><CheckCircle size={14}/></button>}
+                                {t.status !== 'rejected' && <button onClick={()=>update(t.id,{status:'rejected'})} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Reject"><XCircle size={14}/></button>}
+                                <button onClick={()=>del(t.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14}/></button>
                             </div>
-
-                            {/* Content */}
-                            <div className="flex-1 flex flex-col">
-                                <div className="mb-4">
-                                    <h3 className="text-lg font-bold text-[#5CB800] mb-3 flex items-start gap-2">
-                                        <Sparkles size={20} className="shrink-0 mt-0.5" />
-                                        Won: {t.opportunity_won}
-                                    </h3>
-                                    <div className="relative bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
-                                        <Quote size={40} className="absolute top-2 left-2 text-[#5CB800]/10" />
-                                        <p className="text-gray-700 leading-relaxed relative z-10 whitespace-pre-wrap pl-6 italic">
-                                            "{t.story}"
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="mt-auto pt-4 border-t border-gray-100 flex flex-wrap gap-2 justify-end">
-                                    {t.status !== 'approved' && (
-                                        <button 
-                                            onClick={() => updateStatus(t.id, 'approved')}
-                                            disabled={actionLoading === t.id}
-                                            className="btn btn-sm bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-1.5"
-                                        >
-                                            <CheckCircle size={16} /> Approve
-                                        </button>
-                                    )}
-                                    {t.status !== 'rejected' && (
-                                        <button 
-                                            onClick={() => updateStatus(t.id, 'rejected')}
-                                            disabled={actionLoading === t.id}
-                                            className="btn btn-sm bg-gray-200 hover:bg-gray-300 text-gray-800 border-none gap-1.5"
-                                        >
-                                            <XCircle size={16} /> Reject
-                                        </button>
-                                    )}
-                                    <button 
-                                        onClick={() => deleteTestimonial(t.id)}
-                                        disabled={actionLoading === t.id}
-                                        className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border-none gap-1.5"
-                                    >
-                                        <Trash2 size={16} /> Delete
-                                    </button>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <Quote size={20} className="text-emerald-300 shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm text-gray-700 leading-relaxed line-clamp-4">{t.content}</p>
+                                <div className="mt-3 pt-3 border-t border-gray-50">
+                                    <p className="font-extrabold text-gray-900 text-sm">{t.name}</p>
+                                    {(t.role || t.company) && <p className="text-xs text-gray-500 mt-0.5">{[t.role,t.company].filter(Boolean).join(' · ')}</p>}
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
+                    </div>
+                ))}
+            </div>
+            {items.length===0&&<div className="text-center py-16 bg-white rounded-2xl border border-gray-100 text-gray-400"><Quote size={40} className="mx-auto mb-3 opacity-30"/><p className="font-semibold">No testimonials yet</p></div>}
         </div>
     );
 }

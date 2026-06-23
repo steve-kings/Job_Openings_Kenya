@@ -1,156 +1,50 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Search, Edit, Trash2, AlertCircle, X } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
+interface Post { id: string; title: string; slug: string; status: string; category?: string; author_name?: string; created_at: string; views?: number; }
+
 export default function AdminBlogPage() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [posts, setPosts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const supabase = createClient();
+    const [search, setSearch] = useState(''); const [statusFilter, setStatusFilter] = useState('All');
+    const [posts, setPosts] = useState<Post[]>([]); const [loading, setLoading] = useState(true);
+    const s = useMemo(() => createClient(), []);
 
-    useEffect(() => {
-        fetchPosts();
-    }, []);
+    useEffect(() => { s.from('blog_posts').select('*').order('created_at',{ascending:false}).then(({data}) => { setPosts(data||[]); setLoading(false); }); }, [s]);
 
-    const fetchPosts = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('blog_posts')
-                .select('*')
-                .order('created_at', { ascending: false });
+    const del = async (id: string) => { if (!confirm('Delete?')) return; await s.from('blog_posts').delete().eq('id',id); setPosts(prev => prev.filter(p => p.id !== id)); };
 
-            if (error) throw error;
-            setPosts(data || []);
-        } catch (error) {
-            console.error('Error fetching posts:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const filtered = posts.filter(p => {
+        return (search === '' || p.title.toLowerCase().includes(search.toLowerCase())) && (statusFilter === 'All' || p.status === statusFilter);
+    });
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this post?')) return;
-
-        try {
-            const { error } = await supabase
-                .from('blog_posts')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-            fetchPosts();
-        } catch (error) {
-            console.error('Error deleting post:', error);
-            alert('Error deleting post');
-        }
-    };
-
-    const filteredPosts = posts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>;
 
     return (
-        <div>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-primary mb-2">Manage Blog Posts</h1>
-                    <p className="text-gray-600">Create and manage success stories, insights, and organizational news</p>
-                </div>
-                <Link href="/admin/blog/create" className="btn btn-primary gap-2">
-                    <Plus size={20} />
-                    Create New Post
-                </Link>
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div><h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Blog Posts</h1><p className="text-sm text-gray-500 mt-0.5">{posts.length} total · {posts.filter(p=>p.status==='published').length} published</p></div>
+                <Link href="/admin/blog/create" className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200"><Plus size={16} /> New Post</Link>
             </div>
-
-            {/* Search */}
-            <div className="card bg-base-100 shadow-md mb-6">
-                <div className="card-body">
-                    <div className="form-control">
-                        <div className="input-group">
-                            <span className="bg-base-200">
-                                <Search size={20} />
-                            </span>
-                            <input
-                                type="text"
-                                placeholder="Search blog posts..."
-                                className="input input-bordered w-full"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1"><Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" /><input type="text" placeholder="Search posts..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100" />{search&&<button onClick={()=>setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><X size={14}/></button>}</div>
+                <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-emerald-500 bg-white"><option value="All">All</option><option value="published">Published</option><option value="draft">Draft</option></select>
             </div>
-
-            {/* Blog Posts Table */}
-            <div className="card bg-base-100 shadow-xl">
-                <div className="card-body">
-                    {loading ? (
-                        <div className="text-center py-8">Loading posts...</div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th>Author</th>
-                                        <th>Status</th>
-                                        <th>Views</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredPosts.map((post) => (
-                                        <tr key={post.id}>
-                                            <td className="font-medium max-w-xs truncate" title={post.title}>{post.title}</td>
-                                            <td>
-                                                <span className="badge badge-primary badge-sm">{post.category}</span>
-                                            </td>
-                                            <td className="text-sm">{post.author_name}</td>
-                                            <td>
-                                                <span className={`badge badge-sm ${post.status === 'published' ? 'badge-success' : 'badge-warning'
-                                                    }`}>
-                                                    {post.status}
-                                                </span>
-                                            </td>
-                                            <td className="text-sm flex items-center gap-1">
-                                                <Eye size={14} className="text-gray-500" />
-                                                {post.views?.toLocaleString() || 0}
-                                            </td>
-                                            <td className="text-sm text-gray-600">{new Date(post.created_at).toLocaleDateString()}</td>
-                                            <td>
-                                                <div className="flex gap-2">
-                                                    <Link href={`/admin/blog/${post.id}`} className="btn btn-ghost btn-xs" title="Edit">
-                                                        <Edit size={16} />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleDelete(post.id)}
-                                                        className="btn btn-ghost btn-xs text-error"
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    {!loading && filteredPosts.length === 0 && (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500">No blog posts found matching your criteria.</p>
-                        </div>
-                    )}
-                </div>
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100 bg-gray-50/50">{['Title','Category','Author','Status','Date',''].map(h=><th key={h} className="text-left px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-gray-50">
+                        {filtered.map(p=>(<tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-5 py-3.5"><Link href={`/admin/blog/${p.id}`} className="font-semibold text-gray-900 text-sm hover:text-emerald-700 line-clamp-1 max-w-[250px] block">{p.title}</Link></td>
+                            <td className="px-5 py-3.5"><span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-violet-50 text-violet-700">{p.category||'General'}</span></td>
+                            <td className="px-5 py-3.5 text-sm text-gray-500">{p.author_name||'—'}</td>
+                            <td className="px-5 py-3.5"><span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${p.status==='published'?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'}`}>{p.status}</span></td>
+                            <td className="px-5 py-3.5 text-sm text-gray-500">{new Date(p.created_at).toLocaleDateString()}</td>
+                            <td className="px-5 py-3.5"><div className="flex gap-1"><Link href={`/admin/blog/${p.id}`} className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"><Edit size={14}/></Link><button onClick={()=>del(p.id)} className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14}/></button></div></td>
+                        </tr>))}
+                    </tbody></table></div>
+                {filtered.length===0&&<div className="text-center py-16 text-gray-400"><AlertCircle size={40} className="mx-auto mb-3 opacity-40"/><p className="font-semibold">No posts found</p></div>}
             </div>
         </div>
     );

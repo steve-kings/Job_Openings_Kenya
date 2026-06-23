@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Download, X, Smartphone } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -12,23 +13,22 @@ export default function PWAInstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isIOS] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: boolean }).MSStream;
+  });
+  const [isStandalone, setIsStandalone] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone
+      || document.referrer.includes('android-app://');
+  });
 
   useEffect(() => {
-    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone
-      || document.referrer.includes('android-app://');
-
-    setIsStandalone(isInStandaloneMode);
-
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    setIsIOS(isIOSDevice);
-
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     const installed = localStorage.getItem('pwa-installed');
 
-    if (!isInStandaloneMode && !dismissed && !installed) {
+    if (!isStandalone && !dismissed && !installed) {
       setTimeout(() => setShowBanner(true), 3000);
     }
 
@@ -44,13 +44,14 @@ export default function PWAInstallButton() {
       setShowInstallButton(false);
       setShowBanner(false);
       setDeferredPrompt(null);
+      setIsStandalone(true);
       localStorage.setItem('pwa-installed', 'true');
     });
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
-  }, []);
+  }, [isStandalone]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -84,7 +85,7 @@ export default function PWAInstallButton() {
           <div className="bg-gradient-to-r from-[#5CB800] to-[#4A9900] rounded-2xl shadow-2xl p-4 text-white">
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
-                <img src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya" className="w-10 h-10 rounded-lg object-cover" />
+                <Image src="/job_openings_kenya_logo.jpeg" alt="Job Openings Kenya" width={40} height={40} className="w-10 h-10 rounded-lg object-cover" />
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg">Install Job Openings Kenya App</h3>
@@ -92,11 +93,11 @@ export default function PWAInstallButton() {
                   Get instant access to the latest job openings in Kenya!
                 </p>
                 <div className="flex gap-2">
-                  <button onClick={handleInstallClick} className="btn btn-sm bg-white text-[#5CB800] hover:bg-gray-100 border-none gap-1">
+                  <button onClick={handleInstallClick} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-[#5CB800] hover:bg-gray-100 font-semibold text-sm transition-colors">
                     <Download size={16} />
                     Install Now
                   </button>
-                  <button onClick={dismissBanner} className="btn btn-sm btn-ghost text-white hover:bg-white/20">
+                  <button onClick={dismissBanner} className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm text-white hover:bg-white/20 transition-colors">
                     Later
                   </button>
                 </div>
@@ -113,7 +114,7 @@ export default function PWAInstallButton() {
       {(showInstallButton || isIOS) && !showBanner && (
         <button
           onClick={handleInstallClick}
-          className="fixed bottom-20 right-4 z-50 btn bg-[#5CB800] text-white border-none shadow-xl hover:bg-[#4A9900] gap-2 rounded-full px-4"
+          className="fixed bottom-20 right-4 z-50 inline-flex items-center justify-center bg-[#5CB800] text-white shadow-xl hover:bg-[#4A9900] gap-2 rounded-full px-4 py-2"
           title="Install Job Openings Kenya App"
         >
           <Smartphone size={20} />

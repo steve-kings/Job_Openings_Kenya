@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
+import CookieConsent from "@/components/CookieConsent";
 import { getBaseUrl } from "@/lib/utils/url";
 import { BookmarkProvider } from "@/contexts/BookmarkContext";
 
@@ -20,8 +21,8 @@ export const metadata: Metadata = {
     default: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
     template: "%s | Job Openings Kenya"
   },
-  description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.",
-  keywords: "Job Openings Kenya, Jobs in Kenya, Kenya Jobs 2025, Kenyan Jobs Portal, Scholarships Kenya, Grants Kenya, Training Kenya",
+  description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs and professional training programs updated daily.",
+  keywords: "Job Openings Kenya, Jobs in Kenya, Kenya Jobs 2025, Kenyan Jobs Portal, Training Kenya",
   authors: [{ name: "Job Openings Kenya Team" }],
   icons: {
     icon: [
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
-    description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs, grants, scholarships, and training programs updated daily.",
+    description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs and professional training programs updated daily.",
     images: [
       {
         url: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
@@ -66,6 +67,50 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="jobopeningskenya">
       <head>
+        {/* Google Organization + Website Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Job Openings Kenya',
+              url: getBaseUrl(),
+              logo: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
+              image: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
+              description: "Kenya's trusted portal for verified job openings, internships, and professional training programs. Updated daily with hand-picked opportunities.",
+              email: 'info@jobopeningskenya.co.ke',
+              telephone: '+254752182132',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Nairobi',
+                addressCountry: 'KE',
+              },
+              sameAs: [
+                'https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C',
+              ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Job Openings Kenya',
+              url: getBaseUrl(),
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: `${getBaseUrl()}/?q={search_term_string}`,
+                },
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
         <link rel="icon" href="/job_openings_kenya_logo.jpeg" type="image/jpeg" sizes="any" />
         <link rel="shortcut icon" href="/job_openings_kenya_logo.jpeg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/job_openings_kenya_logo.jpeg" />
@@ -77,7 +122,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Job Openings Kenya" />
       </head>
       <body
-        className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}
+        className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-white text-gray-900`}
       >
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
@@ -89,22 +134,26 @@ export default function RootLayout({
         )}
         
         {/* Google Analytics */}
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-7NYYNT14WQ"
-        />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-7NYYNT14WQ');
-            `,
-          }}
-        />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+            />
+            <Script
+              id="google-analytics"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
 
         <BookmarkProvider>
           <Navbar />
@@ -114,6 +163,7 @@ export default function RootLayout({
           <Footer />
           <PWAInstallButton />
           <AIChatbot />
+          <CookieConsent />
         </BookmarkProvider>
       </body>
     </html>

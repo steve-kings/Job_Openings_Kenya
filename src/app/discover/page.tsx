@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Compass, Globe, Gift, Quote, FileText, Briefcase, ArrowRight, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { Compass, Globe, Quote, FileText, ArrowRight, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 
@@ -36,7 +37,7 @@ export default async function DiscoverPage() {
                     <Compass className="mx-auto mb-4 text-blue-200" size={64} />
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Discover More</h1>
                     <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                        Explore exclusive remote opportunities, funding grants, inspiring success stories, and our latest career advice.
+                        Explore exclusive remote opportunities, inspiring success stories, and our latest career advice.
                     </p>
                 </div>
             </div>
@@ -55,14 +56,14 @@ export default async function DiscoverPage() {
                         </span>
                     </Link>
 
-                    <Link href="/?type=Grant" className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-2 transition-transform group border border-gray-100">
-                        <div className="w-14 h-14 bg-green-50 text-[#5CB800] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Gift size={28} />
+                    <Link href="/?type=Training" className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-2 transition-transform group border border-gray-100">
+                        <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <Sparkles size={28} />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Grants</h3>
-                        <p className="text-gray-600 text-sm mb-4">Funding opportunities for your business, research, or community project.</p>
-                        <span className="text-[#5CB800] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                            Find Grants <ArrowRight size={16} />
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Training</h3>
+                        <p className="text-gray-600 text-sm mb-4">Professional certifications and courses to boost your career and skills.</p>
+                        <span className="text-purple-600 font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                            Browse Training <ArrowRight size={16} />
                         </span>
                     </Link>
 
@@ -98,7 +99,7 @@ export default async function DiscoverPage() {
                             </h2>
                             <p className="text-gray-600 mt-2">Real stories from the Job Openings Kenya community.</p>
                         </div>
-                        <Link href="/dashboard/feedback" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none hidden sm:flex gap-2 shadow-md">
+                        <Link href="/dashboard/feedback" className="inline-flex items-center justify-center bg-[#5CB800] hover:bg-[#4A9900] text-white hidden sm:flex gap-2 shadow-md px-4 py-2 rounded-lg font-medium">
                             <Quote size={18} /> Share Your Story
                         </Link>
                     </div>
@@ -110,7 +111,7 @@ export default async function DiscoverPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">No Stories Yet</h3>
                             <p className="text-gray-500 max-w-md mx-auto mb-6">Be the first to share how Job Openings Kenya helped you land an opportunity!</p>
-                            <Link href="/dashboard/feedback" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2 shadow-md">
+                            <Link href="/dashboard/feedback" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5CB800] hover:bg-[#4A9900] text-white font-semibold text-sm shadow-md transition-colors">
                                 <Quote size={18} /> Share Your Story
                             </Link>
                         </div>
@@ -120,7 +121,7 @@ export default async function DiscoverPage() {
                                 <div key={t.id} className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 flex flex-col hover:-translate-y-1 transition-transform">
                                     <div className="flex items-center gap-4 mb-6">
                                         {t.user_photo_url ? (
-                                            <img src={t.user_photo_url} alt={t.user_name} className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white" />
+                                            <Image src={t.user_photo_url} alt={t.user_name} width={64} height={64} unoptimized className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-white" />
                                         ) : (
                                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5CB800] to-[#4A9900] text-white flex items-center justify-center font-bold text-2xl shadow-sm border-2 border-white">
                                                 {t.user_name.charAt(0).toUpperCase()}
@@ -136,7 +137,7 @@ export default async function DiscoverPage() {
                                     <div className="relative flex-1">
                                         <Quote size={40} className="absolute -top-2 -left-2 text-gray-100 -z-10" />
                                         <p className="text-gray-700 leading-relaxed italic relative z-10 text-sm">
-                                            "{t.story}"
+                                            &ldquo;{t.story}&rdquo;
                                         </p>
                                     </div>
                                 </div>
@@ -168,7 +169,7 @@ export default async function DiscoverPage() {
                                 <Link href={`/blog/${post.slug}`} key={post.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group flex flex-col hover:-translate-y-2 transition-transform">
                                     <div className="h-48 overflow-hidden bg-gray-100 relative">
                                         {post.cover_image ? (
-                                            <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <Image src={post.cover_image} alt={post.title} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                                                 <FileText size={48} />
@@ -194,7 +195,7 @@ export default async function DiscoverPage() {
                         </div>
                     )}
                     <div className="mt-8 text-center sm:hidden">
-                        <Link href="/blog" className="btn btn-outline border-gray-200 text-gray-700 w-full">
+                        <Link href="/blog" className="inline-flex items-center justify-center border border-gray-200 text-gray-700 w-full py-2.5 rounded-lg font-medium hover:bg-gray-50">
                             View All Articles
                         </Link>
                     </div>

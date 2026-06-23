@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
@@ -11,7 +11,7 @@ import RichTextEditor from '@/components/RichTextEditor';
 export default function EditBlogPostPage() {
     const params = useParams();
     const router = useRouter();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -27,11 +27,7 @@ export default function EditBlogPostPage() {
 
     const [imageUrl, setImageUrl] = useState('');
 
-    useEffect(() => {
-        fetchPost();
-    }, []);
-
-    const fetchPost = async () => {
+    const fetchPost = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('blog_posts')
@@ -56,7 +52,11 @@ export default function EditBlogPostPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [supabase, params.id]);
+
+    useEffect(() => {
+        fetchPost();
+    }, [fetchPost]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const title = e.target.value;
@@ -98,7 +98,7 @@ export default function EditBlogPostPage() {
     return (
         <div className="max-w-4xl mx-auto pb-10">
             <div className="mb-6">
-                <Link href="/admin/blog" className="btn btn-ghost gap-2 mb-2 pl-0">
+                <Link href="/admin/blog" className="inline-flex items-center gap-2 mb-2 pl-0 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-lg font-medium">
                     <ArrowLeft size={20} />
                     Back to Blog Posts
                 </Link>
@@ -199,7 +199,7 @@ export default function EditBlogPostPage() {
 
                                 <div className="divider"></div>
 
-                                <button type="submit" className="btn btn-primary w-full" disabled={saving}>
+                                <button type="submit" className="inline-flex items-center justify-center w-full bg-[#5CB800] hover:bg-[#4A9900] text-white px-4 py-2.5 rounded-lg font-medium disabled:opacity-50" disabled={saving}>
                                     {saving ? 'Saving...' : 'Update Post'}
                                 </button>
                             </div>

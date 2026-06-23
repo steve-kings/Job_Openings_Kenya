@@ -1,155 +1,109 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Mail, Users, Send, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Users, Send, AlertCircle, Loader2, CheckCircle, Clock, Trash2, Zap, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-export default function NewsletterAdminPage() {
-    const [subscribersCount, setSubscribersCount] = useState(0);
-    const [activeOppsCount, setActiveOppsCount] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [sending, setSending] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
-    
-    const supabase = createClient();
+interface Subscriber { id: string; email: string; status: string; created_at: string; }
+interface Scheduled { id: string; subject: string; send_at: string; status: string; recipient_count?: number; }
+
+export default function NewsletterPage() {
+    const [subs, setSubs] = useState<Subscriber[]>([]); const [scheduled, setScheduled] = useState<Scheduled[]>([]);
+    const [loading, setLoading] = useState(true); const [sending, setSending] = useState(false);
+    const [tab, setTab] = useState<'subscribers'|'scheduled'>('subscribers');
+    const [msg, setMsg] = useState<{type:'success'|'error',text:string}|null>(null);
+    const s = useMemo(() => createClient(), []);
+
+    const loadData = useCallback(async () => {
+        const [subData, schData] = await Promise.all([
+            s.from('subscribers').select('*').order('created_at',{ascending:false}),
+            s.from('scheduled_emails').select('*').order('send_at',{ascending:false}),
+        ]);
+        return { subs: subData.data||[], scheduled: schData.data||[] };
+    }, [s]);
 
     useEffect(() => {
-        fetchStats();
-    }, []);
+        loadData().then(({ subs, scheduled }) => {
+            setSubs(subs); setScheduled(scheduled); setLoading(false);
+        });
+    }, [loadData]);
 
-    const fetchStats = async () => {
+    const sendNow = async () => {
+        setSending(true); setMsg(null);
         try {
-            // Count subscribers (graceful fail if table doesn't exist yet)
-            const { count: subCount, error: subError } = await supabase
-                .from('subscribers')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'active');
-                
-            if (!subError) {
-                setSubscribersCount(subCount || 0);
-            }
-
-            // Count opportunities
-            const { count: oppCount } = await supabase
-                .from('opportunities')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'active');
-                
-            setActiveOppsCount(oppCount || 0);
-            
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+            const res = await fetch('/api/admin/newsletter/send', { method: 'POST' });
+            const d = await res.json();
+            setMsg({ type: res.ok ? 'success' : 'error', text: d.message || d.error || 'Done' });
+        } catch { setMsg({ type: 'error', text: 'Failed to send' }); }
+        setSending(false);
     };
 
-    const handleSendNewsletter = async () => {
-        if (!confirm(`Are you sure you want to send the newsletter to ${subscribersCount} subscribers? This action cannot be undone.`)) return;
-        
-        setSending(true);
-        setMessage({ type: '', text: '' });
-        
-        try {
-            const res = await fetch('/api/admin/newsletter/send', {
-                method: 'POST'
-            });
-            const data = await res.json();
-            
-            if (!res.ok) throw new Error(data.error || 'Failed to send newsletter');
-            
-            setMessage({ type: 'success', text: data.message });
-        } catch (error: any) {
-            setMessage({ type: 'error', text: error.message });
-        } finally {
-            setSending(false);
-        }
-    };
+    const delSub = async (id: string) => { await s.from('subscribers').delete().eq('id',id); const d = await loadData(); setSubs(d.subs); setScheduled(d.scheduled); };
+    const delSch = async (id: string) => { await s.from('scheduled_emails').delete().eq('id',id); const d = await loadData(); setSubs(d.subs); setScheduled(d.scheduled); };
 
-    if (loading) return (
-        <div className="flex items-center justify-center min-h-[60vh]">
-            <Loader2 className="animate-spin text-[#5CB800]" size={40} />
-        </div>
-    );
+    const activeSubs = subs.filter(x=>x.status==='active').length;
+
+    if (loading) return <div className="flex justify-center py-20"><Loader2 size={32} className="animate-spin text-emerald-600"/></div>;
 
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-[#5CB800]">
-                <div className="flex items-center gap-4 mb-2">
-                    <div className="p-3 bg-[#5CB800]/10 rounded-xl text-[#5CB800]">
-                        <Mail size={32} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Newsletter Management</h1>
-                        <p className="text-gray-500">Send the weekly digest of top opportunities to your subscribers.</p>
-                    </div>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div><h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Newsletter</h1><p className="text-sm text-gray-500 mt-0.5">{activeSubs} active subscribers</p></div>
+                <button onClick={sendNow} disabled={sending} className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 disabled:opacity-50">
+                    {sending?<Loader2 size={16} className="animate-spin"/>:<Send size={16}/>} Send Now
+                </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body">
-                        <div className="flex items-center gap-3 mb-2">
-                            <Users className="text-[#5CB800]" size={24} />
-                            <h2 className="card-title text-xl">Audience</h2>
-                        </div>
-                        <p className="text-4xl font-black text-gray-900 mb-1">{subscribersCount}</p>
-                        <p className="text-gray-500">Active email subscribers</p>
-                        
-                        {subscribersCount === 0 && (
-                            <div className="alert alert-warning mt-4 text-sm bg-yellow-50 text-yellow-800 border-yellow-200">
-                                <AlertCircle size={16} />
-                                <span>Nobody has subscribed yet! Make sure you ran the create-subscribers.sql script.</span>
+            {msg && (
+                <div className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${msg.type==='success'?'bg-emerald-50 text-emerald-700 border border-emerald-100':'bg-red-50 text-red-600 border border-red-100'}`}>
+                    {msg.type==='success'?<CheckCircle size={16}/>:<AlertCircle size={16}/>}{msg.text}
+                    <button onClick={()=>setMsg(null)} className="ml-auto"><X size={14}/></button>
+                </div>
+            )}
+
+            <div className="flex gap-2">
+                {[
+                    { key: 'subscribers' as const, label: 'Subscribers', icon: Users, count: activeSubs },
+                    { key: 'scheduled' as const, label: 'Scheduled', icon: Clock, count: scheduled.length },
+                ].map(({ key, label, icon: Icon, count }) => (
+                    <button key={key} onClick={()=>setTab(key)} className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all ${tab===key?'bg-emerald-600 text-white shadow-sm':'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}><Icon size={15}/> {label} ({count})</button>
+                ))}
+            </div>
+
+            {tab === 'subscribers' ? (
+                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-gray-100 bg-gray-50/50">
+                        {['Email','Status','Subscribed',''].map(h=><th key={h} className="text-left px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>)}
+                    </tr></thead><tbody className="divide-y divide-gray-50">
+                        {subs.map(su => (
+                            <tr key={su.id} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-5 py-3.5 text-sm font-medium text-gray-900">{su.email}</td>
+                                <td className="px-5 py-3.5"><span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${su.status==='active'?'bg-emerald-50 text-emerald-700':'bg-gray-100 text-gray-500'}`}>{su.status}</span></td>
+                                <td className="px-5 py-3.5 text-sm text-gray-500">{new Date(su.created_at).toLocaleDateString()}</td>
+                                <td className="px-5 py-3.5"><button onClick={()=>delSub(su.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14}/></button></td>
+                            </tr>
+                        ))}
+                    </tbody></table></div>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {scheduled.map(sc => (
+                        <div key={sc.id} className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center justify-between hover:shadow-sm transition-all">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center"><Zap size={18} className="text-violet-600"/></div>
+                                <div>
+                                    <p className="font-extrabold text-gray-900 text-sm">{sc.subject}</p>
+                                    <p className="text-xs text-gray-500 mt-0.5">{new Date(sc.send_at).toLocaleString()} · {sc.status}</p>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body">
-                        <div className="flex items-center gap-3 mb-2">
-                            <Mail className="text-[#5CB800]" size={24} />
-                            <h2 className="card-title text-xl">Content Ready</h2>
-                        </div>
-                        <p className="text-4xl font-black text-gray-900 mb-1">{activeOppsCount >= 5 ? '5' : activeOppsCount}</p>
-                        <p className="text-gray-500">Opportunities will be featured</p>
-                        
-                        {activeOppsCount < 5 && (
-                            <div className="alert alert-info mt-4 text-sm bg-blue-50 text-blue-800 border-blue-200">
-                                <AlertCircle size={16} />
-                                <span>Usually, 5 opportunities are sent. You currently only have {activeOppsCount} active.</span>
+                            <div className="flex items-center gap-2">
+                                {sc.recipient_count && <span className="text-xs text-gray-400">{sc.recipient_count} sent</span>}
+                                <button onClick={()=>delSch(sc.id)} className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14}/></button>
                             </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="card bg-white shadow-xl">
-                <div className="card-body items-center text-center p-8 sm:p-12">
-                    <div className="w-20 h-20 bg-[#5CB800]/10 rounded-full flex items-center justify-center text-[#5CB800] mb-6">
-                        <Send size={40} />
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">Send Weekly Digest</h2>
-                    <p className="text-gray-600 max-w-lg mx-auto mb-8">
-                        This will automatically query the 5 most recent active opportunities and send them in a beautifully formatted email to all <strong>{subscribersCount}</strong> subscribers.
-                    </p>
-
-                    {message.text && (
-                        <div className={`alert mb-6 ${message.type === 'success' ? 'alert-success text-white' : 'alert-error text-white'}`}>
-                            {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                            <span>{message.text}</span>
                         </div>
-                    )}
-
-                    <button
-                        onClick={handleSendNewsletter}
-                        disabled={sending || subscribersCount === 0}
-                        className="btn btn-lg bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-3 shadow-lg px-8"
-                    >
-                        {sending ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
-                        {sending ? 'Sending...' : 'Dispatch Newsletter Now'}
-                    </button>
+                    ))}
+                    {scheduled.length===0&&<div className="text-center py-16 bg-white rounded-2xl border border-gray-100 text-gray-400"><Clock size={40} className="mx-auto mb-3 opacity-30"/><p className="font-semibold">No scheduled emails</p></div>}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MapPin, Search, Users, CheckCircle } from 'lucide-react';
 
@@ -44,7 +45,7 @@ export default async function TalentDirectoryPage({
                         Talent Directory
                     </div>
                     <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                        Discover Africa's<br />
+                        Discover Africa&apos;s<br />
                         <span className="text-[#5CB800]">Next Generation</span> Talent
                     </h1>
                     <p className="text-base sm:text-xl text-white/85 mb-8 max-w-2xl mx-auto px-2">
@@ -63,7 +64,7 @@ export default async function TalentDirectoryPage({
                                 className="flex-1 outline-none text-gray-800 font-medium bg-transparent text-sm sm:text-base min-w-0"
                             />
                         </div>
-                        <button type="submit" className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none px-4 sm:px-8 py-3 h-auto min-h-0 rounded-2xl font-bold shadow-2xl text-base w-full sm:w-auto shrink-0 flex items-center justify-center">
+                        <button type="submit" className="inline-flex items-center justify-center bg-[#5CB800] hover:bg-[#4A9900] text-white px-4 sm:px-8 py-3 rounded-2xl font-bold shadow-2xl text-base w-full sm:w-auto shrink-0">
                             Search
                         </button>
                     </form>
@@ -89,7 +90,7 @@ export default async function TalentDirectoryPage({
                         <Users size={56} className="text-gray-200 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-900 mb-2">No Talent Found</h3>
                         <p className="text-gray-500 mb-6 text-sm">Be the first to make your profile public!</p>
-                        <Link href="/dashboard/profile" className="btn bg-[#5CB800] text-white border-none">
+                        <Link href="/dashboard/profile" className="inline-flex items-center justify-center bg-[#5CB800] text-white px-4 py-2 rounded-lg font-medium">
                             Create Your Public Profile
                         </Link>
                     </div>
@@ -114,7 +115,7 @@ export default async function TalentDirectoryPage({
                                         )}
                                         <div className="flex justify-center">
                                             {talent.avatar_url ? (
-                                                <img src={talent.avatar_url} alt={talent.full_name} className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-white/30" />
+                                                <Image src={talent.avatar_url} alt={talent.full_name} width={80} height={80} unoptimized className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-white/30" />
                                             ) : (
                                                 <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-white/20 flex items-center justify-center ring-4 ring-white/30">
                                                     <span className="text-xl sm:text-2xl font-black text-white">{initials}</span>

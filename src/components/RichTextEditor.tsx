@@ -33,7 +33,6 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
     return (
         <div className="bg-white rounded-xl overflow-hidden [&_.ql-toolbar]:rounded-t-xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200 [&_.ql-container]:rounded-b-xl [&_.ql-editor]:min-h-[250px] [&_.ql-editor]:text-gray-800">
-            {/* @ts-ignore */}
             <ReactQuill 
                 theme="snow"
                 value={value}

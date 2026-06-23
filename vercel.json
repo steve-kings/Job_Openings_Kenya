@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/newsletter",
       "schedule": "0 5 * * 1"
+    },
+    {
+      "path": "/api/cron/scheduled-emails",
+      "schedule": "0 * * * *"
     }
   ]
 }

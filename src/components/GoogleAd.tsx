@@ -13,7 +13,7 @@ export default function GoogleAd({ adSlot, adFormat = 'auto', fullWidthResponsiv
   useEffect(() => {
     if (clientId) {
       try {
-        // @ts-ignore
+        // @ts-expect-error AdSense not in window type
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (err) {
         console.error('Google AdSense error', err);

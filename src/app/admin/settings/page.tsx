@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createAdminUser, getAdminUsers, updateAdminUser, deleteAdminUser, resetAdminPassword } from '@/app/actions/admin';
-import { Settings, UserPlus, Mail, User, Shield, CheckCircle, AlertCircle, Edit, Trash2, Key, X } from 'lucide-react';
+import { Settings, UserPlus, Mail, User, Shield, CheckCircle, AlertCircle, Edit, Trash2, Key } from 'lucide-react';
 
 interface AdminUser {
     id: string;
@@ -74,10 +74,10 @@ export default function AdminSettingsPage() {
                     text: result.message 
                 });
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMessage({ 
                 type: 'error', 
-                text: error.message || 'Failed to create admin user. Please try again.' 
+                text: error instanceof Error ? error.message : 'Failed to create admin user. Please try again.' 
             });
         } finally {
             setLoading(false);
@@ -120,10 +120,10 @@ export default function AdminSettingsPage() {
                     text: result.message 
                 });
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMessage({ 
                 type: 'error', 
-                text: error.message || 'Failed to update admin user.' 
+                text: error instanceof Error ? error.message : 'Failed to update admin user.' 
             });
         } finally {
             setLoading(false);
@@ -153,10 +153,10 @@ export default function AdminSettingsPage() {
                     text: result.message 
                 });
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMessage({ 
                 type: 'error', 
-                text: error.message || 'Failed to delete admin user.' 
+                text: error instanceof Error ? error.message : 'Failed to delete admin user.' 
             });
         } finally {
             setLoading(false);
@@ -186,10 +186,10 @@ export default function AdminSettingsPage() {
                     text: result.message 
                 });
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMessage({ 
                 type: 'error', 
-                text: error.message || 'Failed to reset password.' 
+                text: error instanceof Error ? error.message : 'Failed to reset password.' 
             });
         } finally {
             setLoading(false);
@@ -213,17 +213,17 @@ export default function AdminSettingsPage() {
 
             {/* Global Message */}
             {message && (
-                <div className={`alert ${message.type === 'success' ? 'alert-success' : 'alert-error'} mb-6`}>
+                <div className={`mb-6 flex items-center gap-3 px-4 py-3 rounded-xl border ${message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
                     {message.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                    <span>{message.text}</span>
+                    <span className="text-sm font-semibold">{message.text}</span>
                 </div>
             )}
 
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Add Admin User Form */}
                 <div className="lg:col-span-1">
-                    <div className="card bg-white shadow-xl border-l-4 border-[#5CB800]">
-                        <div className="card-body">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm border-l-4 border-l-[#5CB800]">
+                        <div className="p-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="p-3 bg-[#5CB800]/10 rounded-xl">
                                     <UserPlus className="text-[#5CB800]" size={24} />
@@ -235,15 +235,15 @@ export default function AdminSettingsPage() {
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold text-gray-700 text-sm">Full Name</span>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700">
+                                        <span>Full Name</span>
                                     </label>
                                     <div className="relative">
                                         <input
                                             type="text"
                                             required
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
+                                            className="w-full pl-9 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                             value={formData.full_name}
                                             onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                             placeholder="John Doe"
@@ -252,15 +252,15 @@ export default function AdminSettingsPage() {
                                     </div>
                                 </div>
 
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold text-gray-700 text-sm">Email</span>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700">
+                                        <span>Email</span>
                                     </label>
                                     <div className="relative">
                                         <input
                                             type="email"
                                             required
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
+                                            className="w-full pl-9 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             placeholder="admin@Job Openings Kenya.org"
@@ -269,16 +269,16 @@ export default function AdminSettingsPage() {
                                     </div>
                                 </div>
 
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text font-semibold text-gray-700 text-sm">Password</span>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700">
+                                        <span>Password</span>
                                     </label>
                                     <div className="relative">
                                         <input
                                             type="password"
                                             required
                                             minLength={6}
-                                            className="input input-sm input-bordered w-full pl-9 focus:border-[#5CB800] focus:outline-none"
+                                            className="w-full pl-9 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                             value={formData.password}
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             placeholder="Min. 6 characters"
@@ -289,12 +289,12 @@ export default function AdminSettingsPage() {
 
                                 <button 
                                     type="submit" 
-                                    className="btn btn-sm bg-[#5CB800] hover:bg-[#4A9900] text-white border-none w-full gap-2" 
+                                    className="inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg bg-[#5CB800] hover:bg-[#4A9900] text-white font-semibold text-sm transition-colors" 
                                     disabled={loading}
                                 >
                                     {loading ? (
                                         <>
-                                            <span className="loading loading-spinner loading-xs"></span>
+                                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                             Creating...
                                         </>
                                     ) : (
@@ -311,13 +311,13 @@ export default function AdminSettingsPage() {
 
                 {/* Admin Users List */}
                 <div className="lg:col-span-2">
-                    <div className="card bg-white shadow-xl border-t-4 border-[#5CB800]">
-                        <div className="card-body">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm border-t-4 border-t-[#5CB800]">
+                        <div className="p-6">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Admin Users</h2>
 
                             {fetchingUsers ? (
                                 <div className="text-center py-8">
-                                    <span className="loading loading-spinner loading-lg text-[#5CB800]"></span>
+                                    <div className="w-6 h-6 border-4 border-[#5CB800] border-t-transparent rounded-full animate-spin mx-auto"></div>
                                     <p className="text-gray-600 mt-2">Loading admin users...</p>
                                 </div>
                             ) : adminUsers.length === 0 ? (
@@ -327,7 +327,7 @@ export default function AdminSettingsPage() {
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="table table-zebra">
+                                    <table className="w-full text-sm">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
@@ -348,7 +348,7 @@ export default function AdminSettingsPage() {
                                                         <div className="flex justify-end gap-2">
                                                             <button
                                                                 onClick={() => handleEdit(user)}
-                                                                className="btn btn-xs btn-ghost text-blue-600 hover:bg-blue-50"
+                                                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                                                                 title="Edit"
                                                             >
                                                                 <Edit size={14} />
@@ -358,14 +358,14 @@ export default function AdminSettingsPage() {
                                                                     setResetPasswordUser(user);
                                                                     setNewPassword('');
                                                                 }}
-                                                                className="btn btn-xs btn-ghost text-orange-600 hover:bg-orange-50"
+                                                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-orange-600 hover:bg-orange-50 transition-colors"
                                                                 title="Reset Password"
                                                             >
                                                                 <Key size={14} />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(user)}
-                                                                className="btn btn-xs btn-ghost text-red-600 hover:bg-red-50"
+                                                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
                                                                 title="Delete"
                                                                 disabled={loading}
                                                             >
@@ -386,47 +386,47 @@ export default function AdminSettingsPage() {
 
             {/* Edit Modal */}
             {editingUser && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
                         <h3 className="font-bold text-lg mb-4">Edit Admin User</h3>
                         <form onSubmit={handleUpdate} className="space-y-4">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold">Full Name</span>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700">
+                                    <span>Full Name</span>
                                 </label>
                                 <input
                                     type="text"
                                     required
-                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                     value={editFormData.full_name}
                                     onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
                                 />
                             </div>
 
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold">Email</span>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700">
+                                    <span>Email</span>
                                 </label>
                                 <input
                                     type="email"
                                     required
-                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                     value={editFormData.email}
                                     onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                                 />
                             </div>
 
-                            <div className="modal-action">
+                            <div className="flex justify-end gap-3 mt-6">
                                 <button
                                     type="button"
-                                    className="btn btn-ghost"
+                                    className="px-4 py-2 rounded-lg text-gray-600 font-semibold text-sm hover:bg-gray-100 transition-colors"
                                     onClick={() => setEditingUser(null)}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn bg-[#5CB800] hover:bg-[#4A9900] text-white border-none"
+                                    className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#5CB800] hover:bg-[#4A9900] text-white font-semibold text-sm transition-colors disabled:opacity-50"
                                     disabled={loading}
                                 >
                                     {loading ? 'Updating...' : 'Update'}
@@ -434,38 +434,37 @@ export default function AdminSettingsPage() {
                             </div>
                         </form>
                     </div>
-                    <div className="modal-backdrop" onClick={() => setEditingUser(null)}></div>
                 </div>
             )}
 
             {/* Reset Password Modal */}
             {resetPasswordUser && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
                         <h3 className="font-bold text-lg mb-4">Reset Password</h3>
                         <p className="text-sm text-gray-600 mb-4">
                             Reset password for <strong>{resetPasswordUser.full_name}</strong> ({resetPasswordUser.email})
                         </p>
                         <form onSubmit={handleResetPassword} className="space-y-4">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-semibold">New Password</span>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700">
+                                    <span>New Password</span>
                                 </label>
                                 <input
                                     type="password"
                                     required
                                     minLength={6}
-                                    className="input input-bordered focus:border-[#5CB800] focus:outline-none"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-[#5CB800] focus:outline-none focus:ring-1 focus:ring-[#5CB800]"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     placeholder="Enter new password (min. 6 characters)"
                                 />
                             </div>
 
-                            <div className="modal-action">
+                            <div className="flex justify-end gap-3 mt-6">
                                 <button
                                     type="button"
-                                    className="btn btn-ghost"
+                                    className="px-4 py-2 rounded-lg text-gray-600 font-semibold text-sm hover:bg-gray-100 transition-colors"
                                     onClick={() => {
                                         setResetPasswordUser(null);
                                         setNewPassword('');
@@ -475,7 +474,7 @@ export default function AdminSettingsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn bg-[#5CB800] hover:bg-[#D68910] text-white border-none"
+                                    className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#5CB800] hover:bg-[#D68910] text-white font-semibold text-sm transition-colors disabled:opacity-50"
                                     disabled={loading}
                                 >
                                     {loading ? 'Resetting...' : 'Reset Password'}
@@ -483,10 +482,6 @@ export default function AdminSettingsPage() {
                             </div>
                         </form>
                     </div>
-                    <div className="modal-backdrop" onClick={() => {
-                        setResetPasswordUser(null);
-                        setNewPassword('');
-                    }}></div>
                 </div>
             )}
         </div>

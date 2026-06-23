@@ -2,15 +2,49 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/brevo';
 import { getBaseUrl } from '@/lib/utils/url';
+import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limiter';
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting: 5 newsletter sends per minute per client
+        const rateLimitResult = checkRateLimit({
+            maxRequests: 5,
+            windowMs: 60_000,
+            identifier: `newsletter-send:${getClientIdentifier(request)}`,
+        });
+
+        if (!rateLimitResult.success) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                {
+                    status: 429,
+                    headers: {
+                        'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+                        'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                        'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+                        'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+                    },
+                }
+            );
+        }
+
         const supabase = await createClient();
-        
-        // Ensure user is authenticated and admin
+
+        // Ensure user is authenticated
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Verify admin role
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError || profile?.role !== 'admin') {
+            return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
         // 1. Fetch Subscribers
@@ -20,7 +54,7 @@ export async function POST(request: Request) {
             .eq('status', 'active');
 
         if (subError) throw subError;
-        
+
         if (!subscribers || subscribers.length === 0) {
             return NextResponse.json({ error: 'No active subscribers found' }, { status: 400 });
         }
@@ -73,11 +107,11 @@ export async function POST(request: Request) {
                     <h1>Your Weekly Opportunities</h1>
                     <p>The top 5 hand-picked roles for you this week.</p>
                 </div>
-                
+
                 <div class="content">
                     <p class="intro">Hello there! Here is your curated list of the latest high-impact opportunities on the Job Openings Kenya platform. Don't miss out—apply before the deadlines!</p>
-                    
-                    ${opportunities.map((job: any) => `
+
+                    ${opportunities.map((job: { id: string; title: string; type: string; company: string; location?: string }) => `
                     <div class="job-card">
                         <span class="job-type">${job.type}</span>
                         <h2 class="job-title">${job.title}</h2>
@@ -85,12 +119,12 @@ export async function POST(request: Request) {
                         <a href="${siteUrl}/jobs/${job.id}" class="btn">View & Apply</a>
                     </div>
                     `).join('')}
-                    
+
                     <div style="text-align: center; margin-top: 40px;">
                         <a href="${siteUrl}/jobs" style="color: #5CB800; font-weight: 600; text-decoration: underline; font-size: 16px;">View All 1000+ Opportunities</a>
                     </div>
                 </div>
-                
+
                 <div class="footer">
                     <p>You're receiving this email because you subscribed to the Job Openings Kenya Weekly Opportunities.</p>
                     <p>&copy; ${new Date().getFullYear()} Job Openings Kenya. All rights reserved.<br>Empowering African Youth</p>
@@ -103,14 +137,14 @@ export async function POST(request: Request) {
         // Send email via Brevo API
         const bccList = subscribers.map(sub => ({ email: sub.email }));
 
-        // Split into chunks if needed (Brevo limit is usually 50-100 per API call for BCC, let's assume 50)
+        // Split into chunks (Brevo limit is 50 per API call for BCC)
         const chunkSize = 50;
         let sentCount = 0;
 
         for (let i = 0; i < bccList.length; i += chunkSize) {
             const chunk = bccList.slice(i, i + chunkSize);
             await sendEmail({
-                to: [{ email: 'info.Job Openings Kenya@gmail.com', name: 'Job Openings Kenya Admin' }],
+                to: [{ email: 'info@jobopeningskenya.co.ke', name: 'Job Openings Kenya Admin' }],
                 bcc: chunk,
                 subject: '🔥 Your Weekly Top 5 Opportunities - Job Openings Kenya',
                 htmlContent: htmlContent,
@@ -118,13 +152,13 @@ export async function POST(request: Request) {
             sentCount += chunk.length;
         }
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             message: `Newsletter sent successfully to ${sentCount} subscribers!`
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error sending newsletter:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 500 });
     }
 }

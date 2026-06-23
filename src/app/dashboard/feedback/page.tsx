@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Quote, Sparkles, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import Link from 'next/link';
 
 export default function FeedbackPage() {
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string } | null>(null);
 
     const [formData, setFormData] = useState({
         user_name: '',
@@ -18,7 +18,7 @@ export default function FeedbackPage() {
         story: '',
     });
     const [photoUrl, setPhotoUrl] = useState('');
-    const [existingTestimonial, setExistingTestimonial] = useState<any>(null);
+    const [existingTestimonial, setExistingTestimonial] = useState<{ status: string } | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -47,7 +47,7 @@ export default function FeedbackPage() {
             }
         };
         fetchUser();
-    }, []);
+    }, [supabase]);
 
     const showToast = (type: 'success' | 'error', msg: string) => {
         setToast({ type, msg });
@@ -85,8 +85,8 @@ export default function FeedbackPage() {
                 .single();
             if (testimonial) setExistingTestimonial(testimonial);
 
-        } catch (error: any) {
-            showToast('error', error.message || 'Failed to submit success story.');
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Failed to submit success story.');
         } finally {
             setLoading(false);
         }
@@ -109,7 +109,7 @@ export default function FeedbackPage() {
                 </div>
                 <div className="text-center sm:text-left">
                     <h1 className="text-3xl font-bold mb-2">Share Your Success Story</h1>
-                    <p className="text-white/90">Did you land a job, grant, or scholarship through Job Openings Kenya? Inspire others by sharing your journey!</p>
+                    <p className="text-white/90">Did you land a job or training opportunity through Job Openings Kenya? Inspire others by sharing your journey!</p>
                 </div>
             </div>
 

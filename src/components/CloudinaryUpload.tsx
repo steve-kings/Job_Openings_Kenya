@@ -60,7 +60,7 @@ export default function CloudinaryUpload({
             } else {
                 setError(data.error || 'Upload failed. Please try again.');
             }
-        } catch (err: any) {
+        } catch {
             setError('Network error. Please check your connection and try again.');
         } finally {
             setUploading(false);
@@ -77,15 +77,17 @@ export default function CloudinaryUpload({
         e.preventDefault();
         const file = e.dataTransfer.files?.[0];
         if (file) {
-            const fakeEvent = { target: { files: [file] } } as any;
+            const fakeEvent = { target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>;
             handleFileChange(fakeEvent);
         }
     };
 
     return (
         <div className="space-y-3">
+            {label && <p className="text-sm font-medium text-gray-700">{label}</p>}
             {preview ? (
                 <div className="relative group rounded-xl overflow-hidden border-2 border-[#5CB800] shadow-md">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- preview is a local blob/object URL, next/image is unnecessary here */}
                     <img
                         src={preview}
                         alt="Preview"
@@ -94,14 +96,14 @@ export default function CloudinaryUpload({
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                         <label
                             htmlFor={uid}
-                            className="btn btn-sm bg-white text-gray-800 hover:bg-gray-100 border-none gap-1 cursor-pointer"
+                            className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-white text-gray-800 hover:bg-gray-100 gap-1 cursor-pointer font-medium"
                         >
                             <Upload size={14} /> Replace
                         </label>
                         <button
                             type="button"
                             onClick={handleRemove}
-                            className="btn btn-sm bg-red-500 text-white hover:bg-red-600 border-none gap-1"
+                            className="inline-flex items-center justify-center text-sm px-3 py-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 gap-1 font-medium"
                         >
                             <X size={14} /> Remove
                         </button>

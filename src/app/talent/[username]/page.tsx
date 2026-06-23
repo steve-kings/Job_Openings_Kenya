@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Briefcase, Globe, Github, Linkedin, Twitter, GraduationCap, Star, CheckCircle, ArrowLeft } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
@@ -47,7 +48,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                         {/* Avatar */}
                         <div className="relative shrink-0">
                             {profile.avatar_url ? (
-                                <img src={profile.avatar_url} alt={profile.full_name} className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-cover ring-4 ring-white/30 shadow-2xl" />
+                                <Image src={profile.avatar_url} alt={profile.full_name} width={144} height={144} unoptimized className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-cover ring-4 ring-white/30 shadow-2xl" />
                             ) : (
                                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center ring-4 ring-white/30 shadow-2xl">
                                     <span className="text-4xl sm:text-5xl font-black text-white">{initials}</span>
@@ -121,7 +122,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                                 <h3 className="font-bold text-lg mb-2">Interested in {profile.full_name?.split(' ')[0]}?</h3>
                                 <p className="text-white/80 text-sm mb-4">Connect via LinkedIn or other social platforms.</p>
                                 {profile.linkedin_url ? (
-                                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="btn bg-white text-[#5CB800] hover:bg-gray-100 border-none w-full font-bold">
+                                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-[#5CB800] hover:bg-gray-100 w-full font-bold py-2.5 rounded-lg">
                                         <Linkedin size={18} /> Connect on LinkedIn
                                     </a>
                                 ) : (

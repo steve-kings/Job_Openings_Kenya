@@ -1,13 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import { partners, opportunities, blogPosts } from '../lib/seed-data';
+import dotenv from 'dotenv';
 
-// Hardcoded for immediate seeding fix
-const supabaseUrl = 'https://bmjrebjafjcvtfnxayhq.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtanJlYmphZmpjdnRmbnhheWhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDE3MzE4MywiZXhwIjoyMDc5NzQ5MTgzfQ.Ic0rooIXVsjxTCHxhwtTh64G0fibQtMybEepOPhMiw0';
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Load environment variables from .env.local
+dotenv.config({ path: '.env.local' });
 
 async function seed() {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+        console.error('ERROR: Missing environment variables.');
+        console.error('Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local');
+        process.exit(1);
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+    });
+
     console.log('Starting seed process...');
 
     try {
@@ -60,8 +71,6 @@ async function seed() {
         // 3. Seed Blog Posts
         console.log('Seeding Blog Posts...');
         for (const post of blogPosts) {
-            // Blog posts usually have unique slugs, so upsert might work if constraint exists.
-            // But let's be safe and check.
             const { data: existing } = await supabase
                 .from('blog_posts')
                 .select('id')
@@ -79,8 +88,8 @@ async function seed() {
         }
 
         console.log('Database seeded successfully!');
-    } catch (error: any) {
-        console.error('Seed Error:', error.message);
+    } catch (error: unknown) {
+        console.error('Seed Error:', error instanceof Error ? error.message : error);
         process.exit(1);
     }
 }

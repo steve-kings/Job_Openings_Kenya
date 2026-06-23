@@ -1,26 +1,71 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
-import { Calendar, User, ArrowRight, BookOpen, TrendingUp } from 'lucide-react';
+import { Calendar, User, ArrowRight, BookOpen, ChevronDown, Home } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Blog - Job Openings Kenya | Stories, Insights & Community Updates',
-    description: 'Read success stories from Kenyan job seekers, get career tips, and stay updated with the latest opportunities and community news from Job Openings Kenya.',
+    title: 'Blog - Job Openings Kenya | Stories, Insights & Career Tips',
+    description: 'Read success stories from Kenyan job seekers, get career tips, and stay updated with the latest opportunities and community news.',
     openGraph: {
-        title: 'Job Openings Kenya Blog - Stories, Insights & Community Updates',
-        description: 'Read success stories from Kenyan job seekers, get career tips, and stay updated with the latest opportunities.',
-        images: ['/images/img4.jpg'],
+        title: 'Job Openings Kenya Blog',
+        description: 'Read success stories from Kenyan job seekers and get career tips.',
+        images: ['/images/advance-your-career.png'],
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Job Openings Kenya Blog - Stories & Insights',
+        title: 'Job Openings Kenya Blog',
         description: 'Read success stories from Kenyan job seekers and get career tips.',
-        images: ['/images/img4.jpg'],
+        images: ['/images/advance-your-career.png'],
     },
 };
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
+
+interface BlogPost {
+    id: string;
+    slug: string;
+    title: string;
+    excerpt: string;
+    featured_image: string | null;
+    category: string;
+    created_at: string;
+    author_name: string;
+    status: string;
+}
+
+interface FAQItem {
+    q: string;
+    a: string;
+}
+
+const faqs: FAQItem[] = [
+    {
+        q: 'How do I find the latest job openings in Kenya?',
+        a: 'Visit our homepage and browse the latest verified listings. You can filter by job type, location, and even set up email alerts to get notified when matching jobs are posted.',
+    },
+    {
+        q: 'Are the job listings on Job Openings Kenya verified?',
+        a: 'Yes. Every listing is reviewed before publication to ensure it is legitimate, scam-free, and genuinely available. We partner with trusted employers across Kenya.',
+    },
+    {
+        q: 'Can I apply for jobs directly through the platform?',
+        a: 'Absolutely. Each job listing has an apply button that redirects you to the employer\'s application portal or lets you apply via email. We also offer tools to generate cover letters and prepare for interviews.',
+    },
+    {
+        q: 'How do I track my job applications?',
+        a: 'Create a free account and use our Application Tracker dashboard. You can log every job you apply to, set status updates (applied, interview, offered), and add personal notes.',
+    },
+    {
+        q: 'Do you offer training and internship opportunities?',
+        a: 'Yes. In addition to full-time jobs, we list training programs, internships, and attachments across various sectors. Use the category filter to find them.',
+    },
+    {
+        q: 'How can employers post jobs on the platform?',
+        a: 'Employers can visit the Employer Portal to submit job postings. Our team reviews and approves submissions within 24 hours. Premium posting options are also available for wider reach.',
+    },
+];
 
 export default async function BlogPage() {
     const supabase = await createClient();
@@ -35,216 +80,180 @@ export default async function BlogPage() {
         console.warn('Error fetching posts:', error.message || error);
     }
 
-    // Get featured post (most recent)
-    const featuredPost = posts?.[0];
-    const regularPosts = posts?.slice(1) || [];
+    const allPosts: BlogPost[] = posts || [];
 
-    // Category colors
-    const categoryColors: { [key: string]: { bg: string; text: string; border: string } } = {
-        'Success Stories': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]', border: 'border-[#5CB800]' },
-        'Career Tips': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]', border: 'border-[#5CB800]' },
-        'Opportunities': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]', border: 'border-[#5CB800]' },
-        'News': { bg: 'bg-[#4A9900]', text: 'text-[#4A9900]', border: 'border-[#4A9900]' },
-    };
+    // Compute categories with counts
+    const categoryMap = new Map<string, number>();
+    allPosts.forEach((p) => {
+        categoryMap.set(p.category, (categoryMap.get(p.category) || 0) + 1);
+    });
+    const categories = Array.from(categoryMap.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
 
-    const getCategoryColor = (category: string) => {
-        return categoryColors[category] || { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]', border: 'border-[#5CB800]' };
-    };
+    const formatDate = (date: string) =>
+        new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     return (
-        <div className="bg-white">
-            {/* Hero Section */}
-            <div className="relative min-h-[400px] bg-gradient-to-br from-gray-900 via-[#4A9900] to-[#5CB800] text-white overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-10 w-72 h-72 bg-[#5CB800] rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#5CB800] rounded-full blur-3xl"></div>
-                </div>
-
-                <div className="container mx-auto px-6 lg:px-12 relative z-10 py-20 lg:py-28">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 bg-[#5CB800] text-white px-6 py-2 rounded-full text-sm font-semibold mb-6">
-                            <BookOpen size={18} />
-                            <span>Job Openings Kenya Blog</span>
-                        </div>
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                            Stories, Insights &
-                            <span className="block text-[#5CB800]">Community Updates</span>
-                        </h1>
-                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                            Read success stories from Kenyan job seekers, get career tips, and stay updated with the latest opportunities.
-                        </p>
+        <div className="bg-white min-h-screen">
+            {/* Page Header */}
+            <div className="border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="flex items-center gap-2 text-xs text-gray-400 font-semibold mb-3">
+                        <Link href="/" className="flex items-center gap-1 hover:text-emerald-600 transition-colors">
+                            <Home size={12} /> Home
+                        </Link>
+                        <span>/</span>
+                        <span className="text-emerald-600">Blog</span>
                     </div>
-                </div>
-
-                {/* Wave Divider */}
-                <div className="absolute bottom-0 left-0 right-0">
-                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-                        <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-                    </svg>
+                    <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Blog & Stories</h1>
+                    <p className="text-sm text-gray-500 mt-2 max-w-xl">
+                        Career tips, success stories, and insights to help you navigate the Kenyan job market.
+                    </p>
                 </div>
             </div>
 
-            {/* Featured Post */}
-            {featuredPost && (
-                <div className="py-12 bg-white">
-                    <div className="container mx-auto px-6 lg:px-12">
-                        <div className="flex items-center gap-2 mb-6">
-                            <TrendingUp className="text-[#5CB800]" size={24} />
-                            <h2 className="text-2xl font-bold text-gray-900">Featured Story</h2>
-                        </div>
-                        
-                        <Link href={`/blog/${featuredPost.slug}`}>
-                            <div className="grid lg:grid-cols-2 gap-8 bg-gradient-to-br from-gray-50 to-white rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 group border-2 border-gray-100">
-                                <div className="relative h-64 sm:h-80 lg:h-auto overflow-hidden">
-                                    <img
-                                        src={featuredPost.featured_image || '/images/img4.jpg'}
-                                        alt={featuredPost.title}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                                    {/* Job Openings Kenya Watermark - Bright & Creative */}
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <div className="relative">
-                                            <span className="text-white font-black text-7xl rotate-[-15deg] uppercase tracking-[0.3em] opacity-30 drop-shadow-[0_0_25px_rgba(243,156,18,0.5)]" style={{ textShadow: '0 0 35px rgba(243,156,18,0.6), 0 0 70px rgba(196,69,54,0.4)' }}>
-                                                Job Openings Kenya
-                                            </span>
-                                            <div className="absolute -top-3 -left-3 w-16 h-0.5 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
-                                            <div className="absolute -bottom-3 -right-3 w-16 h-0.5 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="p-8 lg:p-12 flex flex-col justify-center">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <span className={`${getCategoryColor(featuredPost.category).bg} text-white px-4 py-1.5 rounded-full text-sm font-semibold`}>
-                                            {featuredPost.category}
-                                        </span>
-                                        <span className="text-sm text-gray-500 flex items-center gap-1">
-                                            <Calendar size={14} />
-                                            {new Date(featuredPost.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                    
-                                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 group-hover:text-[#5CB800] transition-colors">
-                                        {featuredPost.title}
-                                    </h3>
-                                    
-                                    <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                                        {featuredPost.excerpt}
-                                    </p>
-                                    
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-gray-700">
-                                            <User size={18} />
-                                            <span className="font-medium">{featuredPost.author_name}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-[#5CB800] font-semibold group-hover:gap-3 transition-all">
-                                            <span>Read Full Story</span>
-                                            <ArrowRight size={20} />
-                                        </div>
-                                    </div>
-                                </div>
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    {/* Left: Blog Posts */}
+                    <div className="lg:col-span-2">
+                        {!allPosts.length ? (
+                            <div className="text-center py-20 border border-gray-100 rounded-2xl bg-gray-50/50">
+                                <BookOpen className="mx-auto text-gray-300 mb-4" size={48} />
+                                <h3 className="text-lg font-bold text-gray-900">No Posts Yet</h3>
+                                <p className="text-sm text-gray-500 mt-1">Check back soon for inspiring stories and insights.</p>
                             </div>
-                        </Link>
-                    </div>
-                </div>
-            )}
-
-            {/* All Posts Grid */}
-            <div className="py-12 bg-gray-50">
-                <div className="container mx-auto px-6 lg:px-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8">Latest Articles</h2>
-                    
-                    {!posts || posts.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-2xl shadow-lg">
-                            <BookOpen className="mx-auto text-gray-300 mb-4" size={64} />
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Posts Yet</h3>
-                            <p className="text-gray-500">Check back soon for inspiring stories and insights!</p>
-                        </div>
-                    ) : regularPosts.length === 0 ? (
-                        <div className="text-center py-10 bg-white rounded-2xl">
-                            <p className="text-gray-500">More articles coming soon!</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {regularPosts.map((post) => {
-                                const colors = getCategoryColor(post.category);
-                                return (
-                                    <Link key={post.id} href={`/blog/${post.slug}`}>
-                                        <div className={`bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group border-2 ${colors.border} border-opacity-0 hover:border-opacity-100 hover:-translate-y-2`}>
-                                            <div className="relative h-56 overflow-hidden">
-                                                <img
-                                                    src={post.featured_image || '/images/img5.jpg'}
+                        ) : (
+                            <div className="space-y-6">
+                                {allPosts.map((post) => (
+                                    <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
+                                        <article className="flex flex-col sm:flex-row gap-5 p-4 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all bg-white">
+                                            {/* Thumbnail */}
+                                            <div className="relative sm:w-52 sm:h-40 w-full h-48 shrink-0 rounded-xl overflow-hidden bg-gray-100">
+                                                <Image
+                                                    src={post.featured_image || '/images/advance-your-career.png'}
                                                     alt={post.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                    fill
+                                                    sizes="(max-width: 640px) 100vw, 208px"
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                                                {/* Job Openings Kenya Watermark - Bright & Creative */}
-                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    <div className="relative">
-                                                        <span className="text-white font-black text-5xl rotate-[-15deg] uppercase tracking-[0.3em] opacity-30 drop-shadow-[0_0_20px_rgba(243,156,18,0.5)]" style={{ textShadow: '0 0 30px rgba(243,156,18,0.6), 0 0 60px rgba(196,69,54,0.4)' }}>
-                                                            Job Openings Kenya
-                                                        </span>
-                                                        <div className="absolute -top-2 -left-2 w-12 h-0.5 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
-                                                        <div className="absolute -bottom-2 -right-2 w-12 h-0.5 bg-[#5CB800] opacity-50 rotate-[-15deg]"></div>
-                                                    </div>
-                                                </div>
-                                                {/* Category Badge */}
-                                                <div className="absolute top-4 left-4">
-                                                    <span className={`${colors.bg} text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg`}>
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="flex flex-col justify-center flex-1 min-w-0 py-1">
+                                                <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600">
                                                         {post.category}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <Calendar size={11} />
+                                                        {formatDate(post.created_at)}
+                                                    </span>
+                                                </div>
+
+                                                <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2">
+                                                    {post.title}
+                                                </h2>
+
+                                                <p className="text-sm text-gray-500 mt-2 line-clamp-2 leading-relaxed">
+                                                    {post.excerpt}
+                                                </p>
+
+                                                <div className="mt-3 flex items-center gap-4">
+                                                    <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                                        <User size={12} className="text-gray-400" />
+                                                        {post.author_name}
+                                                    </span>
+                                                    <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 group-hover:gap-1.5 transition-all">
+                                                        Read More
+                                                        <ArrowRight size={12} />
                                                     </span>
                                                 </div>
                                             </div>
-                                            
-                                            <div className="p-6">
-                                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                                                    <Calendar size={14} />
-                                                    <span>{new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                                </div>
-                                                
-                                                <h3 className={`text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:${colors.text} transition-colors`}>
-                                                    {post.title}
-                                                </h3>
-                                                
-                                                <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                                                    {post.excerpt}
-                                                </p>
-                                                
-                                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                        <User size={16} />
-                                                        <span>{post.author_name}</span>
-                                                    </div>
-                                                    <div className={`flex items-center gap-1 ${colors.text} font-semibold text-sm group-hover:gap-2 transition-all`}>
-                                                        <span>Read</span>
-                                                        <ArrowRight size={16} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </article>
                                     </Link>
-                                );
-                            })}
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right: Sidebar */}
+                    <aside className="space-y-8">
+                        {/* Categories */}
+                        <div className="border border-gray-100 rounded-2xl p-6">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4">Categories</h3>
+                            {!categories.length ? (
+                                <p className="text-sm text-gray-400">No categories yet.</p>
+                            ) : (
+                                <div className="divide-y divide-gray-50">
+                                    {categories.map((cat) => (
+                                        <div key={cat.name} className="flex items-center justify-between py-2.5">
+                                            <span className="text-sm font-medium text-gray-600">{cat.name}</span>
+                                            <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{cat.count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    )}
+
+                        {/* Newsletter Mini */}
+                        <div className="border border-gray-100 rounded-2xl p-6 bg-gradient-to-br from-emerald-50 to-green-50/50">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-2">Stay Updated</h3>
+                            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                                Get the latest career tips and job insights delivered to your inbox.
+                            </p>
+                            <form
+                                action="/api/newsletter/subscribe"
+                                method="POST"
+                                className="space-y-2"
+                            >
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    placeholder="your@email.com"
+                                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200 bg-white"
+                                />
+                                <button
+                                    type="submit"
+                                    className="w-full py-2.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+                                >
+                                    Subscribe
+                                </button>
+                            </form>
+                        </div>
+                    </aside>
                 </div>
             </div>
 
-            {/* CTA Section */}
-            <div className="py-20 bg-gradient-to-r from-[#5CB800] to-[#4A9900] text-white">
-                <div className="container mx-auto px-6 lg:px-12 text-center">
-                    <h2 className="text-4xl font-bold mb-6">Want to Share Your Story?</h2>
-                    <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                        Have an inspiring journey or valuable insights to share with the Job Openings Kenya community? We'd love to feature your story!
+            {/* FAQ Section */}
+            <div className="border-t border-gray-100">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Frequently Asked Questions</h2>
+                    <p className="text-sm text-gray-500 mb-8 max-w-lg">
+                        Got questions about using Job Openings Kenya? Here are answers to the most common ones.
                     </p>
-                    <a 
-                        href="mailto:stories@Job Openings Kenya.org" 
-                        className="btn bg-[#5CB800] text-white hover:bg-[#e08d0a] btn-lg border-none w-full sm:w-auto px-6 sm:px-10"
-                    >
-                        Submit Your Story
-                    </a>
+
+                    <div className="space-y-3">
+                        {faqs.map((faq, i) => (
+                            <details
+                                key={i}
+                                className="group border border-gray-100 rounded-xl overflow-hidden open:shadow-sm transition-shadow"
+                            >
+                                <summary className="flex items-center justify-between p-4 sm:p-5 cursor-pointer list-none bg-white hover:bg-gray-50 transition-colors select-none">
+                                    <span className="text-sm sm:text-base font-bold text-slate-800 pr-4">{faq.q}</span>
+                                    <ChevronDown
+                                        size={18}
+                                        className="shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+                                    />
+                                </summary>
+                                <div className="px-4 sm:px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                                    {faq.a}
+                                </div>
+                            </details>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

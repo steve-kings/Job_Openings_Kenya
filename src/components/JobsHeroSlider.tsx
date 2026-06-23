@@ -1,16 +1,31 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-const defaultSlides = [
+interface Slide {
+    id: number | string;
+    title: string;
+    image: string;
+    highlight?: string;
+    description?: string;
+    cta1?: string;
+    cta2?: string;
+    link?: string;
+    isBanner?: boolean;
+    thumbnail_url?: string;
+    apply_url?: string;
+}
+
+const defaultSlides: Slide[] = [
     {
         id: 1,
         title: "Discover Your Next",
         highlight: "Big Opportunity",
-        description: "Access verified jobs, grants, scholarships, and training programs across Kenya. All opportunities are hand-picked and verified by our team.",
-        image: "/images/img4.jpg",
+        description: "Access verified jobs and professional training programs across Kenya. All opportunities are hand-picked and verified by our team.",
+        image: "/images/seeker-hero.png",
         cta1: "Browse Opportunities",
         cta2: "Join WhatsApp"
     },
@@ -19,40 +34,31 @@ const defaultSlides = [
         title: "Land Your Dream",
         highlight: "Career Today",
         description: "From entry-level positions to executive roles, find verified job opportunities that match your skills and aspirations across the continent.",
-        image: "/images/img5.jpg",
+        image: "/images/right-talent-desktop.png",
         cta1: "View Jobs",
         cta2: "Get Alerts"
     },
     {
         id: 3,
-        title: "Unlock Funding for",
-        highlight: "Your Vision",
-        description: "Discover grants and funding opportunities for entrepreneurs, startups, and innovators. Turn your ideas into reality with financial support.",
-        image: "/images/img6 (2).jpg",
-        cta1: "Find Grants",
+        title: "Upskill With",
+        highlight: "Professional Training",
+        description: "Access verified training programs and certifications to boost your career and stay competitive in the job market.",
+        image: "/images/advance-your-career.png",
+        cta1: "Browse Training",
         cta2: "Learn More"
-    },
-    {
-        id: 4,
-        title: "Advance Your Education",
-        highlight: "With Scholarships",
-        description: "Access fully-funded and partially-funded scholarship opportunities to study at top universities around the world.",
-        image: "/images/img7.jpg",
-        cta1: "View Scholarships",
-        cta2: "Apply Now"
     }
 ];
 
-export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] }) {
+export default function JobsHeroSlider({ customSlides }: { customSlides?: Slide[] }) {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-    const displaySlides = customSlides && customSlides.length > 0 
+    const displaySlides: Slide[] = customSlides && customSlides.length > 0 
         ? customSlides.map(slide => ({
             id: slide.id,
             isBanner: true,
             title: slide.title,
-            image: slide.thumbnail_url || '/images/img4.jpg',
+            image: slide.thumbnail_url || '/images/seeker-hero.png',
             link: slide.apply_url || '#'
         }))
         : defaultSlides;
@@ -96,21 +102,26 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                         }`}
                     >
                         {('isBanner' in s && s.isBanner) ? (
-                            <a href={'link' in s ? (s as any).link : '#'} target={'link' in s && s.link !== '#' ? "_blank" : undefined} rel="noopener noreferrer" className="block w-full h-full cursor-pointer">
-                                <img 
+                            <a href={s.link || '#'} target={s.link && s.link !== '#' ? "_blank" : undefined} rel="noopener noreferrer" className="block relative w-full h-full cursor-pointer">
+                                <Image 
                                     src={s.image}
                                     alt={s.title}
-                                    className="w-full h-full object-cover object-center"
+                                    fill
+                                    sizes="100vw"
+                                    className="object-cover object-center"
                                 />
                                 {/* Light gradient at bottom for controls visibility */}
                                 <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                             </a>
                         ) : (
                             <>
-                                <img 
+                                <Image 
                                     src={s.image}
                                     alt={s.title}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    sizes="100vw"
+                                    priority={index === 0}
+                                    className="object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-[#4A9900]/90 to-[#5CB800]/85"></div>
                             </>
@@ -126,17 +137,17 @@ export default function JobsHeroSlider({ customSlides }: { customSlides?: any[] 
                         <div key={slide.id} className="animate-fadeIn">
                             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white">
                                 {slide.title}
-                                <span className="block text-[#5CB800] mt-2">{'highlight' in slide ? (slide as any).highlight : ''}</span>
+                                <span className="block text-[#5CB800] mt-2">{slide.highlight || ''}</span>
                             </h1>
                             <p className="text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
-                                {'description' in slide ? (slide as any).description : ''}
+                                {slide.description || ''}
                             </p>
                             <div>
                                 <a 
                                     href="#opportunities" 
-                                    className="btn bg-[#5CB800] text-white hover:bg-[#e08d0a] btn-lg border-none px-10"
+                                    className="inline-flex items-center justify-center bg-[#5CB800] text-white hover:bg-[#e08d0a] px-10 py-3 text-lg rounded-xl font-bold"
                                 >
-                                    {'cta1' in slide ? (slide as any).cta1 : 'Learn More'}
+                                    {slide.cta1 || 'Learn More'}
                                 </a>
                             </div>
                         </div>

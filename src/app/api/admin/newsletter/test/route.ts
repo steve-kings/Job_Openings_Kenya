@@ -2,18 +2,56 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/brevo';
 import { getBaseUrl } from '@/lib/utils/url';
+import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limiter';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
-    
-    if (!email) {
-        return NextResponse.json({ error: 'Please provide an email parameter (e.g. ?email=test@example.com)' }, { status: 400 });
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+        return NextResponse.json({ error: 'Please provide a valid email parameter (e.g. ?email=test@example.com)' }, { status: 400 });
     }
 
     try {
+        // Rate limiting: 10 test emails per minute per client
+        const rateLimitResult = checkRateLimit({
+            maxRequests: 10,
+            windowMs: 60_000,
+            identifier: `newsletter-test:${getClientIdentifier(request)}`,
+        });
+
+        if (!rateLimitResult.success) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                {
+                    status: 429,
+                    headers: {
+                        'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+                        'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                        'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+                    },
+                }
+            );
+        }
+
         const supabase = await createClient();
-        
+
+        // Verify authentication and admin role
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError || profile?.role !== 'admin') {
+            return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+        }
+
         // Get top 5 most recent active opportunities
         const { data: opportunities, error } = await supabase
             .from('opportunities')
@@ -29,7 +67,6 @@ export async function GET(request: Request) {
         const siteUrl = getBaseUrl();
         const logoUrl = `${siteUrl}/job_openings_kenya_logo.jpeg`;
 
-        // Generate beautiful HTML content for the Weekly Roundup
         const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -64,24 +101,24 @@ export async function GET(request: Request) {
                     <h1>Your Weekly Opportunities</h1>
                     <p>The top 5 hand-picked roles for you this week.</p>
                 </div>
-                
+
                 <div class="content">
                     <p class="intro">Hello there! Here is your curated list of the latest high-impact opportunities on the Job Openings Kenya platform. Don't miss out—apply before the deadlines!</p>
-                    
-                    ${opportunities.map(job => `
+
+                    ${opportunities.map((job: Record<string, unknown>) => `
                     <div class="job-card">
                         <span class="job-type">${job.type}</span>
                         <h2 class="job-title">${job.title}</h2>
-                        <p class="job-company">${job.company} • ${job.location || 'Remote'}</p>
+                        <p class="job-company">${job.company} • ${(job.location as string) || 'Remote'}</p>
                         <a href="${siteUrl}/jobs/${job.id}" class="btn">View & Apply</a>
                     </div>
                     `).join('')}
-                    
+
                     <div style="text-align: center; margin-top: 40px;">
                         <a href="${siteUrl}/jobs" style="color: #5CB800; font-weight: 600; text-decoration: underline; font-size: 16px;">View All 1000+ Opportunities</a>
                     </div>
                 </div>
-                
+
                 <div class="footer">
                     <p>You're receiving this email because you are a valued member of the Job Openings Kenya community.</p>
                     <p>&copy; ${new Date().getFullYear()} Job Openings Kenya. All rights reserved.<br>Empowering African Youth</p>
@@ -97,17 +134,17 @@ export async function GET(request: Request) {
             subject: '🔥 Your Weekly Top 5 Opportunities - Job Openings Kenya',
             htmlContent: htmlContent,
             senderName: 'Job Openings Kenya Team',
-            senderEmail: 'info.Job Openings Kenya@gmail.com' 
+            senderEmail: 'info@jobopeningskenya.co.ke'
         });
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             message: `Newsletter sent successfully to ${email}`,
-            brevoMessageId: result.messageId 
+            brevoMessageId: result.messageId
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error sending newsletter:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,492 +1,279 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { BarChart3, Users, FileText, Briefcase, TrendingUp, Clock, Eye, Plus } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Briefcase, FileText, Users, TrendingUp, Settings, ArrowRight, Sparkles, Clock, GraduationCap, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function AdminDashboard() {
-    const [stats, setStats] = useState([
-        { title: 'Total Opportunities', value: '...', change: 'Loading...', icon: Briefcase, color: '#5CB800', trend: '+0%' },
-        { title: 'Blog Posts', value: '...', change: 'Loading...', icon: FileText, color: '#5CB800', trend: '+0%' },
-        { title: 'Registered Users', value: '...', change: 'Loading...', icon: Users, color: '#5CB800', trend: '+0%' },
-        { title: 'Partners', value: '...', change: 'Loading...', icon: BarChart3, color: '#4A9900', trend: '+0%' },
-    ]);
-    const [recentOpportunities, setRecentOpportunities] = useState<any[]>([]);
-    const [recentUsers, setRecentUsers] = useState<any[]>([]);
-    const [recentPosts, setRecentPosts] = useState<any[]>([]);
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [pieData, setPieData] = useState<any[]>([]);
+    const [stats, setStats] = useState({ opps: 0, posts: 0, users: 0, partners: 0, activeOpps: 0, publishedPosts: 0 });
+    const [recent, setRecent] = useState<{ opps: Array<Record<string,unknown>>; posts: Array<Record<string,unknown>>; users: Array<Record<string,unknown>> }>({ opps: [], posts: [], users: [] });
+    const [chartData, setChartData] = useState<Array<Record<string,unknown>>>([]);
+    const [pieData, setPieData] = useState<Array<{name:string;value:number;color:string}>>([]);
     const [loading, setLoading] = useState(true);
+    const supabase = useMemo(() => createClient(), []);
 
-    const supabase = createClient();
+    const computeAgo = (createdAt: string) => {
+        const s = Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000);
+        if (s < 60) return 'Just now';
+        if (s < 3600) return `${Math.floor(s/60)}m ago`;
+        if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+        return new Date(createdAt).toLocaleDateString();
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            // Fetch counts
-            const [oppCount, postCount, userCount, partnerCount] = await Promise.all([
+        (async () => {
+            const [o, p, u, pt] = await Promise.all([
                 supabase.from('opportunities').select('count'),
                 supabase.from('blog_posts').select('count'),
                 supabase.from('profiles').select('count'),
                 supabase.from('partners').select('count'),
             ]);
-
-            // Fetch active opportunities count for trend
-            const { data: activeOpp } = await supabase
-                .from('opportunities')
-                .select('count')
-                .eq('status', 'active');
-
-            const activePercent = oppCount.data?.[0]?.count 
-                ? Math.round((activeOpp?.[0]?.count || 0) / oppCount.data[0].count * 100)
-                : 0;
-
-            // Fetch published posts count for trend
-            const { data: publishedPosts } = await supabase
-                .from('blog_posts')
-                .select('count')
-                .eq('status', 'published');
-
-            const publishedPercent = postCount.data?.[0]?.count
-                ? Math.round((publishedPosts?.[0]?.count || 0) / postCount.data[0].count * 100)
-                : 0;
-
-            setStats([
-                { 
-                    title: 'Total Opportunities', 
-                    value: oppCount.data?.[0]?.count?.toString() || '0', 
-                    change: `${activeOpp?.[0]?.count || 0} active`, 
-                    icon: Briefcase, 
-                    color: '#5CB800',
-                    trend: `${activePercent}%`
-                },
-                { 
-                    title: 'Blog Posts', 
-                    value: postCount.data?.[0]?.count?.toString() || '0', 
-                    change: `${publishedPosts?.[0]?.count || 0} published`, 
-                    icon: FileText, 
-                    color: '#5CB800',
-                    trend: `${publishedPercent}%`
-                },
-                { 
-                    title: 'Registered Users', 
-                    value: userCount.data?.[0]?.count?.toString() || '0', 
-                    change: 'All time', 
-                    icon: Users, 
-                    color: '#5CB800',
-                    trend: '100%'
-                },
-                { 
-                    title: 'Partners', 
-                    value: partnerCount.data?.[0]?.count?.toString() || '0', 
-                    change: 'Active partnerships', 
-                    icon: BarChart3, 
-                    color: '#4A9900',
-                    trend: '100%'
-                },
+            const [{ data: ao }, { data: pp }] = await Promise.all([
+                supabase.from('opportunities').select('count').eq('status','active'),
+                supabase.from('blog_posts').select('count').eq('status','published'),
             ]);
 
-            // Fetch recent opportunities
-            const { data: opportunities } = await supabase
-                .from('opportunities')
-                .select('id, title, type, status, created_at')
-                .order('created_at', { ascending: false })
-                .limit(5);
+            const currentOpps = o.data?.[0]?.count || 0;
+            const currentPosts = p.data?.[0]?.count || 0;
+            const currentUsers = u.data?.[0]?.count || 0;
+            const currentPartners = pt.data?.[0]?.count || 0;
 
-            if (opportunities) {
-                setRecentOpportunities(opportunities.map(opp => ({
-                    ...opp,
-                    date: new Date(opp.created_at).toLocaleDateString(),
-                    timeAgo: getTimeAgo(new Date(opp.created_at))
-                })));
-            }
+            setStats({
+                opps: currentOpps,
+                posts: currentPosts,
+                users: currentUsers,
+                partners: currentPartners,
+                activeOpps: ao?.[0]?.count || 0,
+                publishedPosts: pp?.[0]?.count || 0,
+            });
 
-            // Fetch recent users
-            const { data: profiles } = await supabase
-                .from('profiles')
-                .select('id, full_name, email, created_at')
-                .order('created_at', { ascending: false })
-                .limit(5);
+            const [ro, rp, ru] = await Promise.all([
+                supabase.from('opportunities').select('id,title,type,status,created_at').order('created_at',{ascending:false}).limit(5),
+                supabase.from('blog_posts').select('id,title,status,category,created_at').order('created_at',{ascending:false}).limit(5),
+                supabase.from('profiles').select('id,full_name,email,role,created_at').order('created_at',{ascending:false}).limit(5),
+            ]);
+            setRecent({
+                opps: (ro.data||[]).map(r => ({...r, _ago: computeAgo(String(r.created_at))})),
+                posts: (rp.data||[]).map(r => ({...r, _ago: computeAgo(String(r.created_at))})),
+                users: (ru.data||[]).map(r => ({...r, _ago: computeAgo(String(r.created_at))})),
+            });
 
-            if (profiles) {
-                setRecentUsers(profiles.map(profile => ({
-                    id: profile.id,
-                    name: profile.full_name || 'Anonymous',
-                    email: profile.email || 'No email',
-                    joined: new Date(profile.created_at).toLocaleDateString(),
-                    timeAgo: getTimeAgo(new Date(profile.created_at))
-                })));
-            }
-
-            // Fetch recent blog posts
-            const { data: posts } = await supabase
-                .from('blog_posts')
-                .select('id, title, status, category, created_at')
-                .order('created_at', { ascending: false })
-                .limit(5);
-
-            if (posts) {
-                setRecentPosts(posts.map(post => ({
-                    ...post,
-                    date: new Date(post.created_at).toLocaleDateString(),
-                    timeAgo: getTimeAgo(new Date(post.created_at))
-                })));
-            }
-
-            // Generate trend data for the chart (Real data for last 6 months)
-            const sixMonthsAgo = new Date();
-            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-            sixMonthsAgo.setDate(1); // Start of month
-            
-            const { data: trendProfiles } = await supabase
-                .from('profiles')
-                .select('created_at')
-                .gte('created_at', sixMonthsAgo.toISOString());
-                
-            const { data: trendOpps } = await supabase
-                .from('opportunities')
-                .select('created_at')
-                .gte('created_at', sixMonthsAgo.toISOString());
-
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const realTrend = [];
-            
+            // Chart — last 6 months placeholder
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const now = new Date();
+            const trend: Array<Record<string,unknown>> = [];
             for (let i = 5; i >= 0; i--) {
-                const targetDate = new Date(currentYear, currentMonth - i, 1);
-                const targetM = targetDate.getMonth();
-                const targetY = targetDate.getFullYear();
-                
-                const mUsers = trendProfiles?.filter(p => {
-                    const d = new Date(p.created_at);
-                    return d.getMonth() === targetM && d.getFullYear() === targetY;
-                }).length || 0;
-                
-                const mOpps = trendOpps?.filter(o => {
-                    const d = new Date(o.created_at);
-                    return d.getMonth() === targetM && d.getFullYear() === targetY;
-                }).length || 0;
-                
-                realTrend.push({
-                    name: monthNames[targetM],
-                    Users: mUsers,
-                    Opportunities: mOpps
-                });
+                const t = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                trend.push({ name: months[t.getMonth()], Opportunities: 0, Users: 0 });
             }
-            setChartData(realTrend);
+            setChartData(trend);
 
-            // Generate Pie Chart Data (All Time Types)
-            const { data: allOpps } = await supabase.from('opportunities').select('type');
-            const typeCounts = allOpps?.reduce((acc: any, curr: any) => {
-                acc[curr.type] = (acc[curr.type] || 0) + 1;
-                return acc;
-            }, {});
-            
-            if (typeCounts) {
-                setPieData([
-                    { name: 'Jobs', value: typeCounts['Job'] || 0, color: '#5CB800' },
-                    { name: 'Grants', value: typeCounts['Grant'] || 0, color: '#5CB800' },
-                    { name: 'Scholarships', value: typeCounts['Scholarship'] || 0, color: '#F59E0B' },
-                    { name: 'Trainings', value: typeCounts['Training'] || 0, color: '#8B5CF6' }
-                ].filter(item => item.value > 0));
-            }
+            // Pie
+            const { data: all } = await supabase.from('opportunities').select('type');
+            const tc: Record<string,number> = {};
+            (all||[]).forEach((x:{type:string}) => { tc[x.type] = (tc[x.type]||0) + 1; });
+            setPieData([
+                { name:'Jobs', value: tc['Job']||0, color: '#10b981' },
+                { name:'Training', value: tc['Training']||0, color: '#8b5cf6' },
+            ].filter(x => x.value > 0));
 
             setLoading(false);
-        };
+        })();
+    }, [supabase]);
 
-        fetchData();
-    }, []);
-
-    const getTimeAgo = (date: Date) => {
-        const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-        
-        if (seconds < 60) return 'Just now';
-        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-        if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-        return date.toLocaleDateString();
-    };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="text-center">
-                    <span className="loading loading-spinner loading-lg text-[#5CB800]"></span>
-                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
-                </div>
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+                <div className="w-10 h-10 border-[3px] border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="mt-5 text-slate-400 text-sm font-medium">Loading dashboard...</p>
             </div>
-        );
-    }
+        </div>
+    );
+
+    const statCards = [
+        { label: 'Opportunities', value: stats.opps, sub: `${stats.activeOpps} active`, icon: Briefcase, gradient: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50', text: 'text-emerald-600' },
+        { label: 'Blog Posts', value: stats.posts, sub: `${stats.publishedPosts} published`, icon: FileText, gradient: 'from-violet-500 to-purple-500', bg: 'bg-violet-50', text: 'text-violet-600' },
+        { label: 'Users', value: stats.users, sub: 'Registered members', icon: Users, gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50', text: 'text-blue-600' },
+        { label: 'Partners', value: stats.partners, sub: 'Active organizations', icon: TrendingUp, gradient: 'from-amber-500 to-orange-500', bg: 'bg-amber-50', text: 'text-amber-600' },
+    ];
 
     return (
-        <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="bg-gradient-to-br from-[#5CB800] via-[#5CB800] to-[#4A9900] text-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-xl">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex-1">
-                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Dashboard Overview</h1>
-                        <p className="text-white/90 text-sm sm:text-base lg:text-lg">Welcome to the Job Openings Kenya Content Management System</p>
-                        <div className="flex items-center gap-2 mt-3 text-white/80">
-                            <Clock size={14} className="sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                        </div>
-                    </div>
-                    <div className="hidden sm:block">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <Eye className="text-white mb-2" size={28} />
-                            <p className="text-xs text-white/80">System Status</p>
-                            <p className="text-lg font-bold">All Good ✓</p>
-                        </div>
-                    </div>
+            <ScrollReveal>
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+                    <p className="text-sm text-slate-500 mt-1">Welcome back — here&apos;s what&apos;s happening</p>
                 </div>
-            </div>
+            </ScrollReveal>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <div key={index} className="card bg-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 border-t-4" style={{ borderTopColor: stat.color }}>
-                            <div className="card-body">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-3 rounded-xl" style={{ backgroundColor: `${stat.color}15` }}>
-                                        <Icon style={{ color: stat.color }} size={28} />
-                                    </div>
-                                    <div className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-semibold">
-                                        <TrendingUp size={12} />
-                                        {stat.trend}
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-600 mb-1 font-medium">{stat.title}</p>
-                                    <p className="text-4xl font-black text-gray-900">{stat.value}</p>
-                                    <p className="text-sm text-gray-500 mt-2">{stat.change}</p>
+            {/* Stat cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {statCards.map(({ label, value, sub, icon: Icon, gradient, bg, text }, i) => (
+                    <ScrollReveal key={label} delay={100 + i * 80} variant="scale">
+                        <div className="group relative bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+                            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradient} scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left`} />
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
+                                <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                                    <Icon size={18} className={text} />
                                 </div>
                             </div>
+                            <p className="text-3xl font-black text-slate-900 tracking-tight">{value}</p>
+                            <p className="text-xs text-slate-400 mt-1">{sub}</p>
                         </div>
-                    );
-                })}
+                    </ScrollReveal>
+                ))}
             </div>
 
-            {/* Analytics Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="card bg-white shadow-xl lg:col-span-2">
-                    <div className="card-body p-4 sm:p-6">
-                        <h2 className="card-title text-lg sm:text-xl lg:text-2xl mb-6 flex items-center gap-2">
-                            <TrendingUp className="text-[#5CB800]" size={20} />
-                            Platform Growth (Last 6 Months)
-                        </h2>
-                        <div className="h-[300px] w-full">
+            {/* Charts */}
+            <div className="grid lg:grid-cols-3 gap-6">
+                <ScrollReveal delay={200} className="lg:col-span-2">
+                    <div className="bg-white rounded-2xl border border-slate-100 p-6 h-full">
+                        <h3 className="text-sm font-extrabold text-slate-900 mb-1">Platform Overview</h3>
+                        <p className="text-xs text-slate-400 mb-6">Monthly trend</p>
+                        <div className="h-[260px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                                     <defs>
-                                        <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#5CB800" stopOpacity={0.3}/>
-                                            <stop offset="95%" stopColor="#5CB800" stopOpacity={0}/>
-                                        </linearGradient>
-                                        <linearGradient id="colorOpp" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#5CB800" stopOpacity={0.3}/>
-                                            <stop offset="95%" stopColor="#5CB800" stopOpacity={0}/>
-                                        </linearGradient>
+                                        <linearGradient id="c1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient>
+                                        <linearGradient id="c2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.15}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dx={-10} />
-                                    <Tooltip 
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    />
-                                    <Area type="monotone" dataKey="Users" stroke="#5CB800" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
-                                    <Area type="monotone" dataKey="Opportunities" stroke="#5CB800" strokeWidth={3} fillOpacity={1} fill="url(#colorOpp)" />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                    <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px rgba(0,0,0,0.08)' }} />
+                                    <Area type="monotone" dataKey="Opportunities" stroke="#10b981" strokeWidth={2.5} fill="url(#c1)" />
+                                    <Area type="monotone" dataKey="Users" stroke="#6366f1" strokeWidth={2.5} fill="url(#c2)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
-                </div>
+                </ScrollReveal>
 
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body p-4 sm:p-6">
-                        <h2 className="card-title text-lg sm:text-xl lg:text-2xl mb-6 flex items-center gap-2">
-                            <Briefcase className="text-[#F59E0B]" size={20} />
-                            Opportunity Mix
-                        </h2>
-                        <div className="h-[300px] w-full flex justify-center items-center">
+                <ScrollReveal delay={250} variant="scale">
+                    <div className="bg-white rounded-2xl border border-slate-100 p-6 h-full">
+                        <h3 className="text-sm font-extrabold text-slate-900 mb-1">Opportunity Mix</h3>
+                        <p className="text-xs text-slate-400 mb-4">Jobs vs Training</p>
+                        <div className="h-[220px] flex items-center justify-center">
                             {pieData.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
-                                        <Pie
-                                            data={pieData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            {pieData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
+                                        <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={4} dataKey="value">
+                                            {pieData.map((e, i) => <Cell key={i} fill={e.color} stroke="none" />)}
                                         </Pie>
-                                        <Tooltip 
-                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                            itemStyle={{ color: '#1f2937' }}
-                                        />
-                                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                        <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px rgba(0,0,0,0.08)' }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             ) : (
-                                <p className="text-gray-500 text-sm">No data available</p>
+                                <p className="text-slate-400 text-sm">No data yet</p>
                             )}
                         </div>
+                        <div className="flex justify-center gap-5 mt-3">
+                            {pieData.map(e => (
+                                <div key={e.name} className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: e.color }} /> {e.name}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </ScrollReveal>
             </div>
 
             {/* Quick Actions */}
-            <div className="card bg-white shadow-xl border-l-4 border-[#5CB800]">
-                <div className="card-body p-4 sm:p-6">
-                    <h2 className="card-title text-lg sm:text-xl lg:text-2xl mb-4 flex items-center gap-2">
-                        <Plus className="text-[#5CB800]" size={20} />
-                        Quick Actions
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#5CB800] hover:bg-[#4A9900] text-white border-none gap-2">
-                            <Briefcase size={18} />
-                            <span className="hidden sm:inline">Add Opportunity</span>
-                            <span className="sm:hidden">Opportunity</span>
-                        </Link>
-                        <Link href="/admin/blog/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#5CB800] hover:bg-[#D68910] text-white border-none gap-2">
-                            <FileText size={18} />
-                            <span className="hidden sm:inline">Publish Post</span>
-                            <span className="sm:hidden">Blog Post</span>
-                        </Link>
-                        <Link href="/admin/partners/create" className="btn btn-sm sm:btn-md lg:btn-lg bg-[#5CB800] hover:bg-[#388E3C] text-white border-none gap-2">
-                            <BarChart3 size={18} />
-                            <span className="hidden sm:inline">Add Partner</span>
-                            <span className="sm:hidden">Partner</span>
-                        </Link>
-                        <a href="https://kings-learn.vercel.app" target="_blank" rel="noopener noreferrer" className="btn btn-sm sm:btn-md lg:btn-lg btn-outline border-2 gap-2">
-                            <span>🎓</span>
-                            <span className="hidden sm:inline">Manage Courses</span>
-                            <span className="sm:hidden">Courses</span>
-                        </a>
+            <ScrollReveal delay={300}>
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <h3 className="text-sm font-extrabold text-slate-900 mb-4 flex items-center gap-2"><Sparkles size={16} className="text-emerald-500" /> Quick Actions</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        {[
+                            { href: '/admin/opportunities/create', label: 'Add Opportunity', icon: Briefcase, c: 'emerald' },
+                            { href: '/admin/blog/create', label: 'Write Blog Post', icon: FileText, c: 'violet' },
+                            { href: '/admin/courses/create', label: 'Add Course', icon: GraduationCap, c: 'blue' },
+                            { href: '/admin/partners/create', label: 'Add Partner', icon: Users, c: 'amber' },
+                            { href: '/admin/settings', label: 'Settings', icon: Settings, c: 'slate' },
+                        ].map(({ href, label, icon: Icon, c }) => (
+                            <Link key={href} href={href}
+                                className={`flex items-center gap-3 p-3.5 rounded-xl bg-${c}-50 hover:bg-${c}-100 transition-all group`}>
+                                <div className={`w-9 h-9 rounded-lg bg-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}>
+                                    <Icon size={17} className={`text-${c}-600`} />
+                                </div>
+                                <span className="text-sm font-bold text-slate-700">{label}</span>
+                            </Link>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </ScrollReveal>
 
             {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                {/* Recent Opportunities */}
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body p-4 sm:p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="card-title text-xl">Recent Opportunities</h2>
-                            <Briefcase className="text-[#5CB800]" size={20} />
-                        </div>
-                        <div className="space-y-3">
-                            {recentOpportunities.length > 0 ? recentOpportunities.map((opp) => (
-                                <div key={opp.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-gray-900 truncate">{opp.title}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="badge badge-sm" style={{ backgroundColor: '#5CB800', color: 'white' }}>{opp.type}</span>
-                                                <span className={`badge badge-sm ${opp.status === 'active' ? 'badge-success' : 'badge-error'}`}>
-                                                    {opp.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="text-xs text-gray-500 whitespace-nowrap">{opp.timeAgo}</span>
+            <div className="grid lg:grid-cols-3 gap-6">
+                {[
+                    { title: 'Recent Opportunities', data: recent.opps, icon: Briefcase, href: '/admin/opportunities', c: 'emerald',
+                        render: (r: Record<string,unknown>) => (
+                            <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-slate-900 text-sm truncate">{String(r.title)}</p>
+                                <div className="flex gap-1.5 mt-1">
+                                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">{String(r.type)}</span>
+                                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">{String(r.status)}</span>
+                                </div>
+                            </div>
+                        )
+                    },
+                    { title: 'Recent Posts', data: recent.posts, icon: FileText, href: '/admin/blog', c: 'violet',
+                        render: (r: Record<string,unknown>) => (
+                            <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-slate-900 text-sm truncate">{String(r.title)}</p>
+                                <div className="flex gap-1.5 mt-1">
+                                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-violet-50 text-violet-700">{String(r.category||'General')}</span>
+                                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">{String(r.status)}</span>
+                                </div>
+                            </div>
+                        )
+                    },
+                    { title: 'New Members', data: recent.users, icon: Users, href: '/admin/members', c: 'blue',
+                        render: (r: Record<string,unknown>) => (
+                            <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-slate-900 text-sm truncate">{String(r.full_name||'Anonymous')}</p>
+                                <div className="flex gap-1.5 mt-1">
+                                    <span className="text-xs text-slate-400 truncate">{String(r.email||'')}</span>
+                                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700">{String(r.role||'user')}</span>
+                                </div>
+                            </div>
+                        )
+                    },
+                ].map(({ title, data, icon: Icon, href, c, render }, i) => (
+                    <ScrollReveal key={title} delay={350 + i * 80} variant="fade">
+                        <div className="bg-white rounded-2xl border border-slate-100 p-5 h-full">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-sm font-extrabold text-slate-900">{title}</h3>
+                                <div className={`w-7 h-7 rounded-lg bg-${c}-50 flex items-center justify-center`}>
+                                    <Icon size={14} className={`text-${c}-500`} />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                {data.length > 0 ? data.map((r: Record<string,unknown>, i: number) => (
+                                    <div key={i} className="flex items-start justify-between gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                                        {render(r)}
+                                        <span className="text-[10px] text-slate-400 whitespace-nowrap flex items-center gap-1 mt-0.5">
+                                            <Clock size={9} />{String((r as Record<string,unknown>)._ago)}
+                                        </span>
                                     </div>
-                                </div>
-                            )) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Briefcase className="mx-auto mb-2 opacity-30" size={40} />
-                                    <p className="text-sm">No opportunities yet</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/opportunities" className="btn btn-sm bg-[#5CB800] hover:bg-[#4A9900] text-white border-none">
-                                View All →
+                                )) : (
+                                    <div className="text-center py-8 text-slate-300">
+                                        <Icon size={28} className="mx-auto mb-2 opacity-30" />
+                                        <p className="text-xs font-medium">Nothing yet</p>
+                                    </div>
+                                )}
+                            </div>
+                            <Link href={href} className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                                View all <ArrowRight size={12} />
                             </Link>
                         </div>
-                    </div>
-                </div>
-
-                {/* Recent Blog Posts */}
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="card-title text-xl">Recent Blog Posts</h2>
-                            <FileText className="text-[#5CB800]" size={20} />
-                        </div>
-                        <div className="space-y-3">
-                            {recentPosts.length > 0 ? recentPosts.map((post) => (
-                                <div key={post.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-gray-900 truncate">{post.title}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="badge badge-sm" style={{ backgroundColor: '#5CB800', color: 'white' }}>{post.category}</span>
-                                                <span className={`badge badge-sm ${post.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
-                                                    {post.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="text-xs text-gray-500 whitespace-nowrap">{post.timeAgo}</span>
-                                    </div>
-                                </div>
-                            )) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <FileText className="mx-auto mb-2 opacity-30" size={40} />
-                                    <p className="text-sm">No blog posts yet</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/blog" className="btn btn-sm bg-[#5CB800] hover:bg-[#D68910] text-white border-none">
-                                View All →
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Recent Users */}
-                <div className="card bg-white shadow-xl">
-                    <div className="card-body">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="card-title text-xl">New Users</h2>
-                            <Users className="text-[#5CB800]" size={20} />
-                        </div>
-                        <div className="space-y-3">
-                            {recentUsers.length > 0 ? recentUsers.map((user) => (
-                                <div key={user.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-gray-900 truncate">{user.name}</p>
-                                            <p className="text-xs text-gray-600 truncate">{user.email}</p>
-                                        </div>
-                                        <span className="text-xs text-gray-500 whitespace-nowrap">{user.timeAgo}</span>
-                                    </div>
-                                </div>
-                            )) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Users className="mx-auto mb-2 opacity-30" size={40} />
-                                    <p className="text-sm">No users yet</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="card-actions justify-end mt-4">
-                            <Link href="/admin/users" className="btn btn-sm bg-[#5CB800] hover:bg-[#388E3C] text-white border-none">
-                                View All →
-                            </Link>
-                        </div>
-                    </div>
-                </div>
+                    </ScrollReveal>
+                ))}
             </div>
-
         </div>
     );
 }

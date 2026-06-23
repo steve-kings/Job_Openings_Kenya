@@ -62,6 +62,7 @@ export async function GET(
                 }}>
                     {/* Header Logo */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (Satori) only supports raw <img>, not next/image */}
                         <img src={logoUrl} alt="Job Openings Kenya" width="60" height="60" style={{ borderRadius: '12px', marginRight: '16px' }} />
                         <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#5CB800' }}>Job Openings Kenya Blog</span>
                     </div>
@@ -110,8 +111,10 @@ export async function GET(
                         height: '100%',
                         position: 'relative'
                     }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (Satori) only supports raw <img>, not next/image */}
                         <img 
                             src={featuredImage} 
+                            alt=""
                             style={{ 
                                 width: '100%', 
                                 height: '100%', 

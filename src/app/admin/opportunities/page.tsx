@@ -1,353 +1,167 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Eye, Calendar, MapPin, Building2, TrendingUp, AlertCircle, CheckCircle, Clock, Share2 } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Plus, Search, Edit, Trash2, TrendingUp, AlertCircle, CheckCircle, Clock, X } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
+interface Opp { id: string; title: string; type: string; company: string; location: string; deadline: string; status: string; views?: number; displayStatus?: string; }
+
 export default function AdminOpportunitiesPage() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterType, setFilterType] = useState('All');
-    const [filterStatus, setFilterStatus] = useState('All');
-    const [opportunities, setOpportunities] = useState<any[]>([]);
+    const [search, setSearch] = useState('');
+    const [typeFilter, setTypeFilter] = useState('All');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [opps, setOpps] = useState<Opp[]>([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        total: 0,
-        active: 0,
-        expired: 0,
-        draft: 0
+    const [stats, setStats] = useState({ total: 0, active: 0, expired: 0, draft: 0 });
+    const s = useMemo(() => createClient(), []);
+
+    const loadData = useCallback(async () => {
+        const { data } = await s.from('opportunities').select('*').order('created_at', { ascending: false });
+        const now = new Date();
+        const list: Opp[] = (data || []).map(o => ({
+            ...o,
+            displayStatus: new Date(o.deadline) < now ? 'Expired' : o.status === 'active' ? 'Active' : 'Draft',
+        }));
+        return list;
+    }, [s]);
+
+    const applyData = (list: Opp[]) => {
+        setOpps(list);
+        setStats({
+            total: list.length,
+            active: list.filter(o => o.status === 'active' && new Date(o.deadline) >= new Date()).length,
+            expired: list.filter(o => o.displayStatus === 'Expired').length,
+            draft: list.filter(o => o.status === 'draft').length,
+        });
+        setLoading(false);
+    };
+
+    useEffect(() => { loadData().then(applyData); }, [loadData]);
+
+    const del = async (id: string) => {
+        if (!confirm('Delete this opportunity?')) return;
+        await s.from('opportunities').delete().eq('id', id);
+        loadData().then(applyData);
+    };
+
+    const filtered = opps.filter(o => {
+        const m = o.title.toLowerCase().includes(search.toLowerCase()) || o.company.toLowerCase().includes(search.toLowerCase());
+        const mt = typeFilter === 'All' || o.type === typeFilter;
+        const ms = statusFilter === 'All' || o.displayStatus === statusFilter;
+        return m && mt && ms;
     });
-    const supabase = createClient();
 
-    useEffect(() => {
-        fetchOpportunities();
-    }, []);
+    const statCards = [
+        { label: 'Total', value: stats.total, icon: TrendingUp, c: 'blue' },
+        { label: 'Active', value: stats.active, icon: CheckCircle, c: 'emerald' },
+        { label: 'Expired', value: stats.expired, icon: AlertCircle, c: 'red' },
+        { label: 'Draft', value: stats.draft, icon: Clock, c: 'amber' },
+    ];
 
-    const fetchOpportunities = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('opportunities')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            
-            const opps = data || [];
-            setOpportunities(opps);
-            
-            // Calculate stats
-            const today = new Date();
-            const active = opps.filter(o => o.status === 'active' && new Date(o.deadline) >= today).length;
-            const expired = opps.filter(o => new Date(o.deadline) < today).length;
-            const draft = opps.filter(o => o.status === 'draft').length;
-            
-            setStats({
-                total: opps.length,
-                active,
-                expired,
-                draft
-            });
-        } catch (error) {
-            console.error('Error fetching opportunities:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this opportunity? This action cannot be undone.')) return;
-
-        try {
-            const { error } = await supabase
-                .from('opportunities')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-            fetchOpportunities();
-        } catch (error) {
-            console.error('Error deleting opportunity:', error);
-            alert('Error deleting opportunity');
-        }
-    };
-
-    const getStatus = (opp: any) => {
-        const deadline = new Date(opp.deadline);
-        const today = new Date();
-        if (deadline < today) return 'Expired';
-        return opp.status === 'active' ? 'Active' : 'Draft';
-    };
-
-    const filteredOpportunities = opportunities.filter(opp => {
-        const matchesSearch = opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            opp.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            opp.location.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesType = filterType === 'All' || opp.type === filterType;
-        const status = getStatus(opp);
-        const matchesStatus = filterStatus === 'All' || status === filterStatus;
-        return matchesSearch && matchesType && matchesStatus;
-    });
+    if (loading) return <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>;
 
     return (
-        <div>
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Manage Opportunities</h1>
-                    <p className="text-sm sm:text-base text-gray-600">Create, edit, and manage job postings, grants, scholarships, and trainings</p>
+                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Opportunities</h1>
+                    <p className="text-sm text-gray-500 mt-0.5">{stats.total} total listing{stats.total !== 1 ? 's' : ''}</p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <button 
-                        onClick={() => {
-                            const url = `${window.location.origin}/jobs?urgent=true`;
-                            const text = `🚨 Urgent! Several opportunities are expiring in the next 3 days on Job Openings Kenya. Apply now before they close:\n\n${url}`;
-                            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                        }}
-                        className="btn btn-sm sm:btn-md bg-[#25D366] text-white hover:bg-[#128C7E] border-none gap-2 w-full sm:w-auto shadow-md"
-                        title="Share Expiring Opportunities via WhatsApp"
-                    >
-                        <Share2 size={18} />
-                        Share Expiring
-                    </button>
-                    <Link href="/admin/opportunities/create" className="btn btn-sm sm:btn-md bg-[#1976D2] text-white hover:bg-[#1565C0] border-none gap-2 w-full sm:w-auto shadow-md">
-                        <Plus size={18} />
-                        Add New
+                <div className="flex gap-2">
+                    <Link href="/admin/opportunities/create"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200">
+                        <Plus size={16} /> Add New
                     </Link>
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="card bg-white shadow-lg border-l-4 border-[#1976D2]">
-                    <div className="card-body p-3 sm:p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Total</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</p>
-                            </div>
-                            <div className="p-2 sm:p-3 bg-[#1976D2] rounded-lg">
-                                <TrendingUp className="text-white" size={20} />
-                            </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {statCards.map(({ label, value, icon: Icon, c }) => (
+                    <div key={label} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</span>
+                            <div className={`w-9 h-9 rounded-xl bg-${c}-50 flex items-center justify-center`}><Icon size={18} className={`text-${c}-600`} /></div>
                         </div>
+                        <p className="text-3xl font-black text-gray-900">{value}</p>
                     </div>
-                </div>
-
-                <div className="card bg-white shadow-lg border-l-4 border-green-500">
-                    <div className="card-body p-3 sm:p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Active</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.active}</p>
-                            </div>
-                            <div className="p-2 sm:p-3 bg-green-500 rounded-lg">
-                                <CheckCircle className="text-white" size={20} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card bg-white shadow-lg border-l-4 border-red-500">
-                    <div className="card-body p-3 sm:p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Expired</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats.expired}</p>
-                            </div>
-                            <div className="p-2 sm:p-3 bg-red-500 rounded-lg">
-                                <AlertCircle className="text-white" size={20} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card bg-white shadow-lg border-l-4 border-yellow-500">
-                    <div className="card-body p-3 sm:p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs sm:text-sm text-gray-600 font-medium">Draft</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{stats.draft}</p>
-                            </div>
-                            <div className="p-2 sm:p-3 bg-yellow-500 rounded-lg">
-                                <Clock className="text-white" size={20} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
-            {/* Filters & Search */}
-            <div className="card bg-white shadow-lg mb-6">
-                <div className="card-body p-4 sm:p-6">
-                    <div className="flex flex-col gap-3 sm:gap-4">
-                        <div className="form-control flex-1">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Search opportunities..."
-                                    className="input input-bordered input-sm sm:input-md w-full pl-10 text-sm"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <select
-                                className="select select-bordered select-sm sm:select-md w-full sm:flex-1 text-sm"
-                                value={filterType}
-                                onChange={(e) => setFilterType(e.target.value)}
-                            >
-                                <option>All Types</option>
-                                <option>Job</option>
-                                <option>Grant</option>
-                                <option>Scholarship</option>
-                                <option>Training</option>
-                            </select>
-                            <select
-                                className="select select-bordered select-sm sm:select-md w-full sm:flex-1 text-sm"
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value)}
-                            >
-                                <option>All Status</option>
-                                <option>Active</option>
-                                <option>Expired</option>
-                                <option>Draft</option>
-                            </select>
-                        </div>
-                    </div>
+            {/* Filters */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" placeholder="Search by title or company..." value={search} onChange={e => setSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all" />
+                    {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><X size={14} /></button>}
                 </div>
+                <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 outline-none focus:border-emerald-500 bg-white">
+                    <option value="All">All Types</option><option value="Job">Job</option><option value="Training">Training</option><option value="Banner">Banner</option>
+                </select>
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 outline-none focus:border-emerald-500 bg-white">
+                    <option value="All">All Status</option><option value="Active">Active</option><option value="Expired">Expired</option><option value="Draft">Draft</option>
+                </select>
             </div>
 
-            {/* Opportunities Table */}
-            <div className="card bg-white shadow-xl">
-                <div className="card-body p-0 sm:p-6">
-                    {loading ? (
-                        <div className="text-center py-12">
-                            <span className="loading loading-spinner loading-lg text-[#1976D2]"></span>
-                            <p className="mt-4 text-gray-600">Loading opportunities...</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto -mx-4 sm:mx-0">
-                            <table className="table table-xs sm:table-sm lg:table-md">
-                                <thead>
-                                    <tr className="border-b-2">
-                                        <th className="font-bold text-gray-700">Title</th>
-                                        <th className="font-bold text-gray-700 hidden sm:table-cell">Type</th>
-                                        <th className="font-bold text-gray-700 hidden md:table-cell">Company</th>
-                                        <th className="font-bold text-gray-700 hidden lg:table-cell">Location</th>
-                                        <th className="font-bold text-gray-700 hidden md:table-cell">Deadline</th>
-                                        <th className="font-bold text-gray-700">Status</th>
-                                        <th className="font-bold text-gray-700 hidden lg:table-cell">Views</th>
-                                        <th className="font-bold text-gray-700">Actions</th>
+            {/* Table */}
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-gray-100 bg-gray-50/50">
+                                {['Title','Type','Company','Location','Deadline','Status','Views',''].map(h => (
+                                    <th key={h} className="text-left px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {filtered.map(o => {
+                                const status = o.displayStatus;
+                                const days = Math.ceil((new Date(o.deadline).getTime() - new Date().getTime()) / 86400000);
+                                return (
+                                    <tr key={o.id} className="hover:bg-gray-50/50 transition-colors">
+                                        <td className="px-5 py-3.5">
+                                            <Link href={`/admin/opportunities/${o.id}`} className="font-semibold text-gray-900 text-sm hover:text-emerald-700 transition-colors line-clamp-1 max-w-[200px]">{o.title}</Link>
+                                        </td>
+                                        <td className="px-5 py-3.5"><span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${o.type === 'Job' ? 'bg-emerald-50 text-emerald-700' : o.type === 'Training' ? 'bg-violet-50 text-violet-700' : 'bg-gray-100 text-gray-600'}`}>{o.type}</span></td>
+                                        <td className="px-5 py-3.5 text-sm text-gray-600 font-medium">{o.company}</td>
+                                        <td className="px-5 py-3.5 text-sm text-gray-500">{o.location}</td>
+                                        <td className="px-5 py-3.5">
+                                            <div className="text-sm text-gray-600">{new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                                            {status === 'Active' && days <= 7 && <div className="text-[10px] font-bold text-red-500">{days}d left</div>}
+                                        </td>
+                                        <td className="px-5 py-3.5">
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${status === 'Active' ? 'bg-emerald-50 text-emerald-700' : status === 'Expired' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`}>{status}</span>
+                                        </td>
+                                        <td className="px-5 py-3.5 text-sm text-gray-400">{o.views || 0}</td>
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex gap-1">
+                                                <Link href={`/admin/opportunities/${o.id}`} className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"><Edit size={14} /></Link>
+                                                <button onClick={() => del(o.id)} className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14} /></button>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredOpportunities.map((opp) => {
-                                        const status = getStatus(opp);
-                                        const daysUntilDeadline = Math.ceil((new Date(opp.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                                        
-                                        return (
-                                            <tr key={opp.id} className="hover:bg-gray-50">
-                                                <td className="font-medium max-w-[150px] sm:max-w-xs">
-                                                    <div className="flex flex-col">
-                                                        <span className="truncate text-xs sm:text-sm" title={opp.title}>{opp.title}</span>
-                                                        <span className="text-[10px] sm:text-xs text-gray-500 sm:hidden">
-                                                            {opp.type}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="hidden sm:table-cell">
-                                                    <span className={`badge badge-xs sm:badge-sm ${
-                                                        opp.type === 'Job' ? 'bg-[#1976D2] text-white border-none' :
-                                                        opp.type === 'Grant' ? 'badge-success' :
-                                                        opp.type === 'Scholarship' ? 'badge-info' :
-                                                        'badge-secondary'
-                                                    }`}>
-                                                        {opp.type}
-                                                    </span>
-                                                </td>
-                                                <td className="hidden md:table-cell">
-                                                    <div className="flex items-center gap-2">
-                                                        <Building2 size={12} className="text-gray-400 hidden lg:block" />
-                                                        <span className="text-xs sm:text-sm truncate max-w-[100px]">{opp.company}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="hidden lg:table-cell">
-                                                    <div className="flex items-center gap-2">
-                                                        <MapPin size={12} className="text-gray-400" />
-                                                        <span className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px]">{opp.location}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="hidden md:table-cell">
-                                                    <div className="flex flex-col">
-                                                        <div className="flex items-center gap-1">
-                                                            <Calendar size={12} className="text-gray-400" />
-                                                            <span className="text-xs">{new Date(opp.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                                                        </div>
-                                                        {status === 'Active' && daysUntilDeadline <= 7 && (
-                                                            <span className="text-[10px] text-orange-600 font-medium">
-                                                                {daysUntilDeadline}d left
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <span className={`badge badge-xs sm:badge-sm ${
-                                                        status === 'Active' ? 'badge-success' :
-                                                        status === 'Expired' ? 'badge-error' : 
-                                                        'badge-warning'
-                                                    }`}>
-                                                        {status}
-                                                    </span>
-                                                </td>
-                                                <td className="hidden lg:table-cell">
-                                                    <div className="flex items-center gap-1 text-gray-600">
-                                                        <Eye size={12} />
-                                                        <span className="text-xs">{opp.views || 0}</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="flex gap-1">
-                                                        <Link 
-                                                            href={`/admin/opportunities/${opp.id}`} 
-                                                            className="btn btn-ghost btn-xs hover:bg-blue-50 hover:text-blue-600 p-1" 
-                                                            title="Edit"
-                                                        >
-                                                            <Edit size={14} />
-                                                        </Link>
-                                                        <button
-                                                            onClick={() => handleDelete(opp.id)}
-                                                            className="btn btn-ghost btn-xs hover:bg-red-50 hover:text-red-600 p-1"
-                                                            title="Delete"
-                                                        >
-                                                            <Trash2 size={14} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    {!loading && filteredOpportunities.length === 0 && (
-                        <div className="text-center py-12">
-                            <AlertCircle className="mx-auto text-gray-400 mb-4" size={48} />
-                            <p className="text-gray-500 text-lg font-medium">No opportunities found</p>
-                            <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
-                        </div>
-                    )}
-
-                    {!loading && filteredOpportunities.length > 0 && (
-                        <div className="flex justify-between items-center mt-6 pt-4 border-t">
-                            <p className="text-sm text-gray-600">
-                                Showing <span className="font-semibold">{filteredOpportunities.length}</span> of <span className="font-semibold">{opportunities.length}</span> opportunities
-                            </p>
-                        </div>
-                    )}
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
+                {filtered.length === 0 && (
+                    <div className="text-center py-16 text-gray-400">
+                        <AlertCircle size={40} className="mx-auto mb-3 opacity-40" />
+                        <p className="font-semibold">No opportunities found</p>
+                        <p className="text-sm mt-1">Try adjusting your filters</p>
+                    </div>
+                )}
+                {filtered.length > 0 && (
+                    <div className="px-5 py-3 border-t border-gray-100 text-xs text-gray-400 font-medium">
+                        Showing {filtered.length} of {opps.length} opportunities
+                    </div>
+                )}
             </div>
         </div>
     );

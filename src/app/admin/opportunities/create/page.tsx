@@ -8,12 +8,10 @@ import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import RichTextEditor from '@/components/RichTextEditor';
 
-const TYPES = ['Job', 'Grant', 'Scholarship', 'Training', 'Banner'];
+const TYPES = ['Job', 'Training', 'Banner'];
 
 const TYPE_COLORS: Record<string, string> = {
     Job: 'from-[#5CB800] to-[#4A9900]',
-    Grant: 'from-[#5CB800] to-[#4A9900]',
-    Scholarship: 'from-[#7B1FA2] to-[#6A1B9A]',
     Training: 'from-[#F57C00] to-[#E65100]',
     Banner: 'from-[#E91E63] to-[#C2185B]',
 };
@@ -88,7 +86,10 @@ export default function CreateOpportunityPage() {
         apply_url: '',
         short_description: '',
         description: '',
-        status: 'active'
+        status: 'active',
+        salary_min: '',
+        salary_max: '',
+        salary_currency: 'KES',
     });
 
     const [thumbnailUrl, setThumbnailUrl] = useState('');
@@ -143,8 +144,8 @@ export default function CreateOpportunityPage() {
             } else {
                 throw new Error(data.error || 'Failed to extract data');
             }
-        } catch (error: any) {
-            showToast('error', error.message || 'Error extracting AI data.');
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error extracting AI data.');
         } finally {
             setExtractingAi(false);
         }
@@ -156,6 +157,8 @@ export default function CreateOpportunityPage() {
         try {
             const { error } = await supabase.from('opportunities').insert({
                 ...formData,
+                salary_min: formData.salary_min ? parseInt(formData.salary_min, 10) : null,
+                salary_max: formData.salary_max ? parseInt(formData.salary_max, 10) : null,
                 thumbnail_url: thumbnailUrl || null,
                 requirements: requirements.filter(r => r.trim()),
                 responsibilities: responsibilities.filter(r => r.trim()),
@@ -180,8 +183,8 @@ export default function CreateOpportunityPage() {
             } else {
                 setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1500);
             }
-        } catch (error: any) {
-            showToast('error', error?.message || 'Error creating opportunity. Please try again.');
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error creating opportunity. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -293,6 +296,24 @@ export default function CreateOpportunityPage() {
                                 <Field label="Application Link" required={formData.type !== 'Banner'}>
                                     <input type="url" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={`${inputCls} md:col-span-2`} />
                                 </Field>
+                                {formData.type === 'Job' && (
+                                    <>
+                                        <Field label="Salary Min (Monthly)">
+                                            <input type="number" min={0} value={formData.salary_min} onChange={(e) => setFormData({ ...formData, salary_min: e.target.value })} placeholder="e.g. 50000" className={inputCls} />
+                                        </Field>
+                                        <Field label="Salary Max (Monthly)">
+                                            <input type="number" min={0} value={formData.salary_max} onChange={(e) => setFormData({ ...formData, salary_max: e.target.value })} placeholder="e.g. 100000" className={inputCls} />
+                                        </Field>
+                                        <Field label="Currency">
+                                            <select value={formData.salary_currency} onChange={(e) => setFormData({ ...formData, salary_currency: e.target.value })} className={inputCls}>
+                                                <option value="KES">KES (Kenyan Shilling)</option>
+                                                <option value="USD">USD (US Dollar)</option>
+                                                <option value="EUR">EUR (Euro)</option>
+                                                <option value="GBP">GBP (British Pound)</option>
+                                            </select>
+                                        </Field>
+                                    </>
+                                )}
                             </div>
                         </div>
 

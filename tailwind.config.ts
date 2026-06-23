@@ -1,5 +1,4 @@
-import type { Config } from "tailwindcss";
-// @ts-ignore
+// @ts-expect-error daisyui lacks TypeScript declarations
 import daisyui from "daisyui";
 
 const config = {
