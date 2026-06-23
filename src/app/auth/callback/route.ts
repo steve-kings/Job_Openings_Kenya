@@ -38,7 +38,7 @@ export async function GET(request: Request) {
                         id: data.user.id,
                         full_name: data.user.user_metadata.full_name || data.user.user_metadata.name || 'User',
                         avatar_url: data.user.user_metadata.avatar_url || data.user.user_metadata.picture || null,
-                        role: 'user'
+                        role: 'student'
                     })
                 } else {
                     // Update existing profile with Google avatar if not set
@@ -62,7 +62,10 @@ export async function GET(request: Request) {
                 if (userProfile?.role === 'admin') {
                     return NextResponse.redirect(`${origin}/admin`)
                 }
-                
+                if (userProfile?.role === 'employer') {
+                    return NextResponse.redirect(`${origin}/employer/dashboard`)
+                }
+
                 return NextResponse.redirect(`${origin}${next}`)
             }
         } catch (err) {
