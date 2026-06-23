@@ -96,15 +96,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                     <HeroSlider />
                 </div>
 
-                <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-                    <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-16 sm:py-20 overflow-hidden">
+                    <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                         {/* Left: Content */}
-                        <div>
-                            <h1 className="text-[28px] xs:text-[34px] sm:text-5xl lg:text-[56px] font-black text-white leading-[1.08] tracking-tight drop-shadow-lg">
+                        <div className="max-w-full">
+                            <h1 className="text-[26px] xs:text-[32px] sm:text-5xl lg:text-[56px] font-black text-white leading-[1.1] tracking-tight drop-shadow-lg">
                                 Find your{' '}
                                 <span className="relative inline-block">
                                     <span className="text-emerald-300">dream job</span>
-                                    <svg className="absolute -bottom-1 left-0 w-full h-3 text-emerald-300/40" viewBox="0 0 240 12" preserveAspectRatio="none">
+                                    <svg className="absolute -bottom-1 left-0 w-full h-3 text-emerald-300/40 overflow-visible" viewBox="0 0 240 12" preserveAspectRatio="none">
                                         <path d="M0,6 Q30,12 60,6 Q90,0 120,6 Q150,12 180,6 Q210,0 240,6" fill="none" stroke="currentColor" strokeWidth="2" />
                                     </svg>
                                 </span>{' '}
@@ -115,14 +115,14 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                             </p>
 
                             {/* Search bar */}
-                            <div className="mt-6 max-w-lg"><JobsFilter /></div>
+                            <div className="mt-5 max-w-full sm:max-w-lg"><JobsFilter /></div>
 
                             {/* Trending keyword tags */}
-                            <div className="flex flex-wrap items-center gap-2 mt-5">
-                                <span className="text-[11px] font-bold text-white/50">Trending:</span>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-4 max-w-full">
+                                <span className="text-[10px] font-bold text-white/50 whitespace-nowrap">Trending:</span>
                                 {['Nairobi', 'Remote', 'Technology', 'Finance', 'Entry Level', 'Internships'].map(tag => (
                                     <a key={tag} href={`/?q=${encodeURIComponent(tag)}`}
-                                        className="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-white/10 backdrop-blur-sm text-white/80 hover:bg-white/20 hover:text-white transition-colors border border-white/10">
+                                        className="px-2.5 py-1.5 rounded-full text-[10px] font-semibold bg-white/10 backdrop-blur-sm text-white/80 hover:bg-white/20 hover:text-white transition-colors border border-white/10 whitespace-nowrap">
                                         {tag}
                                     </a>
                                 ))}

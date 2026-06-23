@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Calendar, MapPin, Building2, ExternalLink, Lock,
-    CheckCircle2, Clock, Eye, Share2, Sparkles, Loader2, X, Copy,
+    CheckCircle2, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, CreditCard,
     Lightbulb, PhoneCall, Wallet, Search,
 } from 'lucide-react';
 import BookmarkButton from '@/components/BookmarkButton';
@@ -60,6 +60,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
     const [coverLetter, setCoverLetter] = useState('');
     const [generatingLetter, setGeneratingLetter] = useState(false);
     const [letterCopied, setLetterCopied] = useState(false);
+    const [letterPaid, setLetterPaid] = useState(false);
+    const [letterPhone, setLetterPhone] = useState('');
+    const [letterPayLoading, setLetterPayLoading] = useState(false);
+    const [letterPayError, setLetterPayError] = useState('');
     const [prepModalOpen, setPrepModalOpen] = useState(false);
     const [prepMaterial, setPrepMaterial] = useState('');
     const [generatingPrep, setGeneratingPrep] = useState(false);
@@ -115,6 +119,42 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
             linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
         };
         window.open(urls[platform], '_blank', 'width=600,height=400');
+    };
+
+    const handleLetterPay = () => {
+        if (!letterPhone.trim() || letterPhone.length < 10) {
+            setLetterPayError('Enter a valid phone number');
+            return;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const P = (window as any).PaystackPop;
+        if (!P) { setLetterPayError('Payment loading... try again.'); return; }
+        setLetterPayLoading(true); setLetterPayError('');
+        P.setup({
+            key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+            email: (user as Record<string,unknown> | null)?.email as string || 'user@jobsopening.co.ke',
+            amount: 2000, // 20 KES in pesa
+            currency: 'KES',
+            ref: `cl_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+            label: 'AI Cover Letter',
+            metadata: { phone: letterPhone, product: 'cover_letter' },
+            channels: ['mobile_money'],
+            onClose: () => setLetterPayLoading(false),
+            callback: async (r: { reference: string }) => {
+                try {
+                    const v = await fetch('/api/payment/verify', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reference: r.reference, user_id: (user as Record<string,unknown>|null)?.id, product: 'cover_letter', amount: 20 }),
+                    });
+                    const d = await v.json();
+                    if (d.verified) {
+                        setLetterPaid(true);
+                        setLetterPayError('');
+                    } else setLetterPayError('Payment verification failed.');
+                } catch { setLetterPayError('Verification error.'); }
+                setLetterPayLoading(false);
+            },
+        }).openIframe();
     };
 
     const handleGenerateCoverLetter = async () => {
@@ -611,8 +651,32 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
             {/* ── Modals ── */}
             {cvModalOpen && (
                 <Modal onClose={() => setCvModalOpen(false)} title="AI Cover Letter Generator" subtitle="Powered by Job Openings Kenya AI" icon={<Sparkles size={20} />} iconBg="bg-emerald-50">
-                    {!coverLetter ? (
+                    {!letterPaid ? (
+                        /* STEP 1: Payment */
                         <div className="space-y-4">
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 text-sm text-emerald-800">
+                                <strong>KES 20</strong> — AI-powered cover letter tailored for <strong>{job.title}</strong> at <strong>{job.company}</strong>. Pay via M-Pesa STK push.
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">M-Pesa Phone Number</label>
+                                <input type="tel" value={letterPhone} onChange={e => setLetterPhone(e.target.value)}
+                                    placeholder="e.g. 0712345678"
+                                    className="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50" />
+                            </div>
+                            {letterPayError && <p className="text-xs text-red-500 font-medium">{letterPayError}</p>}
+                            <button onClick={handleLetterPay} disabled={letterPayLoading}
+                                className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50">
+                                {letterPayLoading ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
+                                {letterPayLoading ? 'Processing...' : 'Pay KES 20 — M-Pesa STK Push'}
+                            </button>
+                            <p className="text-[10px] text-slate-400 text-center">You&apos;ll receive an STK push on your phone. Enter PIN to pay.</p>
+                        </div>
+                    ) : !coverLetter ? (
+                        /* STEP 2: Generate after payment */
+                        <div className="space-y-4">
+                            <div className="bg-green-50 border border-green-100 rounded-2xl p-3 text-sm text-green-700 flex items-center gap-2">
+                                <CheckCircle2 size={16} /> Payment confirmed — KES 20 received
+                            </div>
                             <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-sm text-blue-800">
                                 Paste your CV below. Our AI will customize a cover letter for <strong>{job.title}</strong> at <strong>{job.company}</strong>.
                             </div>

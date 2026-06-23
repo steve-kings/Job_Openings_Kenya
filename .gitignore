@@ -51,3 +51,5 @@ next-env.d.ts
 # Kiro AI files
 .kiro/
 DEPLOY.md
+
+.env.local
