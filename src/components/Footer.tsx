@@ -119,6 +119,10 @@ export default function Footer() {
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
                         <p>© {currentYear} Job Openings Kenya. All rights reserved.</p>
                         <div className="flex items-center gap-4">
+                            <a href="https://kingscreation.co.ke" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Developed by KingsCreation.co.ke</a>
+                            <span className="text-gray-600">|</span>
+                            <span>0769956286</span>
+                            <span className="text-gray-600">|</span>
                             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
                             <Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
                         </div>
