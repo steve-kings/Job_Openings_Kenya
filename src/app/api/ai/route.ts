@@ -153,21 +153,26 @@ export async function POST(req: Request) {
 
             const systemMessage = {
                 role: 'system',
-                content: `You are an AI assistant for Job Openings Kenya administrators. Your job is to extract opportunity details from unstructured text and return a valid JSON object. Extract or infer the following fields EXACTLY as named. You MUST extract the hiring company name.
+                content: `You are an AI assistant for Job Openings Kenya administrators. Extract EVERY field from the text. Return ONLY valid JSON with ALL these fields:
 {
-  "title": "The exact job or training title.",
-  "type": "Must be exactly one of ['Job', 'Training']. Default to 'Job'.",
-  "company": "The hiring organization, company, or provider (CRITICAL). If missing, infer it from context or use 'Unknown'.",
-  "location": "Geographic area or 'Remote'.",
-  "deadline": "YYYY-MM-DD if present. If rolling or no deadline, leave as empty string ''.",
-  "apply_url": "Any URL found, or empty string.",
-  "short_description": "150-200 characters engaging summary.",
-  "description": "Full Markdown detailed description with appropriate headers.",
-  "requirements": ["req 1", "req 2"],
-  "responsibilities": ["resp 1", "resp 2"],
-  "benefits": ["benefit 1"]
+  "title": "Exact job/training title",
+  "type": "MUST be exactly 'Job' or 'Training'. Default 'Job'.",
+  "company": "Hiring company/organization name (CRITICAL — extract from text, email domain, URL). Do NOT use 'Unknown' unless impossible.",
+  "location": "City or 'Remote' or 'Online'",
+  "deadline": "YYYY-MM-DD if mentioned, otherwise empty ''",
+  "apply_url": "Any URL or email found for applications. If email is given like 'apply@company.com', set apply_url to 'mailto:apply@company.com'",
+  "contact_email": "Any email address found in the text. Extract the first one you see.",
+  "contact_phone": "Any phone number found in the text. Format as +254...",
+  "short_description": "150-200 char engaging summary",
+  "description": "Full Markdown description with ## headers. Include ALL details from the text — role, duties, qualifications, how to apply.",
+  "requirements": ["list every requirement mentioned"],
+  "responsibilities": ["list every responsibility/duty mentioned"],
+  "benefits": ["list every benefit/perk mentioned"],
+  "salary_min": "number only, e.g. 50000. Empty if not mentioned.",
+  "salary_max": "number only, e.g. 80000. Empty if not mentioned.",
+  "salary_currency": "KES or USD etc. Default 'KES'."
 }
-Output ONLY valid JSON.`
+If the text mentions a salary range like 'KES 50,000-80,000', extract both numbers. If only one number given, put it in salary_min. Be thorough — extract every possible detail.`
             };
 
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

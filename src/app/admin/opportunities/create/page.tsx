@@ -90,6 +90,8 @@ export default function CreateOpportunityPage() {
         salary_min: '',
         salary_max: '',
         salary_currency: 'KES',
+        contact_email: '',
+        contact_phone: '',
     });
 
     const [thumbnailUrl, setThumbnailUrl] = useState('');
@@ -128,8 +130,13 @@ export default function CreateOpportunityPage() {
                     apply_url: data.apply_url || formData.apply_url,
                     short_description: data.short_description || formData.short_description,
                     description: data.description || formData.description,
+                    salary_min: data.salary_min ? String(data.salary_min) : formData.salary_min,
+                    salary_max: data.salary_max ? String(data.salary_max) : formData.salary_max,
+                    salary_currency: data.salary_currency || formData.salary_currency,
+                    contact_email: data.contact_email || formData.contact_email,
+                    contact_phone: data.contact_phone || formData.contact_phone,
                 });
-                
+
                 if (data.requirements && Array.isArray(data.requirements) && data.requirements.length > 0) {
                     setRequirements(data.requirements);
                 }
@@ -139,7 +146,7 @@ export default function CreateOpportunityPage() {
                 if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0) {
                     setBenefits(data.benefits);
                 }
-                showToast('success', 'AI extracted opportunity details successfully!');
+                showToast('success', 'AI extracted all details successfully!');
                 setAiText('');
             } else {
                 throw new Error(data.error || 'Failed to extract data');
