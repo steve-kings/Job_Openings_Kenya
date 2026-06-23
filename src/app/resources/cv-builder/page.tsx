@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
 
 declare global { interface Window { PaystackPop?: { setup: (o: Record<string,unknown>) => { openIframe: () => void } }; } }
 
@@ -71,6 +72,7 @@ export default function CVBuilderPage() {
     const [form, setForm] = useState({
         full_name: '', email: '', phone: '', location: '', headline: '',
         summary: '', skills: '', experience: '', education: '', linkedin: '',
+        photo_url: '',
     });
 
     // Load Paystack
@@ -95,6 +97,7 @@ export default function CVBuilderPage() {
                     headline: p.headline || '', summary: p.bio || '',
                     skills: (p.skills || []).join(', '), experience: p.experience || '',
                     education: p.education || '', linkedin: p.linkedin_url || '',
+                    photo_url: p.avatar_url || '',
                 });
             }
             setLoading(false);
@@ -183,19 +186,63 @@ export default function CVBuilderPage() {
 
     const TemplateThumb = ({ t: t2 }: { t: TemplateCfg }) => {
         const c = colorMap[t2.color];
-        const headerH = t2.style === 'dark-header' ? c.bg : t2.style === 'sidebar' ? c.bg : 'bg-white border-b';
         const isActive = t2.id === template;
+        const isLight = t2.style === 'centered' || t2.style === 'bordered';
+        const hdrText = t2.style === 'dark-header' || t2.style === 'sidebar' || t2.style === 'split' ? 'text-white' : 'text-slate-800';
+        const hdrBg = t2.style === 'centered' || t2.style === 'bordered' ? 'bg-white border-b border-slate-200' : c.bg;
+        const nameW = t2.style === 'sidebar' || t2.style === 'split' ? 'w-2/3' : 'w-1/2';
+
         return (
             <div className={`bg-white rounded-xl border overflow-hidden cursor-pointer ${isActive ? 'ring-2 ring-emerald-500 shadow-lg' : 'shadow-sm hover:shadow-md'} transition-all group`}>
-                <div className={`h-20 ${headerH} p-3 flex flex-col justify-end`}>
-                    <div className={`h-2 rounded w-1/2 mb-1 ${t2.style === 'dark-header' || t2.style === 'sidebar' ? 'bg-white/30' : 'bg-slate-600'}`} />
-                    <div className={`h-1.5 rounded w-3/4 ${t2.style === 'dark-header' || t2.style === 'sidebar' ? 'bg-white/15' : 'bg-slate-300'}`} />
-                </div>
-                <div className="p-3 space-y-1">
-                    {t2.style === 'sidebar' ? (
-                        <div className="flex gap-2"><div className="w-1/3 space-y-1"><div className="h-1 bg-slate-200 rounded w-2/3" /><div className="h-0.5 bg-slate-100 rounded" /></div><div className="w-2/3 space-y-1"><div className="h-1 bg-slate-200 rounded w-1/2" /><div className="h-0.5 bg-slate-100 rounded" /></div></div>
+                {/* Header */}
+                <div className={`${hdrBg} ${hdrText} p-2.5 ${t2.style === 'sidebar' || t2.style === 'split' ? 'flex' : ''}`}>
+                    {t2.style === 'sidebar' || t2.style === 'split' ? (
+                        <div className={t2.style === 'sidebar' ? 'text-center' : 'flex-1'}>
+                            <div className={`w-5 h-5 rounded-full ${isLight ? 'bg-slate-100' : 'bg-white/20'} mx-auto mb-1`} />
+                            <div className={`h-1.5 rounded ${nameW} ${isLight ? 'bg-slate-300' : 'bg-white/30'} mx-auto mb-0.5`} />
+                            <div className={`h-1 rounded w-3/4 ${isLight ? 'bg-slate-200' : 'bg-white/15'} mx-auto`} />
+                        </div>
                     ) : (
-                        <><div className="h-1 bg-slate-200 rounded w-1/2" /><div className="h-0.5 bg-slate-100 rounded w-3/4" /></>
+                        <>
+                            <div className={`h-2 rounded ${nameW} ${isLight ? 'bg-slate-300' : 'bg-white/30'} mb-1`} />
+                            <div className={`h-1 rounded w-3/4 ${isLight ? 'bg-slate-200' : 'bg-white/15'}`} />
+                        </>
+                    )}
+                    {t2.style === 'split' && (
+                        <div className="w-[45%] pl-2 space-y-1">
+                            <div className="h-0.5 bg-white/20 rounded w-2/3" />
+                            <div className="h-0.5 bg-white/15 rounded w-1/2" />
+                            <div className="h-0.5 bg-white/15 rounded w-3/4" />
+                        </div>
+                    )}
+                </div>
+                {/* Body */}
+                <div className="p-2.5 space-y-1.5">
+                    {t2.style === 'sidebar' ? (
+                        <div className="flex gap-2">
+                            <div className="w-[35%] space-y-1">
+                                <div className="h-0.5 bg-slate-200 rounded w-1/2" />
+                                <div className="h-0.5 bg-slate-100 rounded w-2/3" />
+                                <div className="h-0.5 bg-slate-100 rounded w-3/4" />
+                            </div>
+                            <div className="w-[65%] space-y-1.5">
+                                <div className="h-1 bg-slate-200 rounded w-1/3 mb-1" />
+                                <div className="h-0.5 bg-slate-100 rounded w-full" />
+                                <div className="h-0.5 bg-slate-100 rounded w-5/6" />
+                                <div className="h-1 bg-slate-200 rounded w-1/3 mt-1" />
+                                <div className="h-0.5 bg-slate-100 rounded w-full" />
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="h-1 bg-slate-200 rounded w-1/3" />
+                            <div className="h-0.5 bg-slate-100 rounded w-full" />
+                            <div className="h-0.5 bg-slate-100 rounded w-11/12" />
+                            <div className="h-0.5 bg-slate-100 rounded w-3/4" />
+                            <div className="h-1 bg-slate-200 rounded w-1/4 mt-1" />
+                            <div className="h-0.5 bg-slate-100 rounded w-full" />
+                            <div className="h-0.5 bg-slate-100 rounded w-2/3" />
+                        </>
                     )}
                 </div>
             </div>
@@ -224,8 +271,10 @@ export default function CVBuilderPage() {
                     <div className="flex">
                         <div className={`w-[35%] ${sidebarBg} p-6 sm:p-8 print:p-6 space-y-5`}>
                             <div className="text-center">
-                                <div className="w-16 h-16 rounded-full bg-white/20 mx-auto flex items-center justify-center text-xl font-black mb-2">
-                                    {(form.full_name || '?').charAt(0).toUpperCase()}
+                                <div className="w-16 h-16 rounded-full bg-white/20 mx-auto flex items-center justify-center text-xl font-black mb-2 overflow-hidden">
+                                    {form.photo_url ? (
+                                        <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+                                    ) : (form.full_name || '?').charAt(0).toUpperCase()}
                                 </div>
                                 <h2 className="text-lg font-black">{form.full_name || 'Your Name'}</h2>
                                 <p className="opacity-70 text-xs mt-1 font-semibold">{form.headline || 'Professional'}</p>
@@ -244,8 +293,17 @@ export default function CVBuilderPage() {
                     <div>
                         {(isDarkHeader || isCentered || isBordered) && (
                             <div className={`${headerBg} p-8 sm:p-10 print:p-8 ${isDarkHeader ? '' : 'border-b'}`}>
-                                <h1 className={`text-3xl font-black tracking-tight ${isCentered ? 'text-slate-900' : ''}`}>{form.full_name || 'Your Name'}</h1>
-                                <p className={`font-semibold mt-1.5 text-base ${isDarkHeader ? `text-${tpl.color}-300` : 'text-slate-500'}`}>{form.headline || 'Professional Headline'}</p>
+                                <div className={`flex ${isCentered ? 'flex-col items-center text-center' : 'items-start gap-5'}`}>
+                                    {form.photo_url && (isDarkHeader || isCentered) && (
+                                        <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-white/20 shadow-lg shrink-0">
+                                            <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <h1 className={`text-3xl font-black tracking-tight ${isCentered ? 'text-slate-900' : ''}`}>{form.full_name || 'Your Name'}</h1>
+                                        <p className={`font-semibold mt-1.5 text-base ${isDarkHeader ? `text-${tpl.color}-300` : 'text-slate-500'}`}>{form.headline || 'Professional Headline'}</p>
+                                    </div>
+                                </div>
                                 <div className={`flex flex-wrap ${isCentered ? 'justify-center' : ''} gap-x-5 gap-y-1 mt-3 text-sm ${isDarkHeader ? 'opacity-70' : 'text-slate-400'}`}>
                                     {form.email && <span>{form.email}</span>}
                                     {form.phone && <span>{form.phone}</span>}
@@ -398,6 +456,14 @@ export default function CVBuilderPage() {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                    <div className="mt-3"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Profile Photo</label>
+                                        <CloudinaryUpload
+                                            onUploadComplete={(url) => set('photo_url', url)}
+                                            currentImage={form.photo_url}
+                                            folder="cv-photos"
+                                            label="Upload Photo"
+                                        />
                                     </div>
                                     <div className="mt-3"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Professional Summary</label>
                                         <textarea value={form.summary} onChange={e => set('summary', e.target.value)} rows={3} className="w-full mt-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 resize-none" /></div>
