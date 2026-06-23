@@ -6,8 +6,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
+import { Suspense } from "react";
 import CookieConsent from "@/components/CookieConsent";
 import CVBanner from "@/components/CVBanner";
+import AuthCodeHandler from "@/components/AuthCodeHandler";
 import { getBaseUrl } from "@/lib/utils/url";
 import { BookmarkProvider } from "@/contexts/BookmarkContext";
 
@@ -157,6 +159,7 @@ export default function RootLayout({
         )}
 
         <BookmarkProvider>
+          <Suspense fallback={null}><AuthCodeHandler /></Suspense>
           <Navbar />
           <main className="flex-grow w-full max-w-full overflow-x-hidden">
             {children}
