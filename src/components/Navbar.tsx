@@ -137,14 +137,15 @@ export default function Navbar() {
     };
 
     // Transparent on hero pages (home, about, employer, popular, companies), solid elsewhere
+    // Mobile always stays solid for usability
     const isHeroPage = pathname === '/' || pathname === '/about' || pathname === '/employer' || pathname === '/popular' || pathname === '/companies';
     const transparent = !scrolled && isHeroPage;
 
     return (
-        <nav className={`sticky top-0 z-50 transition-all duration-500 ${
+        <nav className={`sticky top-0 z-50 transition-all duration-500 bg-white/95 backdrop-blur-xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] border-b border-gray-100/50 lg:${
             transparent
-                ? 'bg-transparent'
-                : 'bg-white/95 backdrop-blur-xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] border-b border-gray-100/50'
+                ? 'lg:bg-transparent lg:shadow-none lg:border-transparent'
+                : ''
         }`}>
             {/* Top accent */}
             <div className={`h-[2px] bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 transition-opacity duration-500 ${transparent ? 'opacity-0' : 'opacity-100'}`} />

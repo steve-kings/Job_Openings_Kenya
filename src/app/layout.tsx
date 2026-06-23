@@ -122,7 +122,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Job Openings Kenya" />
       </head>
       <body
-        className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-white text-gray-900`}
+        className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-white text-gray-900 overflow-x-hidden w-full max-w-full`}
       >
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
@@ -157,7 +157,7 @@ export default function RootLayout({
 
         <BookmarkProvider>
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow w-full max-w-full overflow-x-hidden">
             {children}
           </main>
           <Footer />
