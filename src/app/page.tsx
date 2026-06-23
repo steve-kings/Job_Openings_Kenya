@@ -14,6 +14,7 @@ import HeroSlider from '@/components/HeroSlider';
 import ListingsView from '@/components/ListingsView';
 import ScrollReveal from '@/components/ScrollReveal';
 import WeatherWidget from '@/components/WeatherWidget';
+import AuthCodeHandler from '@/components/AuthCodeHandler';
 import { createClient } from '@/lib/supabase/server';
 import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
@@ -89,6 +90,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
     return (
         <div className="bg-white">
+            <AuthCodeHandler />
             {/* ═══════ HERO ═══════ */}
             <section className="relative overflow-hidden min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] flex items-center">
                 {/* Background image slider */}
