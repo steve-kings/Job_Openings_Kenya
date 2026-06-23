@@ -23,12 +23,23 @@ interface Profile {
 
 const CV_PRICE = 50;
 
-type TemplateId = 'classic' | 'modern' | 'minimal';
+type TemplateId = 'classic' | 'modern' | 'minimal' | 'executive' | 'creative' | 'technical' | 'academic' | 'sales' | 'hybrid' | 'bold' | 'simple' | 'timeline';
 
-const TEMPLATES: { id: TemplateId; name: string; desc: string; accent: string; headerBg: string; headerText: string }[] = [
-    { id: 'classic', name: 'Classic', desc: 'Traditional & ATS-friendly — ideal for corporate roles', accent: 'emerald', headerBg: 'bg-slate-800', headerText: 'text-white' },
-    { id: 'modern', name: 'Modern', desc: 'Bold sidebar layout — stands out for creative roles', accent: 'blue', headerBg: 'bg-emerald-600', headerText: 'text-white' },
-    { id: 'minimal', name: 'Minimal', desc: 'Clean & elegant — lets your experience speak', accent: 'slate', headerBg: 'bg-white border-b-2 border-slate-900', headerText: 'text-slate-900' },
+interface TemplateCfg { id: TemplateId; name: string; desc: string; free: boolean; color: string; style: 'dark-header' | 'sidebar' | 'centered' | 'split' | 'bordered'; }
+
+const TEMPLATES: TemplateCfg[] = [
+    { id: 'classic', name: 'Classic', desc: 'Traditional ATS-friendly — perfect for banking & corporate', free: true, color: 'slate', style: 'dark-header' },
+    { id: 'executive', name: 'Executive', desc: 'Premium navy header — boardroom ready', free: false, color: 'blue', style: 'dark-header' },
+    { id: 'bold', name: 'Bold', desc: 'Black & emerald — commanding presence', free: false, color: 'emerald', style: 'dark-header' },
+    { id: 'modern', name: 'Modern', desc: 'Green sidebar with avatar — creative fields', free: true, color: 'emerald', style: 'sidebar' },
+    { id: 'creative', name: 'Creative', desc: 'Purple sidebar — design & media roles', free: false, color: 'violet', style: 'sidebar' },
+    { id: 'technical', name: 'Technical', desc: 'Code-friendly layout — IT & engineering', free: false, color: 'indigo', style: 'sidebar' },
+    { id: 'minimal', name: 'Minimal', desc: 'Clean centered — consulting & academia', free: true, color: 'slate', style: 'centered' },
+    { id: 'simple', name: 'Simple', desc: 'Pure white — one page, no distractions', free: true, color: 'gray', style: 'centered' },
+    { id: 'academic', name: 'Academic', desc: 'Structured — education & research', free: false, color: 'amber', style: 'bordered' },
+    { id: 'sales', name: 'Sales Pro', desc: 'Achievement-focused — sales & marketing', free: false, color: 'orange', style: 'split' },
+    { id: 'hybrid', name: 'Hybrid', desc: 'Two-tone split — modern professional', free: false, color: 'teal', style: 'split' },
+    { id: 'timeline', name: 'Timeline', desc: 'Visual career path — storytelling format', free: false, color: 'rose', style: 'bordered' },
 ];
 
 export default function CVBuilderPage() {
@@ -93,7 +104,12 @@ export default function CVBuilderPage() {
             });
             const data = await res.json();
             if (data.reply) {
-                try { setForm(f => ({ ...f, ...JSON.parse(data.reply) })); }
+                // Try to parse JSON — strip markdown code blocks if present
+                let jsonStr = data.reply.trim();
+                if (jsonStr.startsWith('```')) {
+                    jsonStr = jsonStr.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+                }
+                try { setForm(f => ({ ...f, ...JSON.parse(jsonStr) })); }
                 catch { setForm(f => ({ ...f, summary: data.reply })); }
             }
         } catch {}
@@ -133,123 +149,115 @@ export default function CVBuilderPage() {
 
     const tpl = TEMPLATES.find(t => t.id === template)!;
 
-    // Template Preview Thumbnails
-    const TemplateThumb = ({ id, name }: { id: TemplateId; name: string }) => {
-        const s = id === 'classic' ? 'space-y-1.5' : id === 'modern' ? 'flex gap-3' : 'space-y-2';
+    const colorMap: Record<string, { bg: string; light: string; text: string; border: string }> = {
+        slate:   { bg: 'bg-slate-800', light: 'bg-slate-50', text: 'text-white', border: 'border-slate-200' },
+        blue:    { bg: 'bg-blue-900', light: 'bg-blue-50', text: 'text-white', border: 'border-blue-100' },
+        emerald: { bg: 'bg-emerald-600', light: 'bg-emerald-50', text: 'text-white', border: 'border-emerald-100' },
+        violet:  { bg: 'bg-violet-700', light: 'bg-violet-50', text: 'text-white', border: 'border-violet-100' },
+        indigo:  { bg: 'bg-indigo-700', light: 'bg-indigo-50', text: 'text-white', border: 'border-indigo-100' },
+        amber:   { bg: 'bg-amber-100', light: 'bg-amber-50', text: 'text-slate-900', border: 'border-amber-200' },
+        orange:  { bg: 'bg-orange-500', light: 'bg-orange-50', text: 'text-white', border: 'border-orange-100' },
+        teal:    { bg: 'bg-teal-600', light: 'bg-teal-50', text: 'text-white', border: 'border-teal-100' },
+        rose:    { bg: 'bg-rose-600', light: 'bg-rose-50', text: 'text-white', border: 'border-rose-100' },
+        gray:    { bg: 'bg-white', light: 'bg-gray-50', text: 'text-slate-900', border: 'border-slate-200' },
+    };
+
+    const TemplateThumb = ({ t: t2 }: { t: TemplateCfg }) => {
+        const c = colorMap[t2.color];
+        const headerH = t2.style === 'dark-header' ? c.bg : t2.style === 'sidebar' ? c.bg : 'bg-white border-b';
+        const isActive = t2.id === template;
         return (
-            <div className={`bg-white rounded-xl border overflow-hidden ${id === template ? 'ring-2 ring-emerald-500 shadow-lg' : 'shadow-sm hover:shadow-md'} transition-all`}>
-                <div className={`h-28 ${id === 'classic' ? 'bg-slate-800' : id === 'modern' ? 'bg-emerald-600' : 'bg-white border-b'} p-3 flex flex-col justify-end`}>
-                    <div className={`h-2.5 rounded w-1/2 mb-1.5 ${id === 'minimal' ? 'bg-slate-700' : 'bg-white/40'}`} />
-                    <div className={`h-1.5 rounded w-3/4 ${id === 'minimal' ? 'bg-slate-400' : 'bg-white/20'}`} />
+            <div className={`bg-white rounded-xl border overflow-hidden cursor-pointer ${isActive ? 'ring-2 ring-emerald-500 shadow-lg' : 'shadow-sm hover:shadow-md'} transition-all group`}>
+                <div className={`h-20 ${headerH} p-3 flex flex-col justify-end`}>
+                    <div className={`h-2 rounded w-1/2 mb-1 ${t2.style === 'dark-header' || t2.style === 'sidebar' ? 'bg-white/30' : 'bg-slate-600'}`} />
+                    <div className={`h-1.5 rounded w-3/4 ${t2.style === 'dark-header' || t2.style === 'sidebar' ? 'bg-white/15' : 'bg-slate-300'}`} />
                 </div>
-                <div className="p-3 space-y-1.5">
-                    {id === 'modern' ? (
-                        <div className="flex gap-3">
-                            <div className="w-1/3 space-y-1.5">
-                                <div className="h-1.5 bg-slate-200 rounded w-3/4" />
-                                <div className="h-1.5 bg-slate-100 rounded w-full" />
-                                <div className="h-1.5 bg-slate-100 rounded w-2/3" />
-                            </div>
-                            <div className="w-2/3 space-y-1.5">
-                                <div className="h-1.5 bg-slate-200 rounded w-2/3" />
-                                <div className="h-1 bg-slate-100 rounded w-full" />
-                                <div className="h-1 bg-slate-100 rounded w-5/6" />
-                            </div>
-                        </div>
+                <div className="p-3 space-y-1">
+                    {t2.style === 'sidebar' ? (
+                        <div className="flex gap-2"><div className="w-1/3 space-y-1"><div className="h-1 bg-slate-200 rounded w-2/3" /><div className="h-0.5 bg-slate-100 rounded" /></div><div className="w-2/3 space-y-1"><div className="h-1 bg-slate-200 rounded w-1/2" /><div className="h-0.5 bg-slate-100 rounded" /></div></div>
                     ) : (
-                        <>
-                            <div className="h-1.5 bg-slate-200 rounded w-1/2" />
-                            <div className="h-1 bg-slate-100 rounded w-full" />
-                            <div className="h-1 bg-slate-100 rounded w-3/4" />
-                        </>
+                        <><div className="h-1 bg-slate-200 rounded w-1/2" /><div className="h-0.5 bg-slate-100 rounded w-3/4" /></>
                     )}
                 </div>
             </div>
         );
     };
 
-    // ====== CV RENDERER ======
+    // ====== CV RENDERER (12 templates via pattern matching) ======
     const CVRender = ({ fullWidth, printMode }: { fullWidth?: boolean; printMode?: boolean }) => {
         const cls = printMode ? 'print-cv' : fullWidth ? '' : 'scale-[0.55] origin-top-left';
+        const c = colorMap[tpl.color];
+        const isSidebar = tpl.style === 'sidebar';
+        const isCentered = tpl.style === 'centered';
+        const isDarkHeader = tpl.style === 'dark-header';
+        const isBordered = tpl.style === 'bordered';
+        const isSplit = tpl.style === 'split';
+
+        const headerBg = isDarkHeader ? `${c.bg} ${c.text}` : isSidebar ? '' : `bg-white ${isCentered ? 'text-center' : ''} ${isBordered ? 'border-b-2 border-slate-800' : ''}`;
+        const sidebarBg = isSidebar ? `${c.bg} ${c.text}` : '';
+        const skillChipBg = isDarkHeader ? `${c.light} text-slate-700` : `${c.light} text-${tpl.color}-700`;
+
         return (
             <div className={`bg-white ${fullWidth ? 'rounded-2xl border border-slate-200 shadow-lg overflow-hidden print:shadow-none print:border-none' : 'rounded-xl border shadow-sm overflow-hidden'} ${cls}`}
                 style={!fullWidth ? { width: '182%' } : {}}>
-                {/* ---- CLASSIC ---- */}
-                {template === 'classic' && (
-                    <div>
-                        <div className="bg-slate-800 text-white p-8 sm:p-10 print:p-8">
-                            <h1 className="text-3xl font-black tracking-tight">{form.full_name || 'Your Name'}</h1>
-                            <p className="text-emerald-300 font-semibold mt-1.5 text-base">{form.headline || 'Professional Headline'}</p>
-                            <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm opacity-70">
-                                {form.email && <span>{form.email}</span>}
-                                {form.phone && <span>{form.phone}</span>}
-                                {form.location && <span>{form.location}</span>}
-                                {form.linkedin && <span>{form.linkedin}</span>}
-                            </div>
-                        </div>
-                        <div className="p-8 sm:p-10 print:p-8 space-y-6">
-                            {form.summary && <Section title="Professional Summary"><p className="text-slate-700 leading-relaxed text-sm">{form.summary}</p></Section>}
-                            {skillsArr.length > 0 && <Section title="Skills"><div className="flex flex-wrap gap-1.5">{skillsArr.map(s => <span key={s} className="px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">{s}</span>)}</div></Section>}
-                            {form.experience && <Section title="Experience"><p className="text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">{form.experience}</p></Section>}
-                            {form.education && <Section title="Education"><p className="text-slate-700 leading-relaxed text-sm">{form.education}</p></Section>}
-                        </div>
-                    </div>
-                )}
-
-                {/* ---- MODERN ---- */}
-                {template === 'modern' && (
+                {isSidebar ? (
+                    /* SIDEBAR LAYOUT: modern, creative, technical */
                     <div className="flex">
-                        <div className="w-[35%] bg-emerald-600 text-white p-6 sm:p-8 print:p-6 space-y-6">
+                        <div className={`w-[35%] ${sidebarBg} p-6 sm:p-8 print:p-6 space-y-5`}>
                             <div className="text-center">
-                                <div className="w-20 h-20 rounded-full bg-white/20 mx-auto flex items-center justify-center text-2xl font-black mb-3">
+                                <div className="w-16 h-16 rounded-full bg-white/20 mx-auto flex items-center justify-center text-xl font-black mb-2">
                                     {(form.full_name || '?').charAt(0).toUpperCase()}
                                 </div>
-                                <h2 className="text-xl font-black">{form.full_name || 'Your Name'}</h2>
-                                <p className="text-emerald-100 text-xs mt-1 font-semibold">{form.headline || 'Professional'}</p>
+                                <h2 className="text-lg font-black">{form.full_name || 'Your Name'}</h2>
+                                <p className="opacity-70 text-xs mt-1 font-semibold">{form.headline || 'Professional'}</p>
                             </div>
-                            {skillsArr.length > 0 && (
-                                <div>
-                                    <h3 className="text-xs font-extrabold uppercase tracking-widest text-emerald-200 mb-3 border-b border-emerald-400/30 pb-1.5">Skills</h3>
-                                    <div className="space-y-1.5">{skillsArr.slice(0, 10).map(s => <p key={s} className="text-xs text-emerald-50">{s}</p>)}</div>
-                                </div>
-                            )}
-                            <div>
-                                <h3 className="text-xs font-extrabold uppercase tracking-widest text-emerald-200 mb-3 border-b border-emerald-400/30 pb-1.5">Contact</h3>
-                                <div className="space-y-2 text-xs text-emerald-50">
-                                    {form.email && <p>{form.email}</p>}
-                                    {form.phone && <p>{form.phone}</p>}
-                                    {form.location && <p>{form.location}</p>}
-                                    {form.linkedin && <p>{form.linkedin}</p>}
-                                </div>
-                            </div>
+                            <ContactBlock form={form} color="text-white/70" />
+                            <SkillsBlock skills={skillsArr} color="text-white/70" colorClass={c.light} />
                         </div>
-                        <div className="w-[65%] p-6 sm:p-8 print:p-6 space-y-6 bg-white">
-                            {form.summary && <Section title="Summary"><p className="text-slate-700 text-sm leading-relaxed">{form.summary}</p></Section>}
-                            {form.experience && <Section title="Work Experience"><p className="text-slate-700 whitespace-pre-wrap text-sm leading-relaxed">{form.experience}</p></Section>}
-                            {form.education && <Section title="Education"><p className="text-slate-700 text-sm leading-relaxed">{form.education}</p></Section>}
+                        <div className="w-[65%] p-6 sm:p-8 print:p-6 space-y-5 bg-white">
+                            <SummaryBlock summary={form.summary} />
+                            <ExpBlock experience={form.experience} />
+                            <EduBlock education={form.education} />
                         </div>
                     </div>
-                )}
-
-                {/* ---- MINIMAL ---- */}
-                {template === 'minimal' && (
+                ) : (
+                    /* VERTICAL LAYOUTS */
                     <div>
-                        <div className="text-center p-8 sm:p-10 print:p-8 border-b">
-                            <h1 className="text-3xl font-black text-slate-900 tracking-tight">{form.full_name || 'Your Name'}</h1>
-                            <p className="text-slate-500 font-medium mt-1">{form.headline || 'Professional'}</p>
-                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3 text-xs text-slate-400">
-                                {form.email && <span>{form.email}</span>}
-                                {form.phone && <span>{form.phone}</span>}
-                                {form.location && <span>{form.location}</span>}
-                                {form.linkedin && <span>{form.linkedin}</span>}
+                        {(isDarkHeader || isCentered || isBordered) && (
+                            <div className={`${headerBg} p-8 sm:p-10 print:p-8 ${isDarkHeader ? '' : 'border-b'}`}>
+                                <h1 className={`text-3xl font-black tracking-tight ${isCentered ? 'text-slate-900' : ''}`}>{form.full_name || 'Your Name'}</h1>
+                                <p className={`font-semibold mt-1.5 text-base ${isDarkHeader ? `text-${tpl.color}-300` : 'text-slate-500'}`}>{form.headline || 'Professional Headline'}</p>
+                                <div className={`flex flex-wrap ${isCentered ? 'justify-center' : ''} gap-x-5 gap-y-1 mt-3 text-sm ${isDarkHeader ? 'opacity-70' : 'text-slate-400'}`}>
+                                    {form.email && <span>{form.email}</span>}
+                                    {form.phone && <span>{form.phone}</span>}
+                                    {form.location && <span>{form.location}</span>}
+                                    {form.linkedin && <span>{form.linkedin}</span>}
+                                </div>
                             </div>
-                        </div>
-                        <div className="max-w-2xl mx-auto p-8 sm:p-10 print:p-8 space-y-6">
-                            {form.summary && <Section title="About"><p className="text-slate-700 leading-relaxed text-sm">{form.summary}</p></Section>}
-                            {skillsArr.length > 0 && <Section title="Skills"><div className="flex flex-wrap gap-1.5">{skillsArr.map(s => <span key={s} className="px-3 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-semibold">{s}</span>)}</div></Section>}
-                            {form.experience && <Section title="Experience"><p className="text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">{form.experience}</p></Section>}
-                            {form.education && <Section title="Education"><p className="text-slate-700 leading-relaxed text-sm">{form.education}</p></Section>}
-                        </div>
+                        )}
+                        {isSplit && (
+                            <div className="flex">
+                                <div className={`w-[40%] ${c.bg} ${c.text} p-6 sm:p-8 space-y-4`}>
+                                    <h3 className="font-extrabold text-sm uppercase tracking-wider opacity-70">Contact</h3>
+                                    <ContactBlock form={form} color="text-white/70" />
+                                    <SkillsBlock skills={skillsArr} color="text-white/70" colorClass={c.light} />
+                                </div>
+                                <div className="w-[60%] p-6 sm:p-8 space-y-5">
+                                    <SummaryBlock summary={form.summary} />
+                                    <ExpBlock experience={form.experience} />
+                                    <EduBlock education={form.education} />
+                                </div>
+                            </div>
+                        )}
+                        {!isSplit && (
+                            <div className={`${isCentered ? 'max-w-2xl mx-auto' : ''} p-8 sm:p-10 print:p-8 space-y-6`}>
+                                {!isBordered && skillsArr.length > 0 && <SkillsBlock skills={skillsArr} color="text-slate-700" colorClass={c.light} />}
+                                <SummaryBlock summary={form.summary} />
+                                <ExpBlock experience={form.experience} />
+                                <EduBlock education={form.education} />
+                                {isBordered && skillsArr.length > 0 && <SkillsBlock skills={skillsArr} color="text-slate-700" colorClass={c.light} />}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -265,7 +273,7 @@ export default function CVBuilderPage() {
                     <Link href="/resources" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white mb-3 text-sm font-medium"><ArrowLeft size={15} /> Resources</Link>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center"><PenTool size={18} /></div>
-                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">Professional CV in minutes • KES {CV_PRICE} only</p></div>
+                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">12 templates • 4 free • Premium KES {CV_PRICE}</p></div>
                     </div>
                 </div>
             </section>
@@ -299,16 +307,40 @@ export default function CVBuilderPage() {
                         <div>
                             <h2 className="text-2xl font-black text-slate-900 text-center mb-2">Choose Your Template</h2>
                             <p className="text-slate-500 text-center mb-8">Select a design that fits your industry — you can switch anytime</p>
-                            <div className="grid sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+                            <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
                                 {TEMPLATES.map(t => (
                                     <div key={t.id} className="cursor-pointer group" onClick={() => { setTemplate(t.id); setStep('details'); }}>
-                                        <TemplateThumb id={t.id} name={t.name} />
-                                        <div className="mt-3 text-center">
-                                            <p className="font-extrabold text-sm text-slate-900">{t.name}</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">{t.desc}</p>
+                                        <TemplateThumb t={t} />
+                                        <div className="mt-2 text-center">
+                                            <p className="font-extrabold text-xs text-slate-900 flex items-center justify-center gap-1.5">
+                                                {t.name}
+                                                {t.free && <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Free</span>}
+                                            </p>
+                                            <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">{t.desc}</p>
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* Portfolio Inspiration Gallery */}
+                            <div className="mt-12 pt-10 border-t border-slate-100">
+                                <h3 className="text-lg font-extrabold text-slate-900 text-center mb-2">CV Portfolio Inspiration</h3>
+                                <p className="text-sm text-slate-400 text-center mb-6">See what your professional CV can look like</p>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
+                                    {[
+                                        '/images/89134f788dd9c7573b50c5cc6c5a6733.webp',
+                                        '/images/743202c6badfb8165ea151d49fb8565a.webp',
+                                        '/images/cf1b0fe036c0dd3f55b8439534ec4e57.webp',
+                                        '/images/ef7b4721a0640ccc032e889c4c9bf763.webp',
+                                    ].map((src, i) => (
+                                        <div key={src} className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 aspect-[3/4]">
+                                            <img src={src} alt={`CV Portfolio ${i+1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                                <span className="text-white text-xs font-bold">Template Style #{i+1}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </ScrollReveal>
@@ -401,7 +433,19 @@ export default function CVBuilderPage() {
 
                         {/* Payment */}
                         <ScrollReveal delay={100}>
-                            {!paid ? (
+                            {tpl.free ? (
+                                /* Free template — no payment */
+                                <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-8 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Star size={30} className="text-emerald-600" /></div>
+                                    <h3 className="font-extrabold text-emerald-900 text-xl mb-1">Free Template — Ready to Download!</h3>
+                                    <p className="text-emerald-700 text-sm mb-5">This is a free basic template. Upgrade to premium for KES {CV_PRICE}.</p>
+                                    <div className="flex flex-wrap justify-center gap-3">
+                                        <button onClick={handlePrint} className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2"><Download size={15} /> Download / Print</button>
+                                        <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-emerald-300 text-emerald-700 font-extrabold text-sm hover:bg-emerald-100 transition-all">Dashboard</Link>
+                                    </div>
+                                    <p className="text-xs text-emerald-500 mt-3">Want a premium template? Switch to any non-free design above.</p>
+                                </div>
+                            ) : !paid ? (
                                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6 sm:p-8">
                                     <div className="flex flex-col sm:flex-row items-start gap-5">
                                         <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0"><CreditCard size={26} className="text-amber-700" /></div>
@@ -468,4 +512,38 @@ function Section({ title, children }: { title: string; children: React.ReactNode
             {children}
         </div>
     );
+}
+
+function ContactBlock({ form, color }: { form: Record<string,string>; color: string }) {
+    return <div className={`space-y-1.5 text-xs ${color}`}>
+        {form.email && <p className="flex items-center gap-1.5"><Mail size={11} />{form.email}</p>}
+        {form.phone && <p className="flex items-center gap-1.5"><Phone size={11} />{form.phone}</p>}
+        {form.location && <p className="flex items-center gap-1.5"><MapPin size={11} />{form.location}</p>}
+        {form.linkedin && <p className="flex items-center gap-1.5"><Globe size={11} />{form.linkedin}</p>}
+    </div>;
+}
+
+function SkillsBlock({ skills, color, colorClass }: { skills: string[]; color: string; colorClass: string }) {
+    if (!skills.length) return null;
+    return (
+        <div>
+            <h3 className={`text-xs font-extrabold uppercase tracking-widest mb-2 ${color} border-b border-white/10 pb-1.5`}>Skills</h3>
+            <div className="flex flex-wrap gap-1">{skills.slice(0, 12).map(s => <span key={s} className={`px-2 py-0.5 rounded text-[10px] font-semibold ${colorClass}`}>{s}</span>)}</div>
+        </div>
+    );
+}
+
+function SummaryBlock({ summary }: { summary: string }) {
+    if (!summary) return null;
+    return <div><h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-2">Summary</h3><p className="text-slate-700 text-sm leading-relaxed">{summary}</p></div>;
+}
+
+function ExpBlock({ experience }: { experience: string }) {
+    if (!experience) return null;
+    return <div><h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-2">Experience</h3><p className="text-slate-700 whitespace-pre-wrap text-sm leading-relaxed">{experience}</p></div>;
+}
+
+function EduBlock({ education }: { education: string }) {
+    if (!education) return null;
+    return <div><h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-2">Education</h3><p className="text-slate-700 text-sm leading-relaxed">{education}</p></div>;
 }

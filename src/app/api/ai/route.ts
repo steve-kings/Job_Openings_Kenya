@@ -72,9 +72,15 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: validation.error }, { status: 400 });
             }
 
-            const systemMessage = {
+            // Strip 'id' field from messages (Groq doesn't support it)
+            const cleanMsgs = messages.map((m: Record<string, unknown>) => ({ role: m.role, content: m.content }));
+
+            // Only prepend default system message if client didn't provide one
+            const hasSystemMsg = cleanMsgs.length > 0 && (cleanMsgs[0] as {role:string}).role === 'system';
+
+            const defaultSystem = {
                 role: 'system',
-                content: `You are 'Job Openings Kenya AI Assistance', a helpful and friendly chatbot on the Job Openings Kenya website. Your purpose is to assist African youth in finding opportunities (jobs and professional training programs), answer questions about the platform, provide career advice, and give guidance on how to apply for opportunities. Do not mention that you are powered by Groq, OpenAI, or any other underlying technology. Just say you are the Job Openings Kenya AI Assistance.`
+                content: `You are 'Job Openings Kenya AI Assistant', a helpful and friendly chatbot on the Job Openings Kenya website. Your purpose is to assist African youth in finding opportunities, answer questions about the platform, provide career advice, and give guidance on how to apply for opportunities. Do not mention that you are powered by Groq, OpenAI, or any other underlying technology.`
             };
 
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -85,7 +91,7 @@ export async function POST(req: Request) {
                 },
                 body: JSON.stringify({
                     model: 'llama-3.1-8b-instant',
-                    messages: [systemMessage, ...messages.map((m: Record<string, unknown>) => ({ role: m.role, content: m.content }))],
+                    messages: hasSystemMsg ? cleanMsgs : [defaultSystem, ...cleanMsgs],
                     temperature: 0.7,
                     max_tokens: 1024,
                 })
