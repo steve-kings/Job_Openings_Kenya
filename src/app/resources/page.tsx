@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 const resources = [
     {
-        title: 'CV & Resume Writing',
-        description: 'Craft a winning CV that stands out to Kenyan employers. Templates, examples, and expert tips.',
-        icon: FileText,
-        href: '/blog/cv-writing-tips',
+        title: 'CV Builder',
+        description: 'Create a professional ATS-friendly CV in minutes. AI-powered, beautiful templates, KES 50 only.',
+        icon: PenTool,
+        href: '/resources/cv-builder',
         color: 'emerald',
         articles: [
             { title: '5 Tips for Writing a Winning CV', href: '/blog/cv-writing-tips' },
