@@ -90,8 +90,8 @@ export default function JobsFilter() {
     return (
         <div className="w-full bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
             {/* Main search row */}
-            <div className="flex items-center gap-2 p-3 sm:p-4">
-                <div className="flex-1 flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-300 border border-transparent transition-all">
+            <div className="flex items-center gap-2 p-2.5 sm:p-4">
+                <div className="flex-1 flex items-center gap-2.5 bg-slate-50 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-300 border border-transparent transition-all">
                     <Search size={18} className="text-slate-400 shrink-0" />
                     <input
                         type="text"
@@ -109,7 +109,7 @@ export default function JobsFilter() {
             </div>
 
             {/* Filters row */}
-            <div className="flex flex-wrap items-center gap-2 px-3 sm:px-4 pb-3 sm:pb-4 border-t border-slate-50 pt-3">
+            <div className="flex flex-wrap items-center gap-1.5 px-2.5 sm:px-4 pb-2.5 sm:pb-4 border-t border-slate-50 pt-2.5">
                 {/* Type pills */}
                 {categories.map((cat) => {
                     const Icon = cat.icon;
@@ -165,19 +165,19 @@ export default function JobsFilter() {
                     <input
                         type="number"
                         min={0}
-                        placeholder="Min KES"
+                        placeholder="Min"
                         value={salaryMin}
                         onChange={(e) => setSalaryMin(e.target.value)}
-                        className="w-16 bg-transparent text-xs font-semibold text-slate-600 placeholder-slate-400 outline-none"
+                        className="w-12 sm:w-16 bg-transparent text-xs font-semibold text-slate-600 placeholder-slate-400 outline-none"
                     />
                     <span className="text-slate-300 text-xs">–</span>
                     <input
                         type="number"
                         min={0}
-                        placeholder="Max KES"
+                        placeholder="Max"
                         value={salaryMax}
                         onChange={(e) => setSalaryMax(e.target.value)}
-                        className="w-16 bg-transparent text-xs font-semibold text-slate-600 placeholder-slate-400 outline-none"
+                        className="w-12 sm:w-16 bg-transparent text-xs font-semibold text-slate-600 placeholder-slate-400 outline-none"
                     />
                 </div>
             </div>

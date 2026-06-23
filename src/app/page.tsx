@@ -90,7 +90,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     return (
         <div className="bg-white">
             {/* ═══════ HERO ═══════ */}
-            <section className="relative overflow-hidden min-h-[560px] sm:min-h-[640px] flex items-center">
+            <section className="relative overflow-hidden min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] flex items-center">
                 {/* Background image slider */}
                 <div className="absolute inset-0">
                     <HeroSlider />
@@ -100,7 +100,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                     <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                         {/* Left: Content */}
                         <div>
-                            <h1 className="text-[38px] sm:text-5xl lg:text-[56px] font-black text-white leading-[1.06] tracking-tight drop-shadow-lg">
+                            <h1 className="text-[28px] xs:text-[34px] sm:text-5xl lg:text-[56px] font-black text-white leading-[1.08] tracking-tight drop-shadow-lg">
                                 Find your{' '}
                                 <span className="relative inline-block">
                                     <span className="text-emerald-300">dream job</span>
@@ -110,7 +110,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 </span>{' '}
                                 in Kenya
                             </h1>
-                            <p className="mt-4 text-base sm:text-lg text-white/75 max-w-md leading-relaxed">
+                            <p className="mt-3 text-sm sm:text-lg text-white/75 max-w-md leading-relaxed">
                                 Browse verified jobs and training programs — hand-picked and scam-free.
                             </p>
 
