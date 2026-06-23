@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
 import CookieConsent from "@/components/CookieConsent";
+import CVBanner from "@/components/CVBanner";
 import { getBaseUrl } from "@/lib/utils/url";
 import { BookmarkProvider } from "@/contexts/BookmarkContext";
 
@@ -164,6 +165,7 @@ export default function RootLayout({
           <PWAInstallButton />
           <AIChatbot />
           <CookieConsent />
+          <CVBanner />
         </BookmarkProvider>
       </body>
     </html>
