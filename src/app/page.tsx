@@ -14,6 +14,7 @@ import HeroSlider from '@/components/HeroSlider';
 import ListingsView from '@/components/ListingsView';
 import ScrollReveal from '@/components/ScrollReveal';
 import WeatherWidget from '@/components/WeatherWidget';
+import NewsWidget from '@/components/NewsWidget';
 import { createClient } from '@/lib/supabase/server';
 import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
@@ -430,6 +431,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 ))}
                             </div>
                         </div>
+
+                        <NewsWidget />
 
                         {companies.length > 0 && (
                             <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
