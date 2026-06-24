@@ -217,7 +217,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                                         </div>
                                         <h3 className="text-2xl font-bold mb-2 text-gray-900">Login to Read Full Article</h3>
                                         <p className="text-gray-600 mb-6 text-center max-w-md">
-                                            Join Job Openings Kenya to access full articles, courses, and exclusive opportunities.
+                                            Join Job Openings Kenya to access full articles and exclusive opportunities.
                                         </p>
                                         <Link 
                                             href={`/login?redirect=/blog/${slug}`} 

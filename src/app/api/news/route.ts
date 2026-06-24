@@ -11,6 +11,19 @@ interface NewsArticle {
     image: string | null;
 }
 
+// Strip HTML tags and decode entities from a string
+function cleanHTML(html: string): string {
+    return html
+        .replace(/<[^>]*>/g, '')      // Remove all HTML tags
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ')
+        .trim();
+}
+
 // Parse Google News RSS XML into articles
 function parseRSS(xml: string, limit: number): NewsArticle[] {
     const articles: NewsArticle[] = [];
@@ -31,10 +44,8 @@ function parseRSS(xml: string, limit: number): NewsArticle[] {
         const imgMatch = description?.match(/<img[^>]+src="([^"]+)"/);
         const image = imgMatch ? imgMatch[1] : null;
 
-        // Clean description (strip HTML)
-        const cleanDesc = description
-            ? description.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').slice(0, 300)
-            : '';
+        // Clean description
+        const cleanDesc = description ? cleanHTML(description).slice(0, 300) : '';
 
         articles.push({
             title: title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"'),
@@ -58,19 +69,19 @@ async function fetchGNews(query: string, limit: number): Promise<NewsArticle[]> 
     if (!GNEWS_API_KEY) return [];
     try {
         const res = await fetch(
-            `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&country=ke&max=${limit}&token=${GNEWS_API_KEY}`,
-            { next: { revalidate: 900 } }
+            `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&country=ke&max=${limit}&token=${GNEWS_API_KEY}`
         );
         if (!res.ok) return [];
         const data = await res.json();
-        return (data.articles || []).map((a: { title?: string; description?: string; url?: string; source?: { name?: string } | string; publishedAt?: string; image?: string }) => ({
+        const articles = (data.articles || []).map((a: { title?: string; description?: string; url?: string; source?: { name?: string } | string; publishedAt?: string; image?: string }) => ({
             title: String(a.title || ''),
-            description: String(a.description || '').slice(0, 300),
+            description: cleanHTML(String(a.description || '')).slice(0, 300),
             url: String(a.url || ''),
             source: typeof a.source === 'object' ? String((a.source as { name?: string }).name || 'GNews') : String(a.source || 'GNews'),
             publishedAt: String(a.publishedAt || new Date().toISOString()),
             image: a.image || null,
         }));
+        return articles;
     } catch {
         return [];
     }

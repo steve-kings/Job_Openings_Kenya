@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard, Briefcase, FileText, Users, LogOut, Settings,
     Home, Menu, UserCheck, Mail, Quote, ClipboardList, Sparkles,
-    Star,
+    Star, CreditCard,
 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -37,6 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { name: 'Blog Posts', href: '/admin/blog', icon: FileText },
             { name: 'Testimonials', href: '/admin/testimonials', icon: Star },
             { name: 'Partners', href: '/admin/partners', icon: Users },
+            { name: 'Payments', href: '/admin/payments', icon: CreditCard },
         ]},
         { section: 'Community', items: [
             { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },

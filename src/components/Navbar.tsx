@@ -9,7 +9,7 @@ import {
     LogOut, LayoutDashboard, Settings, Menu, X, Bookmark,
     ChevronDown, Search, Briefcase, Building2, Zap,
     MessageCircle, TrendingUp, Compass, Newspaper, ExternalLink,
-    CheckCircle2, Sparkles, ArrowRight, MapPin, BookOpen, GraduationCap, CloudSun,
+    CheckCircle2, Sparkles, ArrowRight, MapPin, BookOpen, CloudSun,
 } from 'lucide-react';
 import { useBookmarks } from '@/contexts/BookmarkContext';
 
@@ -100,7 +100,7 @@ export default function Navbar() {
             title: 'By Type',
             links: [
                 { href: '/?type=Job', label: 'Jobs', desc: 'Full-time & contract', icon: Briefcase, c: 'emerald' },
-                { href: '/?type=Training', label: 'Training', desc: 'Courses & internships', icon: BookOpen, c: 'violet' },
+                { href: 'https://kingslearn.co.ke', label: 'Training', desc: 'Courses & internships', icon: BookOpen, c: 'violet', ext: true },
             ],
         },
         {
@@ -242,13 +242,6 @@ export default function Navbar() {
                             </Link>
                         ))}
 
-                        {/* Learn — external link to KingsLearn */}
-                        <a href="https://kingslearn.co.ke" target="_blank" rel="noopener noreferrer"
-                            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                                transparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-violet-700 hover:bg-violet-50'
-                            }`}>
-                            <GraduationCap size={17} /> Learn <ExternalLink size={11} className="opacity-50" />
-                        </a>
                     </div>
 
                     {/* ── Right Actions ── */}
@@ -362,13 +355,6 @@ export default function Navbar() {
                                 </Link>
                             ))}
 
-                            {/* Learn — mobile */}
-                            <a href="https://kingslearn.co.ke" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-700">
-                                <GraduationCap size={16} /> Learn on KingsLearn <ExternalLink size={12} className="ml-auto text-slate-300" />
-                            </a>
-
-                            {/* WhatsApp */}
                             <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm text-slate-700 hover:bg-green-50 hover:text-green-700">
                                 <MessageCircle size={16} /> WhatsApp Alerts <ExternalLink size={12} className="ml-auto text-slate-300" />

@@ -28,7 +28,7 @@ export default function FeedbackPage() {
                 // Pre-fill name from profile if possible
                 const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
                 if (profile) {
-                    setFormData(prev => ({ ...prev, user_name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() }));
+                    setFormData(prev => ({ ...prev, user_name: profile.full_name || '' }));
                     if (profile.avatar_url) setPhotoUrl(profile.avatar_url);
                 }
 

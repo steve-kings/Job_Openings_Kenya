@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react';
-import { Briefcase, FileText, Users, TrendingUp, Settings, ArrowRight, Sparkles, Clock, GraduationCap, Star } from 'lucide-react';
+import { Briefcase, FileText, Users, TrendingUp, Settings, ArrowRight, Sparkles, Clock, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -187,11 +187,10 @@ export default function AdminDashboard() {
             <ScrollReveal delay={300}>
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h3 className="text-sm font-extrabold text-slate-900 mb-4 flex items-center gap-2"><Sparkles size={16} className="text-emerald-500" /> Quick Actions</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {[
                             { href: '/admin/opportunities/create', label: 'Add Opportunity', icon: Briefcase, c: 'emerald' },
                             { href: '/admin/blog/create', label: 'Write Blog Post', icon: FileText, c: 'violet' },
-                            { href: '/admin/courses/create', label: 'Add Course', icon: GraduationCap, c: 'blue' },
                             { href: '/admin/partners/create', label: 'Add Partner', icon: Users, c: 'amber' },
                             { href: '/admin/settings', label: 'Settings', icon: Settings, c: 'slate' },
                         ].map(({ href, label, icon: Icon, c }) => (

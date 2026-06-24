@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ThumbsUp, MessageSquare, Send, Loader2, ArrowUp, Clock } from 'lucide-react';
+import { ArrowLeft, ThumbsUp, MessageSquare, Send, Loader2, ArrowUp, Clock, Pencil } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
 
@@ -12,6 +12,7 @@ interface Profile { full_name?: string; username?: string; avatar_url?: string; 
 interface Thread {
     id: string; title: string; content: string; created_at: string;
     upvotes: number; comment_count: number; views: number; is_locked: boolean;
+    user_id: string;
     profiles?: Profile; forum_categories?: { icon: string; name: string; color?: string };
 }
 interface Comment {
@@ -148,6 +149,12 @@ export default function ThreadDetailPage() {
                                 }`}>
                                 <ArrowUp size={13} /> {thread.upvotes}
                             </button>
+                            {user && thread.user_id === user.id && (
+                                <Link href={`/community/${thread.id}/edit`}
+                                    className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-emerald-600 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-all">
+                                    <Pencil size={13} /> Edit
+                                </Link>
+                            )}
                             {thread.is_locked && <span className="text-xs text-amber-600 font-bold ml-auto">🔒 Thread locked</span>}
                         </div>
                     </div>

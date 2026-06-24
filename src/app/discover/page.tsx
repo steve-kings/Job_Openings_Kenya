@@ -25,7 +25,7 @@ export default async function DiscoverPage() {
     // Fetch latest blog posts
     const { data: blogs } = await supabase
         .from('blog_posts')
-        .select('id, title, excerpt, slug, created_at, cover_image')
+        .select('id, title, excerpt, slug, created_at, featured_image')
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -168,8 +168,8 @@ export default async function DiscoverPage() {
                             {blogs.map(post => (
                                 <Link href={`/blog/${post.slug}`} key={post.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group flex flex-col hover:-translate-y-2 transition-transform">
                                     <div className="h-48 overflow-hidden bg-gray-100 relative">
-                                        {post.cover_image ? (
-                                            <Image src={post.cover_image} alt={post.title} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        {post.featured_image ? (
+                                            <Image src={post.featured_image} alt={post.title} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                                                 <FileText size={48} />

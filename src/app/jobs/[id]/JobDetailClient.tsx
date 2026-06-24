@@ -41,9 +41,14 @@ interface SimilarJob {
     deadline: string;
 }
 
+interface AuthUser {
+    id: string;
+    email?: string;
+}
+
 interface JobDetailClientProps {
     job: Job;
-    user: unknown;
+    user: AuthUser | null;
     opportunityId: string;
     similarJobs?: SimilarJob[];
     coverLetterPrice?: number;
@@ -133,19 +138,19 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
         setLetterPayLoading(true); setLetterPayError('');
         P.setup({
             key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-            email: (user as Record<string,unknown> | null)?.email as string || 'user@jobsopening.co.ke',
+            email: user?.email || 'user@jobopeningskenya.co.ke',
             amount: coverLetterPrice * 100, // Convert KES to kobo/cents
             currency: 'KES',
             ref: `cl_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
             label: 'AI Cover Letter',
-            metadata: { phone: letterPhone, product: 'cover_letter', user_id: (user as Record<string,unknown>|null)?.id },
+            metadata: { phone: letterPhone, product: 'cover_letter', user_id: user?.id },
             channels: ['mobile_money'],
             onClose: () => setLetterPayLoading(false),
             callback: async (r: { reference: string }) => {
                 try {
                     const v = await fetch('/api/payment/verify', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reference: r.reference, user_id: (user as Record<string,unknown>|null)?.id, product: 'cover_letter', amount: coverLetterPrice }),
+                        body: JSON.stringify({ reference: r.reference, user_id: user?.id, product: 'cover_letter', amount: coverLetterPrice }),
                     });
                     const d = await v.json();
                     if (d.verified) {
