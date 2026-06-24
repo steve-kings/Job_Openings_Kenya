@@ -64,20 +64,28 @@ export async function POST(req: Request) {
 
         // If CV Builder payment, ensure cv_documents is marked paid
         if (product === 'cv_builder' && userId) {
-            // Find the most recent unpaid CV for this user and mark it paid
-            const { data: cvDocs } = await supabase
-                .from('cv_documents')
-                .select('id')
-                .eq('user_id', userId)
-                .eq('status', 'created')
-                .order('created_at', { ascending: false })
-                .limit(1);
-
-            if (cvDocs && cvDocs.length > 0) {
+            const cvDocId = metadata?.cv_document_id;
+            if (cvDocId) {
                 await supabase
                     .from('cv_documents')
                     .update({ status: 'paid' })
-                    .eq('id', cvDocs[0].id);
+                    .eq('id', cvDocId);
+            } else {
+                // Fallback: Find the most recent unpaid CV for this user and mark it paid
+                const { data: cvDocs } = await supabase
+                    .from('cv_documents')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('status', 'created')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (cvDocs && cvDocs.length > 0) {
+                    await supabase
+                        .from('cv_documents')
+                        .update({ status: 'paid' })
+                        .eq('id', cvDocs[0].id);
+                }
             }
         }
 

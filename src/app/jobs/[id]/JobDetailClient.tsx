@@ -91,6 +91,13 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
             .catch(() => {});
     }, [canView, job.id]);
 
+    // Load Paystack script dynamically for Cover Letter payments
+    useEffect(() => {
+        const s = document.createElement('script'); s.src = 'https://js.paystack.co/v1/inline.js'; s.async = true;
+        document.body.appendChild(s);
+        return () => { s.remove(); };
+    }, []);
+
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `Check out this ${job.type.toLowerCase()}: ${job.title} at ${job.company}`;
 
@@ -144,7 +151,6 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
             ref: `cl_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
             label: 'AI Cover Letter',
             metadata: { phone: letterPhone, product: 'cover_letter', user_id: user?.id },
-            channels: ['mobile_money'],
             onClose: () => setLetterPayLoading(false),
             callback: async (r: { reference: string }) => {
                 try {
@@ -661,10 +667,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         /* STEP 1: Payment */
                         <div className="space-y-4">
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 text-sm text-emerald-800">
-                                <strong>KES {coverLetterPrice}</strong> — AI-powered cover letter tailored for <strong>{job.title}</strong> at <strong>{job.company}</strong>. Pay via M-Pesa STK push.
+                                <strong>KES {coverLetterPrice}</strong> — AI-powered cover letter tailored for <strong>{job.title}</strong> at <strong>{job.company}</strong>. Pay via M-Pesa or Card.
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">M-Pesa Phone Number</label>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
                                 <input type="tel" value={letterPhone} onChange={e => setLetterPhone(e.target.value)}
                                     placeholder="e.g. 0712345678"
                                     className="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50" />
@@ -673,9 +679,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                             <button onClick={handleLetterPay} disabled={letterPayLoading}
                                 className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50">
                                 {letterPayLoading ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-                                {letterPayLoading ? 'Processing...' : `Pay KES ${coverLetterPrice} — M-Pesa STK Push`}
+                                {letterPayLoading ? 'Processing...' : `Pay KES ${coverLetterPrice} via Paystack`}
                             </button>
-                            <p className="text-[10px] text-slate-400 text-center">You&apos;ll receive an STK push on your phone. Enter PIN to pay.</p>
+                            <p className="text-[10px] text-slate-400 text-center">Secure payment by Paystack. Supports M-Pesa and Cards.</p>
                         </div>
                     ) : !coverLetter ? (
                         /* STEP 2: Generate after payment */
