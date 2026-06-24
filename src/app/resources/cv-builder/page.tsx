@@ -82,6 +82,49 @@ export default function CVBuilderPage() {
         return () => { s.remove(); };
     }, []);
 
+    // Inject print styles to isolate CV print layout and clean default browser headers/footers
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @page {
+                size: auto;
+                margin: 0mm;
+            }
+            @media print {
+                body {
+                    background: white !important;
+                    color: black !important;
+                }
+                /* Hide all page content by default */
+                body * {
+                    visibility: hidden !important;
+                }
+                /* Make the CV preview container and all its children visible */
+                #cv-print, #cv-print * {
+                    visibility: visible !important;
+                }
+                #cv-print {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    margin: 0 !important;
+                    padding: 20mm !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+                /* Explicitly hide common external elements just in case */
+                nav, footer, iframe, .pwa-install, #ai-chatbot, .cookie-consent, #cv-banner {
+                    display: none !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
+
     // Auth + profile
     useEffect(() => {
         (async () => {
@@ -99,6 +142,8 @@ export default function CVBuilderPage() {
                     education: p.education || '', linkedin: p.linkedin_url || '',
                     photo_url: p.avatar_url || '',
                 });
+            } else {
+                setForm(f => ({ ...f, email: u.email || '' }));
             }
             setLoading(false);
         })();
@@ -183,7 +228,7 @@ export default function CVBuilderPage() {
     const handlePrint = () => window.print();
     const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
     const inputCls = "w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 transition-all bg-white";
-    const skillsArr = form.skills.split(',').map(s => s.trim()).filter(Boolean);
+    const skillsArr = (form.skills || '').split(',').map(s => s.trim()).filter(Boolean);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><Loader2 className="animate-spin text-emerald-500" size={36} /></div>;
 
