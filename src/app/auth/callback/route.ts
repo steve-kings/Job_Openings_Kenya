@@ -25,33 +25,55 @@ export async function GET(request: Request) {
             }
 
             if (data.user) {
-                // Check if profile exists, if not create one for OAuth users
+                // Determine the intended role from the next redirect path
+                const intendedRole = next.includes('/employer') ? 'employer' : 'student';
+                const googleName = data.user.user_metadata.full_name || data.user.user_metadata.name || '';
+                const googleAvatar = data.user.user_metadata.avatar_url || data.user.user_metadata.picture || null;
+
+                // Check if profile exists
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('id')
+                    .select('id, full_name, avatar_url')
                     .eq('id', data.user.id)
                     .single()
 
                 if (!profile) {
-                    // Create profile for OAuth user with Google profile image
+                    // Create profile for new OAuth user
                     await supabase.from('profiles').insert({
                         id: data.user.id,
-                        full_name: data.user.user_metadata.full_name || data.user.user_metadata.name || 'User',
-                        avatar_url: data.user.user_metadata.avatar_url || data.user.user_metadata.picture || null,
-                        role: 'student'
+                        full_name: googleName || 'User',
+                        avatar_url: googleAvatar,
+                        role: intendedRole,
                     })
                 } else {
-                    // Update existing profile with Google avatar if not set
-                    const googleAvatar = data.user.user_metadata.avatar_url || data.user.user_metadata.picture;
-                    if (googleAvatar) {
+                    // Update existing profile — fill in missing fields from Google
+                    const updates: Record<string, string | null> = {};
+                    if (googleAvatar && !profile.avatar_url) {
+                        updates.avatar_url = googleAvatar;
+                    }
+                    if (googleName && (!profile.full_name || profile.full_name.trim() === '')) {
+                        updates.full_name = googleName;
+                    }
+                    // If profile was created by trigger with role 'student' but user is employer-intent
+                    if (intendedRole === 'employer') {
+                        const { data: current } = await supabase
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', data.user.id)
+                            .single();
+                        if (current?.role === 'student') {
+                            updates.role = 'employer';
+                        }
+                    }
+                    if (Object.keys(updates).length > 0) {
                         await supabase
                             .from('profiles')
-                            .update({ avatar_url: googleAvatar })
-                            .eq('id', data.user.id)
+                            .update(updates)
+                            .eq('id', data.user.id);
                     }
                 }
 
-                // Check if user is admin
+                // Fetch final role for redirect
                 const { data: userProfile } = await supabase
                     .from('profiles')
                     .select('role')

@@ -57,9 +57,20 @@ function LoginForm() {
     };
 
     const handleGoogleLogin = async () => {
+        const redirect = searchParams.get('redirect');
+        const role = searchParams.get('role');
+        let callbackUrl = `${getBaseUrl()}/auth/callback`;
+
+        // Pass role/redirect intent through next parameter
+        if (role === 'employer' || redirect?.includes('/employer')) {
+            callbackUrl += '?next=/employer/dashboard';
+        } else if (redirect) {
+            callbackUrl += `?next=${encodeURIComponent(redirect)}`;
+        }
+
         await supabase.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: `${getBaseUrl()}/auth/callback` },
+            options: { redirectTo: callbackUrl },
         });
     };
 

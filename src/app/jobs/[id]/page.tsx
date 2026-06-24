@@ -93,5 +93,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         similarJobs = similar || [];
     }
 
-    return <JobDetailClient job={job} user={user} opportunityId={resolvedParams.id} similarJobs={similarJobs} />;
+    // Fetch cover letter price from site settings
+    let coverLetterPrice = 20; // default fallback
+    try {
+        const { data: priceData } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'cover_letter_price')
+            .single();
+        if (priceData?.value) coverLetterPrice = parseInt(priceData.value, 10);
+    } catch { /* use default */ }
+
+    return <JobDetailClient job={job} user={user} opportunityId={resolvedParams.id} similarJobs={similarJobs} coverLetterPrice={coverLetterPrice} />;
 }

@@ -19,18 +19,27 @@ export default function AdminOpportunitiesPage() {
     const loadData = useCallback(async () => {
         const { data } = await s.from('opportunities').select('*').order('created_at', { ascending: false });
         const now = new Date();
-        const list: Opp[] = (data || []).map(o => ({
-            ...o,
-            displayStatus: new Date(o.deadline) < now ? 'Expired' : o.status === 'active' ? 'Active' : 'Draft',
-        }));
+        const list: Opp[] = (data || []).map(o => {
+            // If deadline is explicitly set and past due, mark as Expired.
+            // Null/empty deadline means "Rolling Basis" — never expires.
+            const isExpired = o.deadline ? new Date(o.deadline) < now : false;
+            const displayStatus = isExpired ? 'Expired'
+                : o.status === 'active' ? 'Active'
+                : o.status === 'draft' ? 'Draft'
+                : o.status === 'inactive' ? 'Inactive'
+                : o.status === 'closed' ? 'Closed'
+                : o.status;
+            return { ...o, displayStatus };
+        });
         return list;
     }, [s]);
 
     const applyData = (list: Opp[]) => {
+        const now = new Date();
         setOpps(list);
         setStats({
             total: list.length,
-            active: list.filter(o => o.status === 'active' && new Date(o.deadline) >= new Date()).length,
+            active: list.filter(o => o.status === 'active' && (!o.deadline || new Date(o.deadline) >= now)).length,
             expired: list.filter(o => o.displayStatus === 'Expired').length,
             draft: list.filter(o => o.status === 'draft').length,
         });
@@ -103,7 +112,7 @@ export default function AdminOpportunitiesPage() {
                 </select>
                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
                     className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 outline-none focus:border-emerald-500 bg-white">
-                    <option value="All">All Status</option><option value="Active">Active</option><option value="Expired">Expired</option><option value="Draft">Draft</option>
+                    <option value="All">All Status</option><option value="Active">Active</option><option value="Draft">Draft</option><option value="Expired">Expired</option><option value="Inactive">Inactive</option><option value="Closed">Closed</option>
                 </select>
             </div>
 
@@ -131,8 +140,10 @@ export default function AdminOpportunitiesPage() {
                                         <td className="px-5 py-3.5 text-sm text-gray-600 font-medium">{o.company}</td>
                                         <td className="px-5 py-3.5 text-sm text-gray-500">{o.location}</td>
                                         <td className="px-5 py-3.5">
-                                            <div className="text-sm text-gray-600">{new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                                            {status === 'Active' && days <= 7 && <div className="text-[10px] font-bold text-red-500">{days}d left</div>}
+                                            <div className="text-sm text-gray-600">
+                                                {o.deadline ? new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : <span className="text-gray-400 italic">Rolling</span>}
+                                            </div>
+                                            {status === 'Active' && o.deadline && days <= 7 && days >= 0 && <div className="text-[10px] font-bold text-red-500">{days}d left</div>}
                                         </td>
                                         <td className="px-5 py-3.5">
                                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${status === 'Active' ? 'bg-emerald-50 text-emerald-700' : status === 'Expired' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`}>{status}</span>

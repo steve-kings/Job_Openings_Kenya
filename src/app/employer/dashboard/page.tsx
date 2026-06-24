@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-    Plus, Briefcase, Clock, CheckCircle2, XCircle, LogOut,
+    Plus, Briefcase, Clock, CheckCircle2, XCircle, LogOut, Trash2,
     Calendar, MapPin, TrendingUp, Loader2, Home,
     Users, BarChart3, Sparkles, ExternalLink,
 } from 'lucide-react';
@@ -79,6 +79,17 @@ export default function EmployerDashboardPage() {
     };
 
     const approvalRate = stats.total > 0 ? Math.round((stats.approved / stats.total) * 100) : 0;
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete this job posting? This cannot be undone.')) return;
+        try {
+            const { error } = await supabase.from('employer_job_submissions').delete().eq('id', id);
+            if (error) throw error;
+            setSubmissions(prev => prev.filter(s => s.id !== id));
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : 'Failed to delete. You may not have permission.');
+        }
+    };
 
     const filtered = activeTab === 'all'
         ? submissions
@@ -207,6 +218,11 @@ export default function EmployerDashboardPage() {
                                                 </div>
                                             </div>
                                             <StatusBadge status={sub.status} />
+                                            <button onClick={() => handleDelete(sub.id)}
+                                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete submission">
+                                                <XCircle size={15} />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>

@@ -5,6 +5,39 @@ const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+// Expected prices in KES (fallbacks if site_settings unavailable)
+const DEFAULT_PRICES: Record<string, number> = {
+    cv_builder: 50,
+    cover_letter: 20,
+    cv_pro_design: 200,
+};
+
+async function getExpectedPrice(product: string): Promise<number | null> {
+    if (!SUPABASE_URL || !SUPABASE_KEY) return DEFAULT_PRICES[product] || null;
+    try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Map product to site_settings key
+        const keyMap: Record<string, string> = {
+            cv_builder: 'cv_price',
+            cover_letter: 'cover_letter_price',
+            cv_pro_design: 'cv_pro_design_price',
+        };
+        const settingKey = keyMap[product];
+        if (!settingKey) return DEFAULT_PRICES[product] || null;
+
+        const { data } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', settingKey)
+            .single();
+
+        if (data?.value) return parseInt(data.value, 10);
+        return DEFAULT_PRICES[product] || null;
+    } catch {
+        return DEFAULT_PRICES[product] || null;
+    }
+}
+
 export async function POST(req: Request) {
     if (!PAYSTACK_SECRET) {
         return NextResponse.json({ error: 'Payment not configured.' }, { status: 500 });
@@ -34,6 +67,31 @@ export async function POST(req: Request) {
             return NextResponse.json({ verified: false, message: data.message || 'Payment not verified' }, { status: 402 });
         }
 
+        // Validate amount matches expected price
+        const paidAmount = data.data.amount / 100; // Convert from kobo/cents to KES
+        const expectedPrice = await getExpectedPrice(product);
+
+        if (expectedPrice !== null && paidAmount < expectedPrice) {
+            // Amount too low — possible client-side manipulation
+            console.warn(`Payment amount mismatch: paid ${paidAmount} KES, expected ${expectedPrice} KES for ${product}`);
+            if (SUPABASE_URL && SUPABASE_KEY && user_id) {
+                const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+                await supabase.from('payment_transactions').insert({
+                    user_id, reference,
+                    amount: paidAmount,
+                    currency: data.data.currency,
+                    product: product || 'unknown',
+                    status: 'failed',
+                    email: data.data.customer?.email,
+                    metadata: { reason: `Amount mismatch: paid ${paidAmount}, expected ${expectedPrice}` },
+                });
+            }
+            return NextResponse.json({
+                verified: false,
+                message: `Payment amount mismatch. Expected KES ${expectedPrice}, paid KES ${paidAmount}.`,
+            }, { status: 402 });
+        }
+
         // Record successful transaction
         if (SUPABASE_URL && SUPABASE_KEY && user_id) {
             const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -41,7 +99,7 @@ export async function POST(req: Request) {
             if (!existing) {
                 await supabase.from('payment_transactions').insert({
                     user_id, reference,
-                    amount: data.data.amount / 100,
+                    amount: paidAmount,
                     currency: data.data.currency,
                     product: product || 'unknown',
                     status: 'verified',
@@ -53,7 +111,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             verified: true,
-            amount: data.data.amount / 100,
+            amount: paidAmount,
             currency: data.data.currency,
             email: data.data.customer?.email,
             reference: data.data.reference,

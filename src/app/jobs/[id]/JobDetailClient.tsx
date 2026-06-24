@@ -46,6 +46,7 @@ interface JobDetailClientProps {
     user: unknown;
     opportunityId: string;
     similarJobs?: SimilarJob[];
+    coverLetterPrice?: number;
 }
 
 const typeMeta: Record<string, { text: string; bg: string; border: string; gradient: string; softBg: string }> = {
@@ -53,7 +54,7 @@ const typeMeta: Record<string, { text: string; bg: string; border: string; gradi
     Training: { text: 'text-violet-700',  bg: 'bg-violet-500',  border: 'border-violet-200',  gradient: 'from-violet-500 to-purple-600',  softBg: 'bg-violet-50' },
 };
 
-export default function JobDetailClient({ job, user, opportunityId, similarJobs }: JobDetailClientProps) {
+export default function JobDetailClient({ job, user, opportunityId, similarJobs, coverLetterPrice = 20 }: JobDetailClientProps) {
     const [copySuccess, setCopySuccess] = useState(false);
     const [cvModalOpen, setCvModalOpen] = useState(false);
     const [cvText, setCvText] = useState('');
@@ -133,18 +134,18 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
         P.setup({
             key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
             email: (user as Record<string,unknown> | null)?.email as string || 'user@jobsopening.co.ke',
-            amount: 2000, // 20 KES in pesa
+            amount: coverLetterPrice * 100, // Convert KES to kobo/cents
             currency: 'KES',
             ref: `cl_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
             label: 'AI Cover Letter',
-            metadata: { phone: letterPhone, product: 'cover_letter' },
+            metadata: { phone: letterPhone, product: 'cover_letter', user_id: (user as Record<string,unknown>|null)?.id },
             channels: ['mobile_money'],
             onClose: () => setLetterPayLoading(false),
             callback: async (r: { reference: string }) => {
                 try {
                     const v = await fetch('/api/payment/verify', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reference: r.reference, user_id: (user as Record<string,unknown>|null)?.id, product: 'cover_letter', amount: 20 }),
+                        body: JSON.stringify({ reference: r.reference, user_id: (user as Record<string,unknown>|null)?.id, product: 'cover_letter', amount: coverLetterPrice }),
                     });
                     const d = await v.json();
                     if (d.verified) {
@@ -655,7 +656,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                         /* STEP 1: Payment */
                         <div className="space-y-4">
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 text-sm text-emerald-800">
-                                <strong>KES 20</strong> — AI-powered cover letter tailored for <strong>{job.title}</strong> at <strong>{job.company}</strong>. Pay via M-Pesa STK push.
+                                <strong>KES {coverLetterPrice}</strong> — AI-powered cover letter tailored for <strong>{job.title}</strong> at <strong>{job.company}</strong>. Pay via M-Pesa STK push.
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">M-Pesa Phone Number</label>
@@ -667,7 +668,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                             <button onClick={handleLetterPay} disabled={letterPayLoading}
                                 className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50">
                                 {letterPayLoading ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-                                {letterPayLoading ? 'Processing...' : 'Pay KES 20 — M-Pesa STK Push'}
+                                {letterPayLoading ? 'Processing...' : `Pay KES ${coverLetterPrice} — M-Pesa STK Push`}
                             </button>
                             <p className="text-[10px] text-slate-400 text-center">You&apos;ll receive an STK push on your phone. Enter PIN to pay.</p>
                         </div>
@@ -675,7 +676,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs 
                         /* STEP 2: Generate after payment */
                         <div className="space-y-4">
                             <div className="bg-green-50 border border-green-100 rounded-2xl p-3 text-sm text-green-700 flex items-center gap-2">
-                                <CheckCircle2 size={16} /> Payment confirmed — KES 20 received
+                                <CheckCircle2 size={16} /> Payment confirmed — KES {coverLetterPrice} received
                             </div>
                             <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-sm text-blue-800">
                                 Paste your CV below. Our AI will customize a cover letter for <strong>{job.title}</strong> at <strong>{job.company}</strong>.

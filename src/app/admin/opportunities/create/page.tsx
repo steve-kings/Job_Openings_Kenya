@@ -8,11 +8,13 @@ import Link from 'next/link';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import RichTextEditor from '@/components/RichTextEditor';
 
-const TYPES = ['Job', 'Training', 'Banner'];
+const TYPES = ['Job', 'Training', 'Grant', 'Scholarship', 'Banner'];
 
 const TYPE_COLORS: Record<string, string> = {
     Job: 'from-[#5CB800] to-[#4A9900]',
     Training: 'from-[#F57C00] to-[#E65100]',
+    Grant: 'from-[#2196F3] to-[#1565C0]',
+    Scholarship: 'from-[#9C27B0] to-[#6A1B9A]',
     Banner: 'from-[#E91E63] to-[#C2185B]',
 };
 const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
@@ -25,8 +27,8 @@ const updateItem = (i: number, val: string, setter: React.Dispatch<React.SetStat
 const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
     setter(arr.filter((_, idx) => idx !== i));
 
-const Field = ({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) => (
-    <div className="space-y-1.5">
+const Field = ({ label, required, hint, className, children }: { label: string; required?: boolean; hint?: string; className?: string; children: React.ReactNode }) => (
+    <div className={`space-y-1.5 ${className || ''}`}>
         <div className="flex items-center justify-between">
             <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
             {hint && <span className="text-xs text-gray-400">{hint}</span>}
@@ -164,6 +166,7 @@ export default function CreateOpportunityPage() {
         try {
             const { error } = await supabase.from('opportunities').insert({
                 ...formData,
+                deadline: formData.deadline || null,
                 salary_min: formData.salary_min ? parseInt(formData.salary_min, 10) : null,
                 salary_max: formData.salary_max ? parseInt(formData.salary_max, 10) : null,
                 thumbnail_url: thumbnailUrl || null,
@@ -267,7 +270,7 @@ export default function CreateOpportunityPage() {
                         {/* Type Selector */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Opportunity Type</h3>
-                            <div className="grid grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                                 {TYPES.map((t) => (
                                     <button
                                         key={t}
@@ -300,8 +303,8 @@ export default function CreateOpportunityPage() {
                                 <Field label="Application Deadline" hint="Leave empty for Rolling Basis">
                                     <input type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
                                 </Field>
-                                <Field label="Application Link" required={formData.type !== 'Banner'}>
-                                    <input type="url" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={`${inputCls} md:col-span-2`} />
+                                <Field label="Application Link" required={formData.type !== 'Banner'} className="md:col-span-2">
+                                    <input type="url" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={inputCls} />
                                 </Field>
                                 {formData.type === 'Job' && (
                                     <>
@@ -321,6 +324,12 @@ export default function CreateOpportunityPage() {
                                         </Field>
                                     </>
                                 )}
+                                <Field label="Contact Email">
+                                    <input type="email" value={formData.contact_email} onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })} placeholder="e.g. careers@company.com" className={inputCls} />
+                                </Field>
+                                <Field label="Contact Phone">
+                                    <input type="text" value={formData.contact_phone} onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })} placeholder="e.g. +254 712 345 678" className={inputCls} />
+                                </Field>
                             </div>
                         </div>
 

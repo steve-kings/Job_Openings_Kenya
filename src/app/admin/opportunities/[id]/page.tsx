@@ -28,6 +28,8 @@ export default function EditOpportunityPage() {
         salary_min: '',
         salary_max: '',
         salary_currency: 'KES',
+        contact_email: '',
+        contact_phone: '',
     });
 
     const [thumbnailUrl, setThumbnailUrl] = useState('');
@@ -58,6 +60,8 @@ export default function EditOpportunityPage() {
                 salary_min: data.salary_min ? String(data.salary_min) : '',
                 salary_max: data.salary_max ? String(data.salary_max) : '',
                 salary_currency: data.salary_currency || 'KES',
+                contact_email: data.contact_email || '',
+                contact_phone: data.contact_phone || '',
             });
 
             setThumbnailUrl(data.thumbnail_url || '');
@@ -96,6 +100,21 @@ export default function EditOpportunityPage() {
         setter(newArray);
     };
 
+    const handleDelete = async () => {
+        if (!confirm('Delete this opportunity permanently? This cannot be undone.')) return;
+        try {
+            const { error } = await supabase
+                .from('opportunities')
+                .delete()
+                .eq('id', params.id);
+            if (error) throw error;
+            router.push('/admin/opportunities');
+        } catch (error) {
+            console.error('Error deleting opportunity:', error);
+            alert('Error deleting opportunity. Please try again.');
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -110,6 +129,7 @@ export default function EditOpportunityPage() {
                 .from('opportunities')
                 .update({
                     ...formData,
+                    deadline: formData.deadline || null,
                     salary_min: formData.salary_min ? parseInt(formData.salary_min, 10) : null,
                     salary_max: formData.salary_max ? parseInt(formData.salary_max, 10) : null,
                     thumbnail_url: thumbnailUrl || null,
@@ -169,6 +189,9 @@ export default function EditOpportunityPage() {
                                 >
                                     <option>Job</option>
                                     <option>Training</option>
+                                    <option>Grant</option>
+                                    <option>Scholarship</option>
+                                    <option>Banner</option>
                                 </select>
                             </div>
                         </div>
@@ -240,6 +263,29 @@ export default function EditOpportunityPage() {
                                 </div>
                             </div>
                         )}
+
+                        <div className="grid md:grid-cols-2 gap-6 mb-4">
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-700">Contact Email</label>
+                                <input
+                                    type="email"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                    value={formData.contact_email}
+                                    onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                                    placeholder="e.g. careers@company.com"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-700">Contact Phone</label>
+                                <input
+                                    type="text"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                    value={formData.contact_phone}
+                                    onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+                                    placeholder="e.g. +254 712 345 678"
+                                />
+                            </div>
+                        </div>
 
                         <div className="space-y-1 mb-4">
                             <label className="block text-sm font-medium text-gray-700">Short Description</label>
@@ -375,6 +421,10 @@ export default function EditOpportunityPage() {
                 </div>
 
                 <div className="flex justify-end gap-4">
+                    <button type="button" onClick={handleDelete} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 border border-red-200 font-semibold text-sm transition-colors">
+                        Delete
+                    </button>
+                    <div className="flex-1" />
                     <Link href="/admin/opportunities" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">Cancel</Link>
                     <button type="submit" className="inline-flex items-center justify-center w-40 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors disabled:opacity-50" disabled={saving}>
                         {saving ? 'Saving...' : 'Update Opportunity'}

@@ -150,7 +150,7 @@ CREATE POLICY "Admins can update all profiles"
 CREATE TABLE IF NOT EXISTS opportunities (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title           TEXT NOT NULL,
-    type            TEXT NOT NULL CHECK (type IN ('Job', 'Training')),
+    type            TEXT NOT NULL CHECK (type IN ('Job', 'Training', 'Grant', 'Scholarship', 'Banner')),
     company         TEXT NOT NULL,
     location        TEXT,
     description     TEXT,
@@ -161,11 +161,14 @@ CREATE TABLE IF NOT EXISTS opportunities (
     deadline        DATE,
     apply_url       TEXT,
     status          TEXT NOT NULL DEFAULT 'active'
-                    CHECK (status IN ('active', 'inactive', 'closed', 'draft')),
+                    CHECK (status IN ('active', 'inactive', 'closed', 'draft', 'expired')),
     views           INTEGER NOT NULL DEFAULT 0,
     salary_min      INTEGER,
     salary_max      INTEGER,
     salary_currency  TEXT DEFAULT 'KES',
+    contact_email   TEXT,
+    contact_phone   TEXT,
+    thumbnail_url   TEXT,
     created_by      UUID REFERENCES auth.users(id) ON DELETE SET NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -839,5 +842,6 @@ CREATE POLICY "Admins can manage settings"
 -- Insert default pricing
 INSERT INTO site_settings (key, value) VALUES
     ('cv_price', '50'),
-    ('cv_pro_design_price', '200')
+    ('cv_pro_design_price', '200'),
+    ('cover_letter_price', '20')
 ON CONFLICT (key) DO NOTHING;

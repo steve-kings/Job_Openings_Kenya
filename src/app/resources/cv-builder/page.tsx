@@ -131,10 +131,22 @@ export default function CVBuilderPage() {
         finally { setAiLoading(false); }
     };
 
-    const handlePaystack = () => {
+    const handlePaystack = async () => {
         const P = window.PaystackPop;
         if (!P) { setPayError('Payment loading... try again.'); return; }
         setPayLoading(true); setPayError('');
+
+        // Save CV as 'created' before payment so we don't lose it
+        let cvDocId: string | null = null;
+        try {
+            const { data: cvDoc } = await supabase
+                .from('cv_documents')
+                .insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'created' })
+                .select('id')
+                .single();
+            cvDocId = cvDoc?.id || null;
+        } catch { /* proceed — will save after payment if this fails */ }
+
         P.setup({
             key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
             email: form.email || user?.email || '',
@@ -142,6 +154,7 @@ export default function CVBuilderPage() {
             currency: 'KES',
             ref: `cv_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
             label: 'CV Builder',
+            metadata: { user_id: user?.id, product: 'cv_builder', cv_document_id: cvDocId },
             onClose: () => setPayLoading(false),
             callback: async (r: { reference: string }) => {
                 try {
@@ -152,9 +165,14 @@ export default function CVBuilderPage() {
                     const d = await v.json();
                     if (d.verified) {
                         setPaid(true);
-                        setSaving(true);
-                        await supabase.from('cv_documents').insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'paid' });
-                        setSaving(false);
+                        // Update the existing CV record to 'paid' (or create if pre-save failed)
+                        if (cvDocId) {
+                            await supabase.from('cv_documents').update({ status: 'paid' }).eq('id', cvDocId);
+                        } else {
+                            setSaving(true);
+                            await supabase.from('cv_documents').insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'paid' });
+                            setSaving(false);
+                        }
                     } else setPayError('Verification failed. Contact support.');
                 } catch { setPayError('Verification error. Contact support.'); }
                 setPayLoading(false);

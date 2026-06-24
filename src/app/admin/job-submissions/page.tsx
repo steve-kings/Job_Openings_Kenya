@@ -14,6 +14,7 @@ export default function JobSubmissionsPage() {
     useEffect(() => { loadData().then(d => { setItems(d); setLoading(false); }); }, [loadData]);
 
     const update = async (id: string, status: string) => { await s.from('employer_job_submissions').update({status}).eq('id',id); const d = await loadData(); setItems(d); };
+    const del = async (id: string) => { if (!confirm('Delete this submission?')) return; await s.from('employer_job_submissions').delete().eq('id',id); const d = await loadData(); setItems(d); };
 
     const filtered = statusFilter === 'All' ? items : items.filter(i => i.status === statusFilter);
     const pending = items.filter(i=>i.status==='pending').length;
@@ -48,7 +49,13 @@ export default function JobSubmissionsPage() {
                             <div className="flex gap-2 shrink-0">
                                 <button onClick={()=>update(s.id,'approved')} className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all"><CheckCircle2 size={13}/> Approve</button>
                                 <button onClick={()=>update(s.id,'rejected')} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"><XCircle size={13}/> Reject</button>
+                                <button onClick={()=>del(s.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-red-200 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 transition-all"><XCircle size={13}/> Delete</button>
                             </div>
+                        )}
+                        {(s.status === 'approved' || s.status === 'rejected') && (
+                            <button onClick={()=>del(s.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 px-3 py-2 text-xs font-bold text-gray-400 hover:text-red-500 hover:border-red-200 transition-all shrink-0">
+                                Delete
+                            </button>
                         )}
                     </div>
                 ))}
