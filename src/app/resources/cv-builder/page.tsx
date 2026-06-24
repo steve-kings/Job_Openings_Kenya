@@ -595,7 +595,7 @@ export default function CVBuilderPage() {
                                     <div className="flex-1">
                                         <h3 className="font-extrabold text-violet-900 mb-1">Want a Pro Designer to Polish It?</h3>
                                         <p className="text-sm text-violet-700 mb-4">Our CV expert will design and format your CV perfectly for your industry. <strong>KES 200</strong> — 24hr turnaround.</p>
-                                        <a href={`mailto:info@jobsopening.co.ke?subject=CV%20Design%20Request&body=Hi, I'd like a professional CV design. My name is ${encodeURIComponent(form.full_name)}.`}
+                                        <a href={`mailto:info@jobopenings.co.ke?subject=CV%20Design%20Request&body=Hi, I'd like a professional CV design. My name is ${encodeURIComponent(form.full_name)}.`}
                                             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 text-white font-extrabold text-sm hover:bg-violet-700 transition-all shadow-sm">
                                             <Mail size={14} /> Request Pro Design
                                         </a>
