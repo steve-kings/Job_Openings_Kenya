@@ -98,12 +98,12 @@ export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boole
                                             <span className={`text-xs font-bold ${expiring ? 'text-red-500' : 'text-gray-400'}`}>{dl === null ? 'Ongoing' : dl === 0 ? 'Today' : `${dl}d`}</span>
                                         </div>
                                     </div>
-                                    <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between">
-                                        <Link href={`/jobs/${job.id}`} className="text-sm font-extrabold text-gray-500 hover:text-emerald-700 transition-colors flex items-center gap-1 group/link">
+                                    <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between flex-wrap gap-2">
+                                        <Link href={`/jobs/${job.id}`} className="text-sm font-extrabold text-gray-500 hover:text-emerald-700 transition-colors flex items-center gap-1 group/link shrink-0">
                                             View Details <ArrowRight size={14} className="group-hover/link:translate-x-0.5 transition-transform" />
                                         </Link>
                                         <Link href={`/jobs/${job.id}`}
-                                            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 hover:shadow-md active:scale-[0.98]">
+                                            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 sm:px-6 py-2 sm:py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 hover:shadow-md active:scale-[0.98] shrink-0">
                                             Apply Now <ExternalLink size={13} />
                                         </Link>
                                     </div>
@@ -139,9 +139,9 @@ export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boole
                                         <div className="hidden sm:flex shrink-0 w-8 h-8 rounded-lg bg-gray-100 items-center justify-center text-xs font-extrabold text-gray-500 group-hover/list:bg-emerald-100 group-hover/list:text-emerald-700 transition-colors">
                                             {(job.company || 'J').charAt(0).toUpperCase()}
                                         </div>
-                                        <div className="min-w-0">
-                                            <div className="flex items-center gap-1.5 flex-wrap">
-                                                <span className="font-bold text-sm text-gray-900 group-hover/list:text-emerald-700 transition-colors truncate">{job.title}</span>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-1.5 min-w-0 w-full">
+                                                <span className="font-bold text-sm text-gray-900 group-hover/list:text-emerald-700 transition-colors truncate flex-1 min-w-0">{job.title}</span>
                                                 {showNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-amber-100 text-amber-700">New</span>}
                                                 {expiring && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-red-100 text-red-600">{dl}d</span>}
                                             </div>

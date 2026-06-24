@@ -131,7 +131,7 @@ export default function JobsFilter() {
                     );
                 })}
 
-                <span className="w-px h-5 bg-slate-200 mx-1" />
+                <span className="hidden sm:inline w-px h-5 bg-slate-200 mx-1" />
 
                 {/* Location */}
                 <div className="relative flex items-center gap-1.5 bg-slate-100 rounded-full px-3 py-1.5">
