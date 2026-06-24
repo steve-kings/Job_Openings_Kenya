@@ -1,8 +1,16 @@
 /**
  * In-memory rate limiter for API routes.
  * Uses a sliding-window approach with per-IP tracking.
- * For production with multiple serverless instances, consider
- * migrating to @upstash/ratelimit or a Redis-backed solution.
+ *
+ * ✅ Suitable for single-instance VPS deployments (current setup).
+ * ⚠️  For serverless / multi-instance (Vercel, AWS Lambda):
+ *     Replace with @upstash/ratelimit + Redis for shared state.
+ *     Install:  npm i @upstash/ratelimit @upstash/redis
+ *     Usage:    const ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, "60s") });
+ *     Then:     const { success } = await ratelimit.limit(identifier);
+ *
+ * Current implementation: Map-based store with 60s cleanup interval.
+ * Memory bound: ~200 entries max under normal load (~2KB).
  */
 
 interface RateLimitEntry {
@@ -11,13 +19,14 @@ interface RateLimitEntry {
 }
 
 const store = new Map<string, RateLimitEntry>();
+const MAX_STORE_SIZE = 5000; // Prevent memory leaks from abusers
 
 // Clean up expired entries periodically (every 60 seconds)
 if (typeof setInterval !== 'undefined') {
     setInterval(() => {
         const now = Date.now();
         for (const [key, entry] of store) {
-            if (now >= entry.resetAt) {
+            if (now >= entry.resetAt || store.size > MAX_STORE_SIZE) {
                 store.delete(key);
             }
         }
