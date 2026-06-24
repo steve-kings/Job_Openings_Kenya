@@ -2,18 +2,96 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { CheckCircle2, XCircle, MapPin, Building2, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, MapPin, Building2, Loader2, AlertCircle, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 interface Sub { id: string; job_title: string; company_name: string; location: string; status: string; created_at: string; employer_id?: string; }
+interface FullSubmission {
+    id: string; job_title: string; company_name: string; contact_email: string;
+    job_type: string; location: string; deadline: string | null;
+    short_description: string; description: string; requirements: string;
+    apply_url: string; logo_url: string | null;
+}
 
 export default function JobSubmissionsPage() {
     const [items, setItems] = useState<Sub[]>([]); const [loading, setLoading] = useState(true);
+    const [approving, setApproving] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState('All'); const s = useMemo(() => createClient(), []);
+    const [createdOpps, setCreatedOpps] = useState<Record<string, string>>({}); // submissionId -> opportunityId
 
     const loadData = useCallback(async () => { const { data } = await s.from('employer_job_submissions').select('*').order('created_at',{ascending:false}); return data||[]; }, [s]);
     useEffect(() => { loadData().then(d => { setItems(d); setLoading(false); }); }, [loadData]);
 
-    const update = async (id: string, status: string) => { await s.from('employer_job_submissions').update({status}).eq('id',id); const d = await loadData(); setItems(d); };
+    const approveAndCreate = async (id: string) => {
+        setApproving(id);
+        try {
+            // Fetch full submission details
+            const { data: sub, error: fetchErr } = await s
+                .from('employer_job_submissions')
+                .select('*')
+                .eq('id', id)
+                .single();
+            if (fetchErr || !sub) throw new Error('Failed to fetch submission');
+
+            const fullSub = sub as unknown as FullSubmission;
+
+            // Convert requirements from newline-separated to array
+            const reqArray = fullSub.requirements
+                ? fullSub.requirements.split('\n').map(r => r.trim()).filter(Boolean)
+                : [];
+
+            // Check for duplicate (same title + company)
+            const { data: existing } = await s
+                .from('opportunities')
+                .select('id')
+                .eq('title', fullSub.job_title)
+                .eq('company', fullSub.company_name)
+                .single();
+
+            let oppId: string;
+            if (existing) {
+                oppId = existing.id;
+            } else {
+                // Create the opportunity
+                const { data: newOpp, error: insertErr } = await s
+                    .from('opportunities')
+                    .insert({
+                        title: fullSub.job_title,
+                        company: fullSub.company_name,
+                        type: 'Job',
+                        location: fullSub.location,
+                        deadline: fullSub.deadline || null,
+                        apply_url: fullSub.apply_url,
+                        short_description: fullSub.short_description,
+                        description: fullSub.description,
+                        requirements: reqArray,
+                        contact_email: fullSub.contact_email,
+                        thumbnail_url: fullSub.logo_url || null,
+                        status: 'active',
+                    })
+                    .select('id')
+                    .single();
+                if (insertErr) throw insertErr;
+                oppId = newOpp.id;
+            }
+
+            // Mark submission as approved
+            await s.from('employer_job_submissions').update({ status: 'approved' }).eq('id', id);
+
+            setCreatedOpps(prev => ({ ...prev, [id]: oppId }));
+            const d = await loadData();
+            setItems(d);
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : 'Failed to approve and create opportunity');
+        } finally {
+            setApproving(null);
+        }
+    };
+
+    const reject = async (id: string) => {
+        await s.from('employer_job_submissions').update({ status: 'rejected' }).eq('id', id);
+        const d = await loadData(); setItems(d);
+    };
     const del = async (id: string) => { if (!confirm('Delete this submission?')) return; await s.from('employer_job_submissions').delete().eq('id',id); const d = await loadData(); setItems(d); };
 
     const filtered = statusFilter === 'All' ? items : items.filter(i => i.status === statusFilter);
@@ -47,12 +125,25 @@ export default function JobSubmissionsPage() {
                         </div>
                         {s.status === 'pending' && (
                             <div className="flex gap-2 shrink-0">
-                                <button onClick={()=>update(s.id,'approved')} className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all"><CheckCircle2 size={13}/> Approve</button>
-                                <button onClick={()=>update(s.id,'rejected')} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"><XCircle size={13}/> Reject</button>
+                                <button onClick={()=>approveAndCreate(s.id)} disabled={approving === s.id}
+                                    className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all disabled:opacity-60">
+                                    {approving === s.id ? <Loader2 size={13} className="animate-spin"/> : <CheckCircle2 size={13}/>}
+                                    Approve & Create
+                                </button>
+                                <button onClick={()=>reject(s.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"><XCircle size={13}/> Reject</button>
                                 <button onClick={()=>del(s.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-red-200 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 transition-all"><XCircle size={13}/> Delete</button>
                             </div>
                         )}
-                        {(s.status === 'approved' || s.status === 'rejected') && (
+                        {s.status === 'approved' && createdOpps[s.id] && (
+                            <Link href={`/admin/opportunities/${createdOpps[s.id]}`}
+                                className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 text-xs font-bold hover:bg-emerald-100 transition-all shrink-0">
+                                <ExternalLink size={13}/> View Listing
+                            </Link>
+                        )}
+                        {(s.status === 'approved' && !createdOpps[s.id]) && (
+                            <span className="text-xs text-emerald-600 font-semibold shrink-0">✓ Published</span>
+                        )}
+                        {s.status === 'rejected' && (
                             <button onClick={()=>del(s.id)} className="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 px-3 py-2 text-xs font-bold text-gray-400 hover:text-red-500 hover:border-red-200 transition-all shrink-0">
                                 Delete
                             </button>

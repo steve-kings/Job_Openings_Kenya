@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { createAdminUser, getAdminUsers, updateAdminUser, deleteAdminUser, resetAdminPassword } from '@/app/actions/admin';
-import { Settings, UserPlus, Mail, User, Shield, CheckCircle, AlertCircle, Edit, Trash2, Key } from 'lucide-react';
+import { Settings, UserPlus, Mail, User, Shield, CheckCircle, AlertCircle, Edit, Trash2, Key, DollarSign, Save, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface AdminUser {
     id: string;
@@ -32,9 +33,46 @@ export default function AdminSettingsPage() {
         email: ''
     });
 
+    const [pricing, setPricing] = useState({ cv_price: '50', cover_letter_price: '20', cv_pro_design_price: '200' });
+    const [savingPricing, setSavingPricing] = useState(false);
+    const [pricingMsg, setPricingMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const supabase = createClient();
+
     useEffect(() => {
         fetchAdminUsers();
+        fetchPricing();
     }, []);
+
+    const fetchPricing = async () => {
+        const { data } = await supabase.from('site_settings').select('key,value');
+        if (data) {
+            const p: Record<string, string> = { cv_price: '50', cover_letter_price: '20', cv_pro_design_price: '200' };
+            data.forEach((row: { key: string; value: string }) => {
+                if (p.hasOwnProperty(row.key)) p[row.key] = row.value;
+            });
+            setPricing(p as { cv_price: string; cover_letter_price: string; cv_pro_design_price: string });
+        }
+    };
+
+    const savePricing = async () => {
+        setSavingPricing(true);
+        setPricingMsg(null);
+        try {
+            const entries = [
+                { key: 'cv_price', value: pricing.cv_price },
+                { key: 'cover_letter_price', value: pricing.cover_letter_price },
+                { key: 'cv_pro_design_price', value: pricing.cv_pro_design_price },
+            ];
+            for (const e of entries) {
+                await supabase.from('site_settings').upsert({ key: e.key, value: e.value }, { onConflict: 'key' });
+            }
+            setPricingMsg({ type: 'success', text: 'Pricing updated successfully!' });
+        } catch (err: unknown) {
+            setPricingMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to save pricing' });
+        } finally {
+            setSavingPricing(false);
+        }
+    };
 
     const fetchAdminUsers = async () => {
         setFetchingUsers(true);
@@ -380,6 +418,54 @@ export default function AdminSettingsPage() {
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── Site Settings: Pricing ── */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-3">
+                    <DollarSign size={20} className="text-emerald-600" />
+                    <h2 className="font-bold text-gray-900">Site Pricing</h2>
+                </div>
+                <div className="p-6 space-y-4">
+                    {pricingMsg && (
+                        <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${pricingMsg.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                            {pricingMsg.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+                            <span className="text-sm font-semibold">{pricingMsg.text}</span>
+                        </div>
+                    )}
+                    <div className="grid sm:grid-cols-3 gap-4">
+                        {[
+                            { key: 'cv_price', label: 'CV Builder', desc: 'Price to download a premium CV template' },
+                            { key: 'cover_letter_price', label: 'AI Cover Letter', desc: 'Price to generate an AI cover letter' },
+                            { key: 'cv_pro_design_price', label: 'CV Pro Design', desc: 'Price for professional CV design service' },
+                        ].map(({ key, label, desc }) => (
+                            <div key={key} className="space-y-1.5">
+                                <label className="text-sm font-bold text-gray-700">{label}</label>
+                                <p className="text-xs text-gray-400">{desc}</p>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-gray-500 font-bold">KES</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={pricing[key as keyof typeof pricing]}
+                                        onChange={(e) => setPricing(prev => ({ ...prev, [key]: e.target.value }))}
+                                        className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 outline-none text-sm text-gray-700"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <button
+                            onClick={savePricing}
+                            disabled={savingPricing}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition-all disabled:opacity-60"
+                        >
+                            {savingPricing ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            {savingPricing ? 'Saving...' : 'Save Pricing'}
+                        </button>
                     </div>
                 </div>
             </div>

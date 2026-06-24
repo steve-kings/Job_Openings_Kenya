@@ -70,7 +70,7 @@ export async function POST(request: Request) {
                 user_agent: request.headers.get('user-agent') || 'Mozilla/5.0',
             });
 
-            const res = await fetch(`http://public.api.careerjet.net/search?${params.toString()}`);
+            const res = await fetch(`https://public.api.careerjet.net/search?${params.toString()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.type === 'JOBS' && data.jobs) {

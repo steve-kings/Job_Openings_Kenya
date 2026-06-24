@@ -250,6 +250,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     status          TEXT NOT NULL DEFAULT 'draft'
                     CHECK (status IN ('draft', 'published', 'archived')),
     views           INTEGER NOT NULL DEFAULT 0,
+    published_at    TIMESTAMPTZ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

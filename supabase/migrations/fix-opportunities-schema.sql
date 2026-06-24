@@ -38,7 +38,15 @@ ALTER TABLE public.opportunities
   ADD CONSTRAINT opportunities_status_check
   CHECK (status IN ('active', 'inactive', 'closed', 'draft', 'expired'));
 
--- 5. Insert default cover letter price if not set
+-- 5. Add missing blog_posts columns
+ALTER TABLE public.blog_posts
+  ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+
+-- 5b. Add phone column to profiles (used by CV builder)
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS phone TEXT;
+
+-- 6. Insert default cover letter price if not set
 INSERT INTO site_settings (key, value)
 VALUES ('cover_letter_price', '20')
 ON CONFLICT (key) DO NOTHING;

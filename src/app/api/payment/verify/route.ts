@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limiter';
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -41,6 +42,16 @@ async function getExpectedPrice(product: string): Promise<number | null> {
 export async function POST(req: Request) {
     if (!PAYSTACK_SECRET) {
         return NextResponse.json({ error: 'Payment not configured.' }, { status: 500 });
+    }
+
+    // Rate limiting: 15 verification attempts per minute
+    const rateLimitResult = checkRateLimit({
+        maxRequests: 15,
+        windowMs: 60_000,
+        identifier: `payment-verify:${getClientIdentifier(req)}`,
+    });
+    if (!rateLimitResult.success) {
+        return NextResponse.json({ error: 'Too many verification attempts. Please try again later.' }, { status: 429 });
     }
 
     try {

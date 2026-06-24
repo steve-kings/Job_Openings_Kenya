@@ -67,16 +67,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
         }
 
+        // Store extra fields in the filters JSONB column to match schema
+        const filters = { email, type, location, notify_email, notify_whatsapp };
+
         const { data, error } = await supabase
             .from('saved_searches')
             .insert([{
                 user_id: user.id,
-                email,
+                name: typeof query === 'string' ? query.slice(0, 100) : 'Search',
                 query: typeof query === 'string' ? query : '',
-                type,
-                location,
-                notify_email,
-                notify_whatsapp,
+                filters,
             }])
             .select()
             .single();

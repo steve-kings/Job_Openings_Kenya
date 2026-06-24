@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
 import { Groq } from 'groq-sdk';
+import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limiter';
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
 export async function POST(req: Request) {
+    // Rate limiting: 10 prep generations per minute
+    const rateLimitResult = checkRateLimit({
+        maxRequests: 10,
+        windowMs: 60_000,
+        identifier: `interview-prep:${getClientIdentifier(req)}`,
+    });
+    if (!rateLimitResult.success) {
+        return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
+
     try {
         const { jobTitle, jobDescription, company } = await req.json();
 
