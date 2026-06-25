@@ -113,7 +113,7 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
                             rel="noopener noreferrer"
                             className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all mb-5 group"
                         >
-                            <div className="grid md:grid-cols-2">
+                            <div className={articles[0].image ? "grid md:grid-cols-2" : "block"}>
                                 {articles[0].image && (
                                     <img
                                         src={articles[0].image}

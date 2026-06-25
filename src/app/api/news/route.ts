@@ -11,16 +11,16 @@ interface NewsArticle {
     image: string | null;
 }
 
-// Strip HTML tags and decode entities from a string
 function cleanHTML(html: string): string {
-    return html
-        .replace(/<[^>]*>/g, '')      // Remove all HTML tags
+    const decoded = html
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'")
-        .replace(/&nbsp;/g, ' ')
+        .replace(/&nbsp;/g, ' ');
+    return decoded
+        .replace(/<[^>]*>/g, '')      // Remove all HTML tags
         .trim();
 }
 
@@ -102,10 +102,14 @@ export async function GET(request: Request) {
         const query = topicMap[topic] || topicMap.jobs;
 
         let articles: NewsArticle[] = [];
+        let sourceUsed = 'google-rss';
 
         // Try GNews first if key is available
         if (GNEWS_API_KEY) {
             articles = await fetchGNews(query, limit);
+            if (articles.length > 0) {
+                sourceUsed = 'gnews';
+            }
         }
 
         // Fallback to Google News RSS (always works, no key needed)
@@ -115,6 +119,7 @@ export async function GET(request: Request) {
             if (res.ok) {
                 const xml = await res.text();
                 articles = parseRSS(xml, limit);
+                sourceUsed = 'google-rss';
             }
         }
 
@@ -130,7 +135,7 @@ export async function GET(request: Request) {
             success: true,
             totalCount: unique.length,
             articles: unique,
-            source: GNEWS_API_KEY ? 'gnews' : 'google-rss',
+            source: sourceUsed,
         });
     } catch (error) {
         console.error('News API error:', error);
