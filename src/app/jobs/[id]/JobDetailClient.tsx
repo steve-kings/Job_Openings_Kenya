@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
     Calendar, MapPin, Building2, ExternalLink, Lock,
     CheckCircle2, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, CreditCard,
-    Lightbulb, PhoneCall, Wallet, Search,
+    Lightbulb, PhoneCall, Wallet, Search, Mail,
 } from 'lucide-react';
 import BookmarkButton from '@/components/BookmarkButton';
 import GoogleAd from '@/components/GoogleAd';
@@ -100,6 +100,80 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
 
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `Check out this ${job.type.toLowerCase()}: ${job.title} at ${job.company}`;
+
+    const getFormattedApplyUrl = (url: string | null | undefined): string => {
+        if (!url) return '';
+        const trimmed = url.trim();
+        if (trimmed.includes('@') && !trimmed.startsWith('mailto:') && !trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+            return `mailto:${trimmed}`;
+        }
+        const phoneClean = trimmed.replace(/[\s\-\(\)]/g, '');
+        const isPhone = /^\+?[0-9]{9,15}$/.test(phoneClean);
+        if (isPhone && !trimmed.startsWith('tel:') && !trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+            return `tel:${phoneClean}`;
+        }
+        if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('mailto:') && !trimmed.startsWith('tel:')) {
+            return `https://${trimmed}`;
+        }
+        return trimmed;
+    };
+
+    const formattedApplyUrl = getFormattedApplyUrl(job.apply_url);
+    const isExternalApply = formattedApplyUrl ? formattedApplyUrl.startsWith('http') : false;
+    const applyHref = formattedApplyUrl || '#about-opportunity';
+
+    const getApplyButtonDetails = () => {
+        if (!formattedApplyUrl) {
+            return {
+                label: 'Refer to Description',
+                icon: <Search size={15} />,
+            };
+        }
+        if (formattedApplyUrl.startsWith('mailto:')) {
+            return {
+                label: 'Apply via Email',
+                icon: <Mail size={15} />,
+            };
+        }
+        if (formattedApplyUrl.startsWith('tel:')) {
+            return {
+                label: 'Call to Apply',
+                icon: <PhoneCall size={15} />,
+            };
+        }
+        return {
+            label: 'Apply Online',
+            icon: <ExternalLink size={15} />,
+        };
+    };
+
+    const getApplyCardButtonDetails = () => {
+        if (!formattedApplyUrl) {
+            return {
+                label: 'Refer to Description',
+                icon: <Search size={16} />,
+            };
+        }
+        if (formattedApplyUrl.startsWith('mailto:')) {
+            return {
+                label: 'Apply via Email',
+                icon: <Mail size={16} />,
+            };
+        }
+        if (formattedApplyUrl.startsWith('tel:')) {
+            return {
+                label: 'Call to Apply',
+                icon: <PhoneCall size={16} />,
+            };
+        }
+        return {
+            label: 'Apply Online',
+            icon: <ExternalLink size={16} />,
+        };
+    };
+
+    const applyBtn = getApplyButtonDetails();
+    const applyCardBtn = getApplyCardButtonDetails();
 
     const handleTrackApplication = async () => {
         setAppStatus('tracking');
@@ -355,9 +429,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         <div className="shrink-0 flex flex-row lg:flex-col gap-2.5">
                             {canView ? (
                                 <>
-                                    <a href={job.apply_url} target="_blank" rel="noopener noreferrer"
+                                    <a href={applyHref} target={isExternalApply ? "_blank" : undefined} rel={isExternalApply ? "noopener noreferrer" : undefined}
                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 hover:shadow-md">
-                                        Apply Now <ExternalLink size={15} />
+                                        {applyBtn.label} {applyBtn.icon}
                                     </a>
                                     <div className="flex gap-2">
                                         <BookmarkButton
@@ -388,7 +462,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                     {/* Main Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Description */}
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                        <div id="about-opportunity" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                             <h2 className="text-lg font-extrabold text-gray-900 mb-5 flex items-center gap-2.5">
                                 <span className={`w-1.5 h-6 rounded-full bg-gradient-to-b ${colors.gradient}`} />
                                 About This Opportunity
@@ -523,9 +597,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                         <p className="text-sm text-white/80 mt-0.5">Don&apos;t miss this opportunity.</p>
                                     </div>
                                     <div className="p-5 space-y-2.5">
-                                        <a href={job.apply_url} target="_blank" rel="noopener noreferrer"
+                                        <a href={applyHref} target={isExternalApply ? "_blank" : undefined} rel={isExternalApply ? "noopener noreferrer" : undefined}
                                             className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200">
-                                            Apply Now <ExternalLink size={16} />
+                                            {applyCardBtn.label} {applyCardBtn.icon}
                                         </a>
                                         {appStatus === 'tracked' ? (
                                             <div className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-50 text-emerald-700 rounded-xl font-semibold text-sm border border-emerald-100">

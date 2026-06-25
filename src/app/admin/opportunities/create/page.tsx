@@ -73,6 +73,39 @@ const ListEditor = ({
     </div>
 );
 
+const sanitizeList = (list: unknown): string[] => {
+    if (!list) return [''];
+    if (Array.isArray(list)) {
+        const flatList = list.flatMap(item => {
+            if (typeof item === 'string') {
+                return item.split('\n');
+            }
+            return [];
+        });
+        const cleaned = flatList
+            .map(item => {
+                if (typeof item !== 'string') return '';
+                let cleanedItem = item.trim();
+                cleanedItem = cleanedItem.replace(/^(?:[-*•+\u2022]\s*|\d+[\.)]\s*)+/, '');
+                return cleanedItem.trim();
+            })
+            .filter(item => item.length > 0);
+        return cleaned.length > 0 ? cleaned : [''];
+    }
+    if (typeof list === 'string') {
+        const cleaned = list
+            .split('\n')
+            .map(item => {
+                let cleanedItem = item.trim();
+                cleanedItem = cleanedItem.replace(/^(?:[-*•+\u2022]\s*|\d+[\.)]\s*)+/, '');
+                return cleanedItem.trim();
+            })
+            .filter(item => item.length > 0);
+        return cleaned.length > 0 ? cleaned : [''];
+    }
+    return [''];
+};
+
 export default function CreateOpportunityPage() {
     const router = useRouter();
     const supabase = createClient();
@@ -121,7 +154,7 @@ export default function CreateOpportunityPage() {
             });
             const data = await res.json();
             
-            if (data.title) {
+            if (data && (data.title || data.description || data.company)) {
                 setFormData({
                     ...formData,
                     title: data.title || formData.title,
@@ -139,14 +172,14 @@ export default function CreateOpportunityPage() {
                     contact_phone: data.contact_phone || formData.contact_phone,
                 });
 
-                if (data.requirements && Array.isArray(data.requirements) && data.requirements.length > 0) {
-                    setRequirements(data.requirements);
+                if (data.requirements) {
+                    setRequirements(sanitizeList(data.requirements));
                 }
-                if (data.responsibilities && Array.isArray(data.responsibilities) && data.responsibilities.length > 0) {
-                    setResponsibilities(data.responsibilities);
+                if (data.responsibilities) {
+                    setResponsibilities(sanitizeList(data.responsibilities));
                 }
-                if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0) {
-                    setBenefits(data.benefits);
+                if (data.benefits) {
+                    setBenefits(sanitizeList(data.benefits));
                 }
                 showToast('success', 'AI extracted all details successfully!');
                 setAiText('');
@@ -303,8 +336,8 @@ export default function CreateOpportunityPage() {
                                 <Field label="Application Deadline" hint="Leave empty for Rolling Basis">
                                     <input type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
                                 </Field>
-                                <Field label="Application Link" required={formData.type !== 'Banner'} className="md:col-span-2">
-                                    <input type="url" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="https://..." className={inputCls} />
+                                <Field label="Application Link / Contact Details" required={formData.type !== 'Banner'} className="md:col-span-2" hint="Enter apply website URL, email address, or phone number">
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="e.g. https://careers.company.com/apply, careers@company.com, or +254..." className={inputCls} />
                                 </Field>
                                 {formData.type === 'Job' && (
                                     <>

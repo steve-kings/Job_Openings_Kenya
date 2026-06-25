@@ -201,7 +201,7 @@ export default function EditOpportunityPage() {
                                 <label className="block text-sm font-medium text-gray-700">Company / Organization</label>
                                 <input
                                     type="text"
-                                    required
+                                    required={formData.type !== 'Banner'}
                                     className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                     value={formData.company}
                                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
@@ -211,7 +211,7 @@ export default function EditOpportunityPage() {
                                 <label className="block text-sm font-medium text-gray-700">Location</label>
                                 <input
                                     type="text"
-                                    required
+                                    required={formData.type !== 'Banner'}
                                     className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                     value={formData.location}
                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -224,17 +224,17 @@ export default function EditOpportunityPage() {
                                 <label className="block text-sm font-medium text-gray-700">Application Deadline</label>
                                 <input
                                     type="date"
-                                    required
                                     className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                     value={formData.deadline}
                                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700">Application Link (URL)</label>
+                                <label className="block text-sm font-medium text-gray-700">Application Link / Contact Details</label>
                                 <input
-                                    type="url"
-                                    required
+                                    type="text"
+                                    required={formData.type !== 'Banner'}
+                                    placeholder="e.g. https://careers.company.com/apply, careers@company.com, or +254..."
                                     className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                     value={formData.apply_url}
                                     onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })}
@@ -290,7 +290,7 @@ export default function EditOpportunityPage() {
                         <div className="space-y-1 mb-4">
                             <label className="block text-sm font-medium text-gray-700">Short Description</label>
                             <textarea
-                                required
+                                required={formData.type !== 'Banner'}
                                 className="w-full px-3 py-2 rounded-lg border border-gray-300 h-20 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                 value={formData.short_description}
                                 onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
