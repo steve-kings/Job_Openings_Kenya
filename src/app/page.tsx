@@ -277,8 +277,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
             {/* ═══════ LISTINGS ═══════ */}
             <section className="py-8 sm:py-12 bg-gray-50/50">
-                <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
-                    <main>
+                <div className="mx-auto grid grid-cols-1 max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
+                    <main className="min-w-0">
                         {/* Breadcrumb */}
                         <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-6">
                             <Link href="/" className="flex items-center gap-1 hover:text-emerald-600 transition-colors">
@@ -372,7 +372,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                     </main>
 
                     {/* ═══════ SIDEBAR ═══════ */}
-                    <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+                    <aside className="min-w-0 space-y-5 lg:sticky lg:top-28 lg:self-start">
                         {/* Weather Widget */}
                         <WeatherWidget />
 

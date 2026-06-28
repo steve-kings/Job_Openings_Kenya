@@ -161,7 +161,7 @@ export default function RootLayout({
         <BookmarkProvider>
           <Suspense fallback={null}><AuthCodeHandler /></Suspense>
           <Navbar />
-          <main className="flex-grow w-full max-w-full overflow-x-hidden">
+          <main className="flex-grow w-full max-w-full min-w-0 overflow-x-hidden">
             {children}
           </main>
           <Footer />

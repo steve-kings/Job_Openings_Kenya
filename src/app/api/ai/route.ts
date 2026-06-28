@@ -164,7 +164,7 @@ export async function POST(req: Request) {
   "contact_email": "Primary contact email address found in the text.",
   "contact_phone": "Primary contact phone number found. Format as +254...",
   "short_description": "Engaging 1-sentence summary under 150 characters",
-  "description": "Full Markdown description of the role overview, team, and company. Do NOT list the bullet points for requirements, responsibilities, or benefits here, as those MUST be extracted separately in their dedicated fields below. Format in clean markdown.",
+  "description": "A SHORT, to-the-point overview of the role and organisation: 2 to 4 sentences (roughly 50-90 words), a single tight paragraph. State what the role is and who it suits — no filler, no repetition, no padding. Do NOT list requirements, responsibilities, or benefits here (those go in their dedicated array fields). Clean markdown, no headings.",
   "requirements": ["Extract each qualification, skill, experience, or education requirement as a separate, plain-text string element in this array. Do NOT include markdown bullets (like '-', '*', '•'), numbering (like '1.', '2.'), or newlines within any element. Split multiple requirements into separate elements. Be extremely thorough. Extract at least 3-8 items if present."],
   "responsibilities": ["Extract each duty, task, or responsibility as a separate, plain-text string element in this array. Do NOT include markdown bullets (like '-', '*', '•'), numbering (like '1.', '2.'), or newlines within any element. Split multiple duties into separate elements. Be extremely thorough. Extract at least 3-8 items if present."],
   "benefits": ["Extract each perk, benefit, allowance, insurance, or working condition as a separate, plain-text string element in this array. Do NOT include markdown bullets, numbering, or newlines."],
@@ -174,7 +174,7 @@ export async function POST(req: Request) {
 }
 If the text mentions a salary range like 'KES 50,000-80,000', extract both numbers. If only one number is given, put it in salary_min.
 CRITICAL FORMATTING RULES:
-1. 'description' MUST be a clean overview of the company and role. It MUST NOT contain the bulleted lists of requirements, qualifications, responsibilities, duties, or benefits/perks, as those MUST be extracted separately in their dedicated array fields. Strip them out from the description if they are present.
+1. 'description' MUST be a SHORT, clean overview of the company and role — 2 to 4 sentences (~50-90 words), concise and to the point with no padding. It MUST NOT contain the bulleted lists of requirements, qualifications, responsibilities, duties, or benefits/perks, as those MUST be extracted separately in their dedicated array fields. Strip them out from the description if they are present.
 2. The arrays for 'requirements', 'responsibilities', and 'benefits' MUST contain clean, individual plain-text items. Do NOT start items with bullet characters (like '-', '*', '•'), checkboxes, or number prefixes (like '1. ', 'a. '). Do NOT combine multiple bullet points into a single array element; split them into separate strings.
 3. Be extremely thorough and extract every detail. If a list of requirements or duties is long, extract all of them as separate items in the array.`
             };

@@ -474,9 +474,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
 
             {/* ── Content ── */}
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Column */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-8 min-w-0">
                         {/* Description */}
                         <div id="about-opportunity" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                             <h2 className="text-lg font-extrabold text-gray-900 mb-5 flex items-center gap-2.5">
@@ -484,7 +484,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 About This Opportunity
                             </h2>
                             <div
-                                className="prose max-w-none text-gray-600 leading-relaxed"
+                                className="prose max-w-none text-gray-600 leading-relaxed break-words"
                                 dangerouslySetInnerHTML={{ __html: job.description }}
                             />
                         </div>
