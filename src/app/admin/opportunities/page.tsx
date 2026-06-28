@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Plus, Search, Edit, Trash2, TrendingUp, AlertCircle, CheckCircle, Clock, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, TrendingUp, AlertCircle, CheckCircle, Clock, X, Building2, MapPin, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -116,9 +116,43 @@ export default function AdminOpportunitiesPage() {
                 </select>
             </div>
 
-            {/* Table */}
+            {/* Listings */}
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
+                {/* Mobile cards */}
+                <div className="sm:hidden divide-y divide-gray-50">
+                    {filtered.map(o => {
+                        const status = o.displayStatus;
+                        const days = o.deadline ? Math.ceil((new Date(o.deadline).getTime() - new Date().getTime()) / 86400000) : null;
+                        return (
+                            <div key={o.id} className="p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <Link href={`/admin/opportunities/${o.id}`} className="font-semibold text-gray-900 text-sm hover:text-emerald-700 line-clamp-2 flex-1">{o.title}</Link>
+                                    <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${status === 'Active' ? 'bg-emerald-50 text-emerald-700' : status === 'Expired' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`}>{status}</span>
+                                </div>
+                                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500">
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${o.type === 'Job' ? 'bg-emerald-50 text-emerald-700' : o.type === 'Training' ? 'bg-violet-50 text-violet-700' : 'bg-gray-100 text-gray-600'}`}>{o.type}</span>
+                                    <span className="flex items-center gap-1 min-w-0"><Building2 size={12} className="shrink-0" /> <span className="truncate">{o.company || '—'}</span></span>
+                                    <span className="flex items-center gap-1 min-w-0"><MapPin size={12} className="shrink-0" /> <span className="truncate">{o.location || '—'}</span></span>
+                                </div>
+                                <div className="mt-2.5 flex items-center justify-between border-t border-gray-50 pt-2.5">
+                                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                            <Clock size={12} /> {o.deadline ? new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : <span className="italic text-gray-400">Rolling</span>}
+                                            {status === 'Active' && days !== null && days <= 7 && days >= 0 && <span className="font-bold text-red-500"> · {days}d</span>}
+                                        </span>
+                                        <span className="flex items-center gap-1"><Eye size={12} /> {o.views || 0}</span>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Link href={`/admin/opportunities/${o.id}`} className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"><Edit size={14} /></Link>
+                                        <button onClick={() => del(o.id)} className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"><Trash2 size={14} /></button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+                {/* Desktop table */}
+                <div className="overflow-x-auto hidden sm:block">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50/50">

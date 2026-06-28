@@ -156,7 +156,7 @@ export async function POST(req: Request) {
                 content: `You are an AI assistant for Job Openings Kenya administrators. Extract EVERY possible field from the text. Return ONLY valid JSON with ALL these fields:
 {
   "title": "Exact job/training title",
-  "type": "MUST be exactly 'Job' or 'Training'. Default 'Job'.",
+  "type": "Classify as EXACTLY one of: 'Job', 'Training', 'Grant', or 'Scholarship'. Use 'Training' for courses, internships, fellowships, or workshops; 'Grant' for funding/grants/awards to organisations or projects; 'Scholarship' for scholarships, bursaries, or study awards for students. Otherwise default to 'Job' for paid employment.",
   "company": "Hiring company/organization name (CRITICAL: extract from text, email domain, or URL. Do NOT use 'Unknown' unless impossible).",
   "location": "City or 'Remote' or 'Hybrid'",
   "deadline": "YYYY-MM-DD if mentioned, otherwise empty ''",

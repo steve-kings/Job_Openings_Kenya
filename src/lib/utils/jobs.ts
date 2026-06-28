@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
-import { Briefcase, BookOpen } from 'lucide-react';
+import { Briefcase, BookOpen, GraduationCap, DollarSign } from 'lucide-react';
 
-export type OpportunityType = 'Job' | 'Training';
+export type OpportunityType = 'Job' | 'Training' | 'Grant' | 'Scholarship';
 
 export const typeConfig: Record<OpportunityType, {
     icon: LucideIcon;
@@ -12,6 +12,13 @@ export const typeConfig: Record<OpportunityType, {
 }> = {
     Job: { icon: Briefcase, gradient: 'from-emerald-500 to-teal-600', softBg: 'bg-emerald-50', softText: 'text-emerald-700', accent: 'border-emerald-400' },
     Training: { icon: BookOpen, gradient: 'from-violet-500 to-purple-600', softBg: 'bg-violet-50', softText: 'text-violet-700', accent: 'border-violet-400' },
+    Grant: { icon: DollarSign, gradient: 'from-blue-500 to-indigo-600', softBg: 'bg-blue-50', softText: 'text-blue-700', accent: 'border-blue-400' },
+    Scholarship: { icon: GraduationCap, gradient: 'from-purple-500 to-fuchsia-600', softBg: 'bg-purple-50', softText: 'text-purple-700', accent: 'border-purple-400' },
+};
+
+// Plural/display label per opportunity type (used in breadcrumbs, headings, filters)
+export const typeLabel: Record<string, string> = {
+    Job: 'Jobs', Training: 'Training', Grant: 'Grants', Scholarship: 'Scholarships', Banner: 'Banner',
 };
 
 export interface JobData {

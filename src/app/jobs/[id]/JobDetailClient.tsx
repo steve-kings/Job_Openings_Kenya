@@ -10,6 +10,7 @@ import {
 import BookmarkButton from '@/components/BookmarkButton';
 import GoogleAd from '@/components/GoogleAd';
 import WeatherWidget from '@/components/WeatherWidget';
+import { typeLabel } from '@/lib/utils/jobs';
 
 interface Job {
     id: string;
@@ -55,8 +56,10 @@ interface JobDetailClientProps {
 }
 
 const typeMeta: Record<string, { text: string; bg: string; border: string; gradient: string; softBg: string }> = {
-    Job:      { text: 'text-emerald-700', bg: 'bg-emerald-500', border: 'border-emerald-200', gradient: 'from-emerald-500 to-teal-600', softBg: 'bg-emerald-50' },
-    Training: { text: 'text-violet-700',  bg: 'bg-violet-500',  border: 'border-violet-200',  gradient: 'from-violet-500 to-purple-600',  softBg: 'bg-violet-50' },
+    Job:         { text: 'text-emerald-700', bg: 'bg-emerald-500', border: 'border-emerald-200', gradient: 'from-emerald-500 to-teal-600',   softBg: 'bg-emerald-50' },
+    Training:    { text: 'text-violet-700',  bg: 'bg-violet-500',  border: 'border-violet-200',  gradient: 'from-violet-500 to-purple-600',   softBg: 'bg-violet-50' },
+    Grant:       { text: 'text-blue-700',    bg: 'bg-blue-500',    border: 'border-blue-200',    gradient: 'from-blue-500 to-indigo-600',     softBg: 'bg-blue-50' },
+    Scholarship: { text: 'text-purple-700',  bg: 'bg-purple-500',  border: 'border-purple-200',  gradient: 'from-purple-500 to-fuchsia-600',  softBg: 'bg-purple-50' },
 };
 
 export default function JobDetailClient({ job, user, opportunityId, similarJobs, coverLetterPrice = 20 }: JobDetailClientProps) {
@@ -78,7 +81,15 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
 
     const canView = !!user;
     const colors = typeMeta[job.type] || typeMeta.Job;
-    const daysLeft = Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    // A null/empty deadline means "Rolling Basis" — never expires. Guard every
+    // deadline calculation against it so rolling listings don't read as Jan 1 1970 / Expired.
+    const hasDeadline = !!job.deadline;
+    const daysLeft = hasDeadline
+        ? Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+        : null;
+    const deadlineLabel = hasDeadline
+        ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : 'Rolling Basis';
 
     useEffect(() => {
         if (!canView) return;
@@ -361,7 +372,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         </Link>
                         <span>/</span>
                         <Link href={`/?type=${job.type}`} className="hover:text-emerald-600 transition-colors">
-                            {job.type === 'Job' ? 'Jobs' : 'Training'}
+                            {typeLabel[job.type] || job.type}
                         </Link>
                         <span>/</span>
                         <span className="text-gray-900 truncate max-w-[300px] sm:max-w-md">{job.title}</span>
@@ -386,12 +397,17 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide ${colors.softBg} ${colors.text} border ${colors.border}`}>
                                     {job.type}
                                 </span>
-                                {daysLeft <= 3 && daysLeft > 0 && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-red-50 text-red-600 border border-red-100">
-                                        <Clock size={10} /> {daysLeft === 0 ? 'Today' : `${daysLeft}d left`}
+                                {!hasDeadline && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                        <Clock size={10} /> Rolling Basis
                                     </span>
                                 )}
-                                {daysLeft <= 0 && (
+                                {daysLeft !== null && daysLeft <= 3 && daysLeft > 0 && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-red-50 text-red-600 border border-red-100">
+                                        <Clock size={10} /> {daysLeft}d left
+                                    </span>
+                                )}
+                                {daysLeft !== null && daysLeft <= 0 && (
                                     <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-gray-100 text-gray-500 border border-gray-200">Expired</span>
                                 )}
                             </div>
@@ -409,7 +425,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 </span>
                                 <span className="flex items-center gap-1.5 text-gray-500">
                                     <Calendar size={15} className="text-gray-400" />
-                                    {new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                    {deadlineLabel}
                                 </span>
                                 {(job.salary_min || job.salary_max) && (
                                     <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
@@ -426,28 +442,28 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         </div>
 
                         {/* CTA Buttons */}
-                        <div className="shrink-0 flex flex-row lg:flex-col gap-2.5">
+                        <div className="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row lg:flex-col gap-2.5">
                             {canView ? (
                                 <>
                                     <a href={applyHref} target={isExternalApply ? "_blank" : undefined} rel={isExternalApply ? "noopener noreferrer" : undefined}
-                                       className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 hover:shadow-md">
+                                       className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 hover:shadow-md">
                                         {applyBtn.label} {applyBtn.icon}
                                     </a>
                                     <div className="flex gap-2">
                                         <BookmarkButton
                                             job={{ id: job.id, title: job.title, company: job.company, type: job.type, location: job.location }}
-                                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 hover:border-gray-300 transition-all"
+                                            className="inline-flex items-center justify-center gap-1.5 flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 hover:border-gray-300 transition-all"
                                             showText={false}
                                         />
                                         <button onClick={handleCopyLink}
-                                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 hover:border-gray-300 transition-all">
+                                            className="inline-flex items-center justify-center gap-1.5 flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 hover:border-gray-300 transition-all">
                                             {copySuccess ? <CheckCircle2 size={17} className="text-emerald-600" /> : <Share2 size={17} />}
                                         </button>
                                     </div>
                                 </>
                             ) : (
                                 <Link href={`/login?redirect=/jobs/${opportunityId}`}
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm">
+                                    className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-sm">
                                     <Lock size={15} /> Login to Apply
                                 </Link>
                             )}
@@ -572,7 +588,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                         { label: 'Company', value: job.company },
                                         { label: 'Location', value: job.location },
                                         ...(job.salary_min || job.salary_max ? [{ label: 'Salary', value: `${job.salary_currency || 'KES'} ${job.salary_min?.toLocaleString() || '?'} – ${job.salary_max?.toLocaleString() || '?'}`, highlight: true }] : []),
-                                        { label: 'Deadline', value: new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }), extra: daysLeft > 0 ? `${daysLeft} days remaining` : 'Expired' },
+                                        { label: 'Deadline', value: deadlineLabel, extra: !hasDeadline ? 'Open until filled' : (daysLeft !== null && daysLeft > 0 ? `${daysLeft} days remaining` : 'Expired') },
                                     ].map(({ label, value, badge, highlight, extra }) => (
                                         <div key={label}>
                                             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
@@ -582,7 +598,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                 <p className={`font-semibold text-sm ${highlight ? 'text-emerald-700' : 'text-gray-900'}`}>{value}</p>
                                             )}
                                             {extra && (
-                                                <p className={`text-xs font-semibold mt-0.5 ${daysLeft > 0 ? 'text-emerald-600' : 'text-red-500'}`}>{extra}</p>
+                                                <p className={`text-xs font-semibold mt-0.5 ${!hasDeadline || (daysLeft !== null && daysLeft > 0) ? 'text-emerald-600' : 'text-red-500'}`}>{extra}</p>
                                             )}
                                         </div>
                                     ))}

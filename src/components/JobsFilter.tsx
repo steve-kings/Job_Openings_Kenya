@@ -4,13 +4,15 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import {
     Search, MapPin, Briefcase, BookOpen, Layers,
-    LocateFixed, Loader2, Wallet
+    LocateFixed, Loader2, Wallet, DollarSign, GraduationCap
 } from 'lucide-react';
 
 const categories = [
     { value: 'All', label: 'All', icon: Layers },
     { value: 'Job', label: 'Jobs', icon: Briefcase },
     { value: 'Training', label: 'Training', icon: BookOpen },
+    { value: 'Grant', label: 'Grants', icon: DollarSign },
+    { value: 'Scholarship', label: 'Scholarships', icon: GraduationCap },
 ];
 
 const popularLocations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Remote'];
@@ -43,12 +45,14 @@ export default function JobsFilter() {
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }, [type, query, location, salaryMin, salaryMax, router, pathname, searchParams]);
 
+    // Debounce free-text inputs (search query + salary) to avoid a navigation per keystroke
     useEffect(() => {
         const timer = setTimeout(() => applyFilters(), 400);
         return () => clearTimeout(timer);
-    }, [query, applyFilters]);
+    }, [query, salaryMin, salaryMax, applyFilters]);
 
-    useEffect(() => { applyFilters(); }, [type, location, salaryMin, salaryMax, applyFilters]);
+    // Apply immediately for discrete controls (type pills, location select)
+    useEffect(() => { applyFilters(); }, [type, location, applyFilters]);
 
     const handleDetectLocation = () => {
         if (!navigator.geolocation) {

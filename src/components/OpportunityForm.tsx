@@ -1,0 +1,547 @@
+'use client'
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { ArrowLeft, Plus, X, Briefcase, Save, Trash2, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
+import RichTextEditor from '@/components/RichTextEditor';
+
+const TYPES = ['Job', 'Training', 'Grant', 'Scholarship', 'Banner'];
+
+const TYPE_COLORS: Record<string, string> = {
+    Job: 'from-[#5CB800] to-[#4A9900]',
+    Training: 'from-[#F57C00] to-[#E65100]',
+    Grant: 'from-[#2196F3] to-[#1565C0]',
+    Scholarship: 'from-[#9C27B0] to-[#6A1B9A]',
+    Banner: 'from-[#E91E63] to-[#C2185B]',
+};
+
+const STATUS_META: Record<string, { label: string; on: string }> = {
+    active: { label: '✅ Active', on: 'bg-[#5CB800] text-white border-[#5CB800] shadow' },
+    draft: { label: '📝 Draft', on: 'bg-gray-900 text-white border-gray-900 shadow' },
+    inactive: { label: '⏸ Inactive', on: 'bg-amber-500 text-white border-amber-500 shadow' },
+    closed: { label: '🔒 Closed', on: 'bg-red-500 text-white border-red-500 shadow' },
+};
+
+const addItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+    setter([...arr, '']);
+
+const updateItem = (i: number, val: string, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) => {
+    const next = [...arr]; next[i] = val; setter(next);
+};
+
+const removeItem = (i: number, setter: React.Dispatch<React.SetStateAction<string[]>>, arr: string[]) =>
+    setter(arr.filter((_, idx) => idx !== i));
+
+const Field = ({ label, required, hint, className, children }: { label: string; required?: boolean; hint?: string; className?: string; children: React.ReactNode }) => (
+    <div className={`space-y-1.5 ${className || ''}`}>
+        <div className="flex items-center justify-between">
+            <label className="text-sm font-semibold text-gray-700">{label} {required && <span className="text-red-500">*</span>}</label>
+            {hint && <span className="text-xs text-gray-400">{hint}</span>}
+        </div>
+        {children}
+    </div>
+);
+
+const ListEditor = ({
+    label, color, items, setter, placeholder
+}: { label: string; color: string; items: string[]; setter: React.Dispatch<React.SetStateAction<string[]>>; placeholder: string }) => (
+    <div className="space-y-3">
+        <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold text-gray-700">{label}</h4>
+            <button
+                type="button"
+                onClick={() => addItem(setter, items)}
+                className={`flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-1.5 rounded-lg bg-gradient-to-r ${color} hover:shadow-md transition-all`}
+            >
+                <Plus size={13} /> Add
+            </button>
+        </div>
+        <div className="space-y-2">
+            {items.map((item, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                    <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => updateItem(i, e.target.value, setter, items)}
+                        placeholder={placeholder}
+                        className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all"
+                    />
+                    {items.length > 1 && (
+                        <button type="button" onClick={() => removeItem(i, setter, items)} className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                            <X size={15} />
+                        </button>
+                    )}
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+const sanitizeList = (list: unknown): string[] => {
+    if (!list) return [''];
+    if (Array.isArray(list)) {
+        const flatList = list.flatMap(item => {
+            if (typeof item === 'string') {
+                return item.split('\n');
+            }
+            return [];
+        });
+        const cleaned = flatList
+            .map(item => {
+                if (typeof item !== 'string') return '';
+                let cleanedItem = item.trim();
+                cleanedItem = cleanedItem.replace(/^(?:[-*•+]\s*|\d+[\.)]\s*)+/, '');
+                return cleanedItem.trim();
+            })
+            .filter(item => item.length > 0);
+        return cleaned.length > 0 ? cleaned : [''];
+    }
+    if (typeof list === 'string') {
+        const cleaned = list
+            .split('\n')
+            .map(item => {
+                let cleanedItem = item.trim();
+                cleanedItem = cleanedItem.replace(/^(?:[-*•+]\s*|\d+[\.)]\s*)+/, '');
+                return cleanedItem.trim();
+            })
+            .filter(item => item.length > 0);
+        return cleaned.length > 0 ? cleaned : [''];
+    }
+    return [''];
+};
+
+const EMPTY_FORM = {
+    title: '',
+    type: 'Job',
+    company: '',
+    location: '',
+    deadline: '',
+    apply_url: '',
+    short_description: '',
+    description: '',
+    status: 'active',
+    salary_min: '',
+    salary_max: '',
+    salary_currency: 'KES',
+};
+
+export default function OpportunityForm({ mode, opportunityId }: { mode: 'create' | 'edit'; opportunityId?: string }) {
+    const router = useRouter();
+    const supabase = useMemo(() => createClient(), []);
+    const isEdit = mode === 'edit';
+
+    const [loading, setLoading] = useState(false);        // submit / save
+    const [fetching, setFetching] = useState(isEdit);     // initial load (edit only)
+    const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+
+    const [formData, setFormData] = useState({ ...EMPTY_FORM });
+    const [thumbnailUrl, setThumbnailUrl] = useState('');
+    const [requirements, setRequirements] = useState<string[]>(['']);
+    const [responsibilities, setResponsibilities] = useState<string[]>(['']);
+    const [benefits, setBenefits] = useState<string[]>(['']);
+
+    const [aiText, setAiText] = useState('');
+    const [extractingAi, setExtractingAi] = useState(false);
+    const [keepCompany, setKeepCompany] = useState(false);
+
+    const showToast = (type: 'success' | 'error', msg: string) => {
+        setToast({ type, msg });
+        setTimeout(() => setToast(null), 4000);
+    };
+
+    // ── Load existing record (edit mode) ──
+    const fetchOpportunity = useCallback(async () => {
+        if (!isEdit || !opportunityId) return;
+        try {
+            const { data, error } = await supabase.from('opportunities').select('*').eq('id', opportunityId).single();
+            if (error) throw error;
+            setFormData({
+                title: data.title || '',
+                type: data.type || 'Job',
+                company: data.company || '',
+                location: data.location || '',
+                deadline: data.deadline ? String(data.deadline).split('T')[0] : '',
+                apply_url: data.apply_url || '',
+                short_description: data.short_description || '',
+                description: data.description || '',
+                status: data.status || 'active',
+                salary_min: data.salary_min ? String(data.salary_min) : '',
+                salary_max: data.salary_max ? String(data.salary_max) : '',
+                salary_currency: data.salary_currency || 'KES',
+            });
+            setThumbnailUrl(data.thumbnail_url || '');
+            setRequirements(data.requirements?.length ? data.requirements : ['']);
+            setResponsibilities(data.responsibilities?.length ? data.responsibilities : ['']);
+            setBenefits(data.benefits?.length ? data.benefits : ['']);
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Failed to load opportunity.');
+        } finally {
+            setFetching(false);
+        }
+    }, [isEdit, opportunityId, supabase]);
+
+    useEffect(() => { fetchOpportunity(); }, [fetchOpportunity]);
+
+    const handleAIExtract = async () => {
+        if (!aiText.trim()) return;
+        setExtractingAi(true);
+        try {
+            const res = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'extract_opportunity', text: aiText })
+            });
+            const data = await res.json();
+
+            if (data && (data.title || data.description || data.company)) {
+                setFormData(prev => ({
+                    ...prev,
+                    title: data.title || prev.title,
+                    type: data.type && TYPES.includes(data.type) ? data.type : prev.type,
+                    company: data.company || prev.company,
+                    location: data.location || prev.location,
+                    deadline: data.deadline || prev.deadline,
+                    // Single application field: prefer an explicit link, else fall back to email/phone the AI found
+                    apply_url: data.apply_url || data.contact_email || data.contact_phone || prev.apply_url,
+                    short_description: data.short_description || prev.short_description,
+                    description: data.description || prev.description,
+                    salary_min: data.salary_min ? String(data.salary_min) : prev.salary_min,
+                    salary_max: data.salary_max ? String(data.salary_max) : prev.salary_max,
+                    salary_currency: data.salary_currency || prev.salary_currency,
+                }));
+                if (data.requirements) setRequirements(sanitizeList(data.requirements));
+                if (data.responsibilities) setResponsibilities(sanitizeList(data.responsibilities));
+                if (data.benefits) setBenefits(sanitizeList(data.benefits));
+                showToast('success', 'AI extracted all details successfully!');
+                setAiText('');
+            } else {
+                throw new Error(data.error || 'Failed to extract data');
+            }
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error extracting AI data.');
+        } finally {
+            setExtractingAi(false);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const payload = {
+                ...formData,
+                deadline: formData.deadline || null,
+                salary_min: formData.salary_min ? parseInt(formData.salary_min, 10) : null,
+                salary_max: formData.salary_max ? parseInt(formData.salary_max, 10) : null,
+                thumbnail_url: thumbnailUrl || null,
+                requirements: requirements.filter(r => r.trim()),
+                responsibilities: responsibilities.filter(r => r.trim()),
+                benefits: benefits.filter(r => r.trim()),
+            };
+
+            if (isEdit) {
+                const { error } = await supabase.from('opportunities')
+                    .update({ ...payload, updated_at: new Date().toISOString() })
+                    .eq('id', opportunityId);
+                if (error) throw error;
+                showToast('success', 'Opportunity updated successfully!');
+                setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1200);
+            } else {
+                const { error } = await supabase.from('opportunities').insert(payload);
+                if (error) throw error;
+                showToast('success', 'Opportunity created successfully!');
+                if (keepCompany) {
+                    setFormData(prev => ({ ...prev, title: '', short_description: '', description: '' }));
+                    setRequirements(['']); setResponsibilities(['']); setBenefits(['']);
+                    setAiText(''); setThumbnailUrl('');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    setTimeout(() => { router.push('/admin/opportunities'); router.refresh(); }, 1200);
+                }
+            }
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!isEdit || !opportunityId) return;
+        if (!confirm('Delete this opportunity permanently? This cannot be undone.')) return;
+        setLoading(true);
+        try {
+            const { error } = await supabase.from('opportunities').delete().eq('id', opportunityId);
+            if (error) throw error;
+            router.push('/admin/opportunities'); router.refresh();
+        } catch (error: unknown) {
+            showToast('error', error instanceof Error ? error.message : 'Error deleting opportunity.');
+            setLoading(false);
+        }
+    };
+
+    const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 bg-white transition-all";
+    const selectedColor = TYPE_COLORS[formData.type] || TYPE_COLORS['Job'];
+    const statuses = isEdit ? ['active', 'draft', 'inactive', 'closed'] : ['active', 'draft'];
+
+    if (fetching) {
+        return <div className="flex justify-center py-24"><Loader2 size={28} className="animate-spin text-[#5CB800]" /></div>;
+    }
+
+    return (
+        <div className="max-w-6xl mx-auto pb-16">
+            {/* Toast */}
+            {toast && (
+                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-top-2 ${toast.type === 'success' ? 'bg-[#5CB800]' : 'bg-red-500'}`}>
+                    {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                    {toast.msg}
+                </div>
+            )}
+
+            {/* Header */}
+            <div className="mb-8">
+                <Link href="/admin/opportunities" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#5CB800] transition-colors text-sm mb-5 group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    Back to Opportunities
+                </Link>
+                <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${selectedColor} flex items-center justify-center shadow-lg transition-all`}>
+                        <Briefcase className="text-white" size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{isEdit ? 'Edit Opportunity' : 'Add New Opportunity'}</h1>
+                        <p className="text-gray-500 text-sm mt-0.5">{isEdit ? 'Update this job, grant, scholarship, or training listing' : 'Create a job, grant, scholarship, or training listing'}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+                <div className="grid lg:grid-cols-3 gap-6">
+
+                    {/* ─── LEFT COLUMN ─── */}
+                    <div className="lg:col-span-2 space-y-5">
+
+                        {/* AI Extractor Box */}
+                        <div className="bg-gradient-to-r from-[#5CB800]/10 to-[#5CB800]/5 rounded-2xl border border-[#5CB800]/20 p-6 space-y-3 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-[#5CB800]">
+                                    <Sparkles size={20} />
+                                    <h3 className="font-bold text-sm uppercase tracking-widest">Job Openings Kenya AI Auto-Fill</h3>
+                                </div>
+                                <span className="text-xs text-[#5CB800]/70 bg-white px-2 py-1 rounded-md border border-[#5CB800]/20 shadow-sm font-semibold">Paste raw text here</span>
+                            </div>
+                            <div className="space-y-3">
+                                <textarea
+                                    value={aiText}
+                                    onChange={(e) => setAiText(e.target.value)}
+                                    placeholder="Paste job description, scholarship details, or grant text here, and AI will read them and fill out the form below automatically..."
+                                    className="w-full px-4 py-3 rounded-xl border border-white focus:border-[#5CB800] focus:ring-2 focus:ring-[#5CB800]/20 outline-none text-sm text-gray-700 transition-all shadow-sm resize-none h-24"
+                                />
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleAIExtract}
+                                        disabled={!aiText.trim() || extractingAi}
+                                        className="px-6 py-2.5 bg-[#5CB800] text-white font-semibold rounded-xl text-sm flex items-center gap-2 hover:bg-[#4A9900] disabled:opacity-50 transition-colors shadow-sm"
+                                    >
+                                        {extractingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                                        Auto-Fill Form
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Type Selector */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Opportunity Type</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                                {TYPES.map((t) => (
+                                    <button
+                                        key={t}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, type: t })}
+                                        className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${formData.type === t
+                                            ? `bg-gradient-to-r ${TYPE_COLORS[t]} text-white border-transparent shadow-md`
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {t === 'Job' && '💼'} {t === 'Grant' && '💰'} {t === 'Scholarship' && '🎓'} {t === 'Training' && '📚'} {t === 'Banner' && '🖼️'} {t}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Basic Info */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Basic Information</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <Field label="Title" required>
+                                    <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g. Senior Frontend Developer" className={inputCls} />
+                                </Field>
+                                <Field label="Company / Organization" required={formData.type !== 'Banner'}>
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
+                                </Field>
+                                <Field label="Location" required={formData.type !== 'Banner'}>
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
+                                </Field>
+                                <Field label="Application Deadline" hint="Leave empty for Rolling Basis">
+                                    <input type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
+                                </Field>
+                                <Field label="How to Apply" required={formData.type !== 'Banner'} className="md:col-span-2" hint="One field — link, email, or phone">
+                                    <input type="text" required={formData.type !== 'Banner'} value={formData.apply_url} onChange={(e) => setFormData({ ...formData, apply_url: e.target.value })} placeholder="Website link, email address, or phone number" className={inputCls} />
+                                    <p className="text-xs text-gray-400 mt-1.5">Enter whichever the employer accepts — we auto-detect it: a website opens the link, an email opens the mail app, a phone number starts a call.</p>
+                                </Field>
+                                {formData.type === 'Job' && (
+                                    <>
+                                        <Field label="Salary Min (Monthly)">
+                                            <input type="number" min={0} value={formData.salary_min} onChange={(e) => setFormData({ ...formData, salary_min: e.target.value })} placeholder="e.g. 50000" className={inputCls} />
+                                        </Field>
+                                        <Field label="Salary Max (Monthly)">
+                                            <input type="number" min={0} value={formData.salary_max} onChange={(e) => setFormData({ ...formData, salary_max: e.target.value })} placeholder="e.g. 100000" className={inputCls} />
+                                        </Field>
+                                        <Field label="Currency">
+                                            <select value={formData.salary_currency} onChange={(e) => setFormData({ ...formData, salary_currency: e.target.value })} className={inputCls}>
+                                                <option value="KES">KES (Kenyan Shilling)</option>
+                                                <option value="USD">USD (US Dollar)</option>
+                                                <option value="EUR">EUR (Euro)</option>
+                                                <option value="GBP">GBP (British Pound)</option>
+                                            </select>
+                                        </Field>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Descriptions */}
+                        {formData.type !== 'Banner' && (
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Description</h3>
+                            <Field label="Short Description" required hint={`${formData.short_description.length} chars`}>
+                                <textarea
+                                    required
+                                    value={formData.short_description}
+                                    onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                                    placeholder="Brief summary shown on listing cards (150–200 characters recommended)"
+                                    rows={3}
+                                    className={`${inputCls} resize-none`}
+                                />
+                            </Field>
+                            <Field label="Full Description" required hint="WYSIWYG Supported">
+                                <RichTextEditor
+                                    value={formData.description}
+                                    onChange={(content) => setFormData({ ...formData, description: content })}
+                                />
+                            </Field>
+                        </div>
+                        )}
+
+                        {/* Dynamic Lists */}
+                        {formData.type !== 'Banner' && (
+                        <div className="grid md:grid-cols-3 gap-5">
+                            {[
+                                { label: 'Requirements', color: 'from-[#5CB800] to-[#4A9900]', items: requirements, setter: setRequirements, placeholder: 'e.g. 3+ years of experience' },
+                                { label: 'Responsibilities', color: 'from-[#5CB800] to-[#4A9900]', items: responsibilities, setter: setResponsibilities, placeholder: 'e.g. Lead the dev team' },
+                                { label: 'Benefits', color: 'from-[#7B1FA2] to-[#6A1B9A]', items: benefits, setter: setBenefits, placeholder: 'e.g. Health insurance' },
+                            ].map((list) => (
+                                <div key={list.label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                                    <ListEditor {...list} />
+                                </div>
+                            ))}
+                        </div>
+                        )}
+                    </div>
+
+                    {/* ─── RIGHT SIDEBAR ─── */}
+                    <div className="space-y-5">
+
+                        {/* Publish */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Publish</h3>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                {statuses.map((s) => (
+                                    <button
+                                        key={s}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: s })}
+                                        className={`py-2.5 rounded-xl text-sm font-semibold border transition-all ${formData.status === s
+                                            ? STATUS_META[s].on
+                                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        {STATUS_META[s].label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="p-3 bg-blue-50 rounded-xl text-xs text-blue-600 font-medium">
+                                {formData.status === 'active'
+                                    ? '🌍 This opportunity is visible to all users.'
+                                    : formData.status === 'draft'
+                                    ? '👁 Saved as draft — not visible to users yet.'
+                                    : '🚫 Hidden from users (inactive/closed).'}
+                            </div>
+
+                            <hr className="border-gray-100" />
+
+                            {!isEdit && (
+                                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={keepCompany}
+                                        onChange={(e) => setKeepCompany(e.target.checked)}
+                                        className="w-4 h-4 rounded border-gray-300 text-[#5CB800] focus:ring-[#5CB800]"
+                                    />
+                                    <span>Keep company & location for next post (for multiple positions)</span>
+                                </label>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3.5 rounded-xl bg-gradient-to-r ${selectedColor} text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-60`}
+                            >
+                                {loading ? (
+                                    <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> {isEdit ? 'Saving...' : 'Creating...'}</>
+                                ) : (
+                                    <><Save size={16} /> {isEdit ? 'Update Opportunity' : 'Create Opportunity'}</>
+                                )}
+                            </button>
+
+                            {isEdit && (
+                                <button
+                                    type="button"
+                                    onClick={handleDelete}
+                                    disabled={loading}
+                                    className="w-full py-2.5 rounded-xl border border-red-200 text-red-600 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-red-50 transition-all disabled:opacity-60"
+                                >
+                                    <Trash2 size={15} /> Delete Opportunity
+                                </button>
+                            )}
+
+                            <Link href="/admin/opportunities" className="block text-center text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                                Cancel
+                            </Link>
+                        </div>
+
+                        {/* Thumbnail */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Thumbnail Image</h3>
+                            <CloudinaryUpload
+                                onUploadComplete={(url) => setThumbnailUrl(url)}
+                                currentImage={thumbnailUrl}
+                                folder="Job Openings Kenya-opportunities"
+                                label="Upload Thumbnail"
+                            />
+                            <p className="text-xs text-gray-400">Optional — default placeholder used if empty.</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}

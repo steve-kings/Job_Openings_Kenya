@@ -78,18 +78,20 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         deadline: string;
     }
 
-    // Fetch similar opportunities
+    // Fetch similar opportunities (exclude expired; a null deadline = rolling basis)
     let similarJobs: SimilarJob[] = [];
     if (job) {
+        const today = new Date().toISOString().split('T')[0];
         const { data: similar } = await supabase
             .from('opportunities')
             .select('id, title, company, type, location, thumbnail_url, deadline')
             .eq('type', job.type)
             .eq('status', 'active')
             .neq('id', job.id)
+            .or(`deadline.gte.${today},deadline.is.null`)
             .order('created_at', { ascending: false })
             .limit(4);
-            
+
         similarJobs = similar || [];
     }
 
