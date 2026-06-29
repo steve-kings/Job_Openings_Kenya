@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Newspaper, Clock, ExternalLink, ArrowLeft, TrendingUp } from 'lucide-react';
+import { Newspaper, ArrowLeft } from 'lucide-react';
 import NewsClient from './NewsClient';
+import NewsPromoBanner from '@/components/NewsPromoBanner';
 
 export const metadata: Metadata = {
     title: 'Kenya News — Jobs, Careers & Business | Job Openings Kenya',
@@ -53,6 +54,9 @@ export default function NewsPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Dismissible CV call-to-action */}
+                <NewsPromoBanner />
 
                 {/* Client component with topic tabs + article grid */}
                 <NewsClient topics={TOPICS} />
