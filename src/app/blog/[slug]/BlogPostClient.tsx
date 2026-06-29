@@ -87,7 +87,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
     return (
         <div className="bg-gray-50 min-h-screen">
             {/* Hero Image Section */}
-            <div className="relative h-[500px] overflow-hidden">
+            <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] overflow-hidden">
                 {post.featured_image ? (
                     <Image
                         src={post.featured_image}
@@ -103,7 +103,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                 {/* Job Openings Kenya Watermark - Bright & Creative */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="relative">
-                        <span className="text-white font-black text-9xl rotate-[-15deg] uppercase tracking-[0.3em] opacity-30 drop-shadow-[0_0_30px_rgba(243,156,18,0.5)]" style={{ textShadow: '0 0 40px rgba(243,156,18,0.6), 0 0 80px rgba(196,69,54,0.4)' }}>
+                        <span className="text-white font-black text-5xl sm:text-7xl lg:text-9xl rotate-[-15deg] uppercase tracking-[0.3em] opacity-30 drop-shadow-[0_0_30px_rgba(243,156,18,0.5)]" style={{ textShadow: '0 0 40px rgba(243,156,18,0.6), 0 0 80px rgba(196,69,54,0.4)' }}>
                             Job Openings Kenya
                         </span>
                         {/* Accent lines */}
@@ -117,7 +117,7 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
 
                 {/* Content Overlay */}
                 <div className="absolute inset-0 flex items-end">
-                    <div className="container mx-auto px-6 lg:px-12 pb-12">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
                         <Link href="/blog" className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6 transition-colors">
                             <ArrowLeft size={20} />
                             <span>Back to Blog</span>
@@ -127,10 +127,10 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
                             <span className={`${colors.bg} text-white px-4 py-1.5 rounded-full text-sm font-semibold inline-block mb-4`}>
                                 {post.category}
                             </span>
-                            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                                 {post.title}
                             </h1>
-                            <div className="flex flex-wrap items-center gap-6 text-white/90">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6 text-white/90">
                                 <span className="flex items-center gap-2">
                                     <User size={18} />
                                     <span className="font-medium">{post.author_name}</span>
@@ -152,12 +152,12 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
             </div>
 
             {/* Article Content */}
-            <div className="container mx-auto px-6 lg:px-12 py-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
                 <div className="max-w-4xl mx-auto">
-                    <article className="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+                    <article className="bg-white rounded-2xl shadow-xl p-5 sm:p-8 lg:p-12">
                         {/* Excerpt */}
-                        <div className={`border-l-4 ${colors.text.replace('text-', 'border-')} pl-6 mb-8`}>
-                            <p className="text-xl text-gray-700 italic leading-relaxed">
+                        <div className={`border-l-4 ${colors.text.replace('text-', 'border-')} pl-4 sm:pl-6 mb-8`}>
+                            <p className="text-lg sm:text-xl text-gray-700 italic leading-relaxed">
                                 {post.excerpt}
                             </p>
                         </div>

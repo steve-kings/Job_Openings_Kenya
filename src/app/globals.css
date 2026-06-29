@@ -101,7 +101,7 @@ html { font-family: var(--font-outfit), system-ui, sans-serif; }
 /* ── Rich-text content (job descriptions, blog posts, AI output) ──
    The Tailwind Typography plugin isn't installed, so the `prose` class is
    styled here. Restores readable structure with on-brand creative accents. */
-.prose { color: #475569; line-height: 1.8; font-size: 0.95rem; }
+.prose { color: #475569; line-height: 1.8; font-size: 0.95rem; overflow-wrap: break-word; }
 .prose > :first-child { margin-top: 0; }
 .prose > :last-child { margin-bottom: 0; }
 .prose p { margin: 0 0 1.1em; }
@@ -136,6 +136,11 @@ html { font-family: var(--font-outfit), system-ui, sans-serif; }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.2em 0; font-size: 0.9em; display: block; overflow-x: auto; }
 .prose th, .prose td { border: 1px solid #e5e7eb; padding: 0.5em 0.75em; text-align: left; }
 .prose th { background: #f8fafc; font-weight: 700; color: #0f172a; }
+/* ── Mobile safety: wrap long inline code & strings, keep code blocks scrollable,
+   and stop embeds (YouTube etc.) from overflowing the viewport. ── */
+.prose :not(pre) > code { overflow-wrap: anywhere; word-break: break-word; }
+.prose :where(iframe, video, embed, object) { max-width: 100%; }
+.prose iframe { width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; border-radius: 0.75rem; }
 
 /* ── DaisyUI overrides ── */
 .btn { font-weight: 700; border-radius: 12px; }
