@@ -68,8 +68,10 @@ function extractTag(xml: string, tag: string): string {
 async function fetchGNews(query: string, limit: number): Promise<NewsArticle[]> {
     if (!GNEWS_API_KEY) return [];
     try {
+        // Note: the free GNews tier returns 0 results when `country=ke` is set, so we
+        // rely on the query terms (which include "kenya") + lang=en instead.
         const res = await fetch(
-            `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&country=ke&max=${limit}&token=${GNEWS_API_KEY}`
+            `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=${limit}&token=${GNEWS_API_KEY}`
         );
         if (!res.ok) return [];
         const data = await res.json();

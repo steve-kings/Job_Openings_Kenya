@@ -89,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                     {/* Footer */}
                     <div className="p-3 border-t border-slate-100 space-y-1">
-                        <Link href="/" className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all">
+                        <Link href="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all">
                             <Home size={16} /> Back to Website
                         </Link>
                         <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-all">

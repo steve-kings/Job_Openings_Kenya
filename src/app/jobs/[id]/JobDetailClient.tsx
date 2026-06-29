@@ -769,9 +769,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                             <button onClick={handleLetterPay} disabled={letterPayLoading}
                                 className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50">
                                 {letterPayLoading ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-                                {letterPayLoading ? 'Processing...' : `Pay KES ${coverLetterPrice} via Paystack`}
+                                {letterPayLoading ? 'Processing...' : `Pay KES ${coverLetterPrice}`}
                             </button>
-                            <p className="text-[10px] text-slate-400 text-center">Secure payment by Paystack. Supports M-Pesa and Cards.</p>
+                            <p className="text-[10px] text-slate-400 text-center">Secure payment. Supports M-Pesa and Cards.</p>
                         </div>
                     ) : !coverLetter ? (
                         /* STEP 2: Generate after payment */

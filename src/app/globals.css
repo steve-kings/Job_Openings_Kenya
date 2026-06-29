@@ -98,6 +98,45 @@ html { font-family: var(--font-outfit), system-ui, sans-serif; }
   transition: all 0.2s ease;
 }
 
+/* ── Rich-text content (job descriptions, blog posts, AI output) ──
+   The Tailwind Typography plugin isn't installed, so the `prose` class is
+   styled here. Restores readable structure with on-brand creative accents. */
+.prose { color: #475569; line-height: 1.8; font-size: 0.95rem; }
+.prose > :first-child { margin-top: 0; }
+.prose > :last-child { margin-bottom: 0; }
+.prose p { margin: 0 0 1.1em; }
+/* Lead-in: make the opening paragraph stand out a touch */
+.prose > p:first-of-type { font-size: 1.05rem; color: #334155; }
+.prose h1, .prose h2, .prose h3, .prose h4 { color: #0f172a; font-weight: 800; line-height: 1.25; letter-spacing: -0.01em; margin: 1.6em 0 0.6em; scroll-margin-top: 6rem; }
+.prose h1 { font-size: 1.6rem; }
+.prose h2 { font-size: 1.35rem; }
+.prose h3 { font-size: 1.15rem; }
+.prose h4 { font-size: 1rem; }
+.prose h2, .prose h3 { display: flex; align-items: center; gap: 0.6rem; }
+.prose h2::before { content: ""; width: 0.3rem; height: 1.1em; border-radius: 9999px; background: linear-gradient(180deg, #5CB800, #3D7A00); flex: none; }
+.prose ul, .prose ol { margin: 1.1em 0; padding: 0; }
+.prose ul { list-style: none; }
+.prose ul > li { position: relative; padding-left: 1.65rem; margin: 0.55em 0; }
+.prose ul > li::before { content: ""; position: absolute; left: 0.15rem; top: 0.62em; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: linear-gradient(135deg, #5CB800, #3D7A00); }
+.prose ol { list-style: none; counter-reset: item; }
+.prose ol > li { position: relative; padding-left: 2.1rem; margin: 0.6em 0; counter-increment: item; }
+.prose ol > li::before { content: counter(item); position: absolute; left: 0; top: 0.05em; width: 1.4rem; height: 1.4rem; border-radius: 9999px; background: #EAFCD6; color: #3D7A00; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.prose li > ul, .prose li > ol { margin: 0.4em 0; }
+.prose a { color: #2f8f00; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; word-break: break-word; transition: color .15s; }
+.prose a:hover { color: #3D7A00; }
+.prose strong, .prose b { color: #0f172a; font-weight: 700; }
+.prose em { font-style: italic; }
+.prose blockquote { border-left: 3px solid #5CB800; background: #f8fafc; padding: 0.75em 1.1em; margin: 1.3em 0; border-radius: 0 0.6rem 0.6rem 0; color: #475569; font-style: italic; }
+.prose blockquote p { margin: 0; }
+.prose hr { border: 0; border-top: 1px solid #e5e7eb; margin: 1.8em 0; }
+.prose img { border-radius: 0.85rem; margin: 1.2em 0; max-width: 100%; height: auto; }
+.prose code { background: #f1f5f9; color: #be185d; padding: 0.15em 0.45em; border-radius: 0.35rem; font-size: 0.85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.prose pre { background: #0f172a; color: #e2e8f0; padding: 1em 1.2em; border-radius: 0.75rem; overflow-x: auto; margin: 1.2em 0; font-size: 0.85em; }
+.prose pre code { background: transparent; color: inherit; padding: 0; }
+.prose table { width: 100%; border-collapse: collapse; margin: 1.2em 0; font-size: 0.9em; display: block; overflow-x: auto; }
+.prose th, .prose td { border: 1px solid #e5e7eb; padding: 0.5em 0.75em; text-align: left; }
+.prose th { background: #f8fafc; font-weight: 700; color: #0f172a; }
+
 /* ── DaisyUI overrides ── */
 .btn { font-weight: 700; border-radius: 12px; }
 .btn-primary { background-color: #5CB800; border-color: #5CB800; }

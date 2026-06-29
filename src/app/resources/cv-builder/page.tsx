@@ -608,14 +608,14 @@ export default function CVBuilderPage() {
                                                 <button onClick={handlePaystack} disabled={payLoading}
                                                     className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm disabled:opacity-60 inline-flex items-center gap-2">
                                                     {payLoading ? <Loader2 size={15} className="animate-spin" /> : <CreditCard size={15} />}
-                                                    Pay KES {cvPrice} with Paystack
+                                                    Pay KES {cvPrice}
                                                 </button>
                                                 <button onClick={() => { const w = window.open('','_blank','width=800,height=600'); if(w){w.document.write('<html><head><title>Preview</title><script src=https://cdn.tailwindcss.com><\/script><style>@media print{body{-webkit-print-color-adjust:exact}}</style></head><body>'+document.getElementById('cv-print')!.outerHTML+'</body></html>');w.document.close();}}}
                                                     className="px-6 py-3 rounded-xl border-2 border-amber-300 text-amber-800 font-extrabold text-sm hover:bg-amber-100 transition-all inline-flex items-center gap-2">
                                                     <Printer size={15} /> Print Preview
                                                 </button>
                                             </div>
-                                            <p className="text-xs text-amber-500 mt-3 flex items-center gap-1"><Shield size={11} /> Secure payment via Paystack. Cards, M-Pesa, bank transfer accepted.</p>
+                                            <p className="text-xs text-amber-500 mt-3 flex items-center gap-1"><Shield size={11} /> Secure payment. Cards, M-Pesa, bank transfer accepted.</p>
                                         </div>
                                     </div>
                                 </div>
