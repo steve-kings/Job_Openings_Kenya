@@ -382,11 +382,11 @@ export default function OpportunityForm({ mode, opportunityId }: { mode: 'create
                                 <Field label="Title" required>
                                     <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g. Senior Frontend Developer" className={inputCls} />
                                 </Field>
-                                <Field label="Company / Organization" required={formData.type !== 'Banner'}>
-                                    <input type="text" required={formData.type !== 'Banner'} value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
+                                <Field label="Company / Organization">
+                                    <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="e.g. Google, USAID, WFP" className={inputCls} />
                                 </Field>
-                                <Field label="Location" required={formData.type !== 'Banner'}>
-                                    <input type="text" required={formData.type !== 'Banner'} value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
+                                <Field label="Location">
+                                    <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="e.g. Nairobi, Kenya / Remote" className={inputCls} />
                                 </Field>
                                 <Field label="Application Deadline" hint="Leave empty for Rolling Basis">
                                     <input type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} className={inputCls} />
@@ -420,16 +420,6 @@ export default function OpportunityForm({ mode, opportunityId }: { mode: 'create
                         {formData.type !== 'Banner' && (
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Description</h3>
-                            <Field label="Short Description" required hint={`${formData.short_description.length} chars`}>
-                                <textarea
-                                    required
-                                    value={formData.short_description}
-                                    onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                                    placeholder="Brief summary shown on listing cards (150–200 characters recommended)"
-                                    rows={3}
-                                    className={`${inputCls} resize-none`}
-                                />
-                            </Field>
                             <Field label="Full Description" required hint="WYSIWYG Supported">
                                 <RichTextEditor
                                     value={formData.description}
@@ -457,6 +447,18 @@ export default function OpportunityForm({ mode, opportunityId }: { mode: 'create
 
                     {/* ─── RIGHT SIDEBAR ─── */}
                     <div className="space-y-5">
+
+                        {/* Thumbnail — kept above the publish/create button */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Thumbnail Image</h3>
+                            <CloudinaryUpload
+                                onUploadComplete={(url) => setThumbnailUrl(url)}
+                                currentImage={thumbnailUrl}
+                                folder="Job Openings Kenya-opportunities"
+                                label="Upload Thumbnail"
+                            />
+                            <p className="text-xs text-gray-400">Optional — default placeholder used if empty.</p>
+                        </div>
 
                         {/* Publish */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
@@ -526,18 +528,6 @@ export default function OpportunityForm({ mode, opportunityId }: { mode: 'create
                             <Link href="/admin/opportunities" className="block text-center text-sm text-gray-500 hover:text-gray-700 transition-colors">
                                 Cancel
                             </Link>
-                        </div>
-
-                        {/* Thumbnail */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Thumbnail Image</h3>
-                            <CloudinaryUpload
-                                onUploadComplete={(url) => setThumbnailUrl(url)}
-                                currentImage={thumbnailUrl}
-                                folder="Job Openings Kenya-opportunities"
-                                label="Upload Thumbnail"
-                            />
-                            <p className="text-xs text-gray-400">Optional — default placeholder used if empty.</p>
                         </div>
                     </div>
                 </div>
