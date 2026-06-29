@@ -34,6 +34,10 @@ function timeAgo(dateStr: string): string {
 // Branded gradients for articles that arrive without an image (e.g. from RSS)
 const PLACEHOLDER_GRADIENTS = ['from-emerald-500 to-teal-600', 'from-blue-500 to-indigo-600', 'from-violet-500 to-purple-600', 'from-orange-500 to-rose-600', 'from-sky-500 to-cyan-600', 'from-amber-500 to-orange-600'];
 
+// Branded reader URL on our own domain, so a shared article routes through this site
+const brandedHref = (a: Article) =>
+    `/news/read?${new URLSearchParams({ u: a.url, t: a.title, s: a.source, i: a.image || '', d: (a.description || '').slice(0, 160), dt: a.publishedAt }).toString()}`;
+
 export default function NewsClient({ topics }: { topics: Topic[] }) {
     const [activeTopic, setActiveTopic] = useState('jobs');
     const [articles, setArticles] = useState<Article[]>([]);
@@ -143,9 +147,7 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
                     {/* Featured (first article) */}
                     {articles[0] && (
                         <a
-                            href={articles[0].url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href={brandedHref(articles[0])}
                             className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all mb-5 group"
                         >
                             <div className="grid md:grid-cols-2">
@@ -188,9 +190,7 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
                         {articles.slice(1).map((article, i) => (
                             <a
                                 key={article.url}
-                                href={article.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href={brandedHref(article)}
                                 className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all group block overflow-hidden"
                             >
                                 {article.image ? (

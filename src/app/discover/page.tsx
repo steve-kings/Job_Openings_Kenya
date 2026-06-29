@@ -29,6 +29,14 @@ export default async function DiscoverPage() {
         .order('created_at', { ascending: false })
         .limit(3);
 
+    // Live counts so the category cards reflect real data instead of being hardcoded
+    const [{ count: remoteCount }, { count: trainingCount }, { count: storyCount }, { count: blogCount }] = await Promise.all([
+        supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('status', 'active').ilike('location', '%remote%'),
+        supabase.from('opportunities').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('type', 'Training'),
+        supabase.from('testimonials').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+        supabase.from('blog_posts').select('*', { count: 'exact', head: true }),
+    ]);
+
     return (
         <div className="bg-gray-50 min-h-screen pb-20">
             {/* Header Hero */}
@@ -50,7 +58,8 @@ export default async function DiscoverPage() {
                             <Globe size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Remote Jobs</h3>
-                        <p className="text-gray-600 text-sm mb-4">Work from anywhere. Explore verified remote opportunities across the globe.</p>
+                        <p className="text-gray-600 text-sm mb-2">Work from anywhere — verified remote opportunities.</p>
+                        <p className="text-xs font-bold text-[#5CB800] mb-3">{(remoteCount || 0).toLocaleString()} live remote roles</p>
                         <span className="text-[#5CB800] font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Browse Remote <ArrowRight size={16} />
                         </span>
@@ -61,7 +70,8 @@ export default async function DiscoverPage() {
                             <Sparkles size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Training</h3>
-                        <p className="text-gray-600 text-sm mb-4">Professional certifications and courses to boost your career and skills.</p>
+                        <p className="text-gray-600 text-sm mb-2">Certifications and courses to boost your career.</p>
+                        <p className="text-xs font-bold text-purple-600 mb-3">{(trainingCount || 0).toLocaleString()} programs available</p>
                         <span className="text-purple-600 font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Browse Training <ArrowRight size={16} />
                         </span>
@@ -72,7 +82,8 @@ export default async function DiscoverPage() {
                             <Sparkles size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Success Stories</h3>
-                        <p className="text-gray-600 text-sm mb-4">Read inspiring stories from youth who landed their dream opportunities.</p>
+                        <p className="text-gray-600 text-sm mb-2">Inspiring stories from youth who landed opportunities.</p>
+                        <p className="text-xs font-bold text-yellow-600 mb-3">{(storyCount || 0).toLocaleString()} stories shared</p>
                         <span className="text-yellow-600 font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Read Stories <ArrowRight size={16} />
                         </span>
@@ -83,7 +94,8 @@ export default async function DiscoverPage() {
                             <FileText size={28} />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">Articles & Advice</h3>
-                        <p className="text-gray-600 text-sm mb-4">Career tips, interview guides, and industry news to help you succeed.</p>
+                        <p className="text-gray-600 text-sm mb-2">Career tips, interview guides, and industry news.</p>
+                        <p className="text-xs font-bold text-purple-600 mb-3">{(blogCount || 0).toLocaleString()} articles published</p>
                         <span className="text-purple-600 font-semibold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                             Read Articles <ArrowRight size={16} />
                         </span>
