@@ -224,8 +224,8 @@ export default function ContactPage() {
                             <div className="space-y-3">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">Contact Number</p>
-                                    <a href="tel:+254752182132" className="text-[#5CB800] font-semibold hover:text-[#5CB800] transition-colors text-lg">
-                                        +254 752 182 132
+                                    <a href="tel:+254790855690" className="text-[#5CB800] font-semibold hover:text-[#5CB800] transition-colors text-lg">
+                                        +254 790 855 690
                                     </a>
                                 </div>
                                 <div className="mt-3 pt-3 border-t border-gray-200">

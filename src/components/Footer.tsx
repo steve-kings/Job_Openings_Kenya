@@ -28,9 +28,9 @@ export default function Footer() {
                                 <Mail size={14} className="text-emerald-500" />
                                 info@jobopeningskenya.co.ke
                             </a>
-                            <a href="tel:+254752182132" className="flex items-center gap-2 hover:text-white transition-colors">
+                            <a href="tel:+254790855690" className="flex items-center gap-2 hover:text-white transition-colors">
                                 <Phone size={14} className="text-emerald-500" />
-                                +254 752 182 132
+                                +254 790 855 690
                             </a>
                             <span className="flex items-center gap-2">
                                 <MapPin size={14} className="text-emerald-500" />

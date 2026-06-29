@@ -631,7 +631,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                         {appError && <p className="text-xs text-red-500 text-center">{appError}</p>}
                                         <button onClick={() => {
                                             const message = `Hello! I'd like help applying for *${job.title}* at *${job.company}*.`;
-                                            window.open(`https://wa.me/254752182132?text=${encodeURIComponent(message)}`, '_blank');
+                                            window.open(`https://wa.me/254790855690?text=${encodeURIComponent(message)}`, '_blank');
                                         }}
                                             className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white rounded-xl font-semibold text-sm hover:bg-[#1FB855] transition-all">
                                             <WhatsAppIcon /> Get Help Applying
