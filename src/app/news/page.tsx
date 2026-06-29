@@ -6,6 +6,23 @@ import NewsClient from './NewsClient';
 export const metadata: Metadata = {
     title: 'Kenya News — Jobs, Careers & Business | Job Openings Kenya',
     description: 'Latest news about jobs, careers, business, and technology in Kenya. Stay informed with curated news for Kenyan professionals.',
+    keywords: 'Kenya news, jobs news Kenya, business news Kenya, career news, Kenyan economy, technology news Kenya, hiring news',
+    alternates: { canonical: '/news' },
+    openGraph: {
+        title: 'Kenya News — Jobs, Careers & Business',
+        description: 'Latest jobs, career, business & tech news for Kenyan professionals, updated regularly.',
+        url: '/news',
+        siteName: 'Job Openings Kenya',
+        type: 'website',
+        locale: 'en_US',
+        images: [{ url: '/job_openings_kenya_logo.jpeg', width: 1200, height: 630, alt: 'Job Openings Kenya News' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Kenya News — Jobs, Careers & Business',
+        description: 'Latest jobs, career, business & tech news for Kenyan professionals.',
+        images: ['/job_openings_kenya_logo.jpeg'],
+    },
 };
 
 export const revalidate = 900; // 15 minutes

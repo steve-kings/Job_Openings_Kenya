@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Loader2, ExternalLink, Clock, AlertCircle, TrendingUp } from 'lucide-react';
+import { Loader2, ExternalLink, Clock, AlertCircle, TrendingUp, Copy, Check, Share2 } from 'lucide-react';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 interface Article {
     title: string;
@@ -30,11 +31,28 @@ function timeAgo(dateStr: string): string {
     return `${Math.floor(days / 7)}w ago`;
 }
 
+// Branded gradients for articles that arrive without an image (e.g. from RSS)
+const PLACEHOLDER_GRADIENTS = ['from-emerald-500 to-teal-600', 'from-blue-500 to-indigo-600', 'from-violet-500 to-purple-600', 'from-orange-500 to-rose-600', 'from-sky-500 to-cyan-600', 'from-amber-500 to-orange-600'];
+
 export default function NewsClient({ topics }: { topics: Topic[] }) {
     const [activeTopic, setActiveTopic] = useState('jobs');
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
+    };
+    const shareTo = (platform: 'whatsapp' | 'twitter') => {
+        const url = window.location.href;
+        const text = 'Latest Kenya jobs, career & business news';
+        const links = {
+            whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' — ' + url)}`,
+            twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+        };
+        window.open(links[platform], '_blank', 'noopener,noreferrer');
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -62,6 +80,23 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
 
     return (
         <>
+            {/* Share this page */}
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+                <span className="text-xs font-bold text-slate-400 mr-0.5">Share this page:</span>
+                <button onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700 transition-all">
+                    {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />} {copied ? 'Copied!' : 'Copy link'}
+                </button>
+                <button onClick={() => shareTo('whatsapp')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#25D366] text-white hover:bg-[#1FB855] transition-all">
+                    <WhatsAppIcon size={13} /> WhatsApp
+                </button>
+                <button onClick={() => shareTo('twitter')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 text-slate-600 hover:border-slate-400 transition-all">
+                    <Share2 size={13} /> Post
+                </button>
+            </div>
+
             {/* Topic Tabs */}
             <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-1">
                 {topics.map(t => (
@@ -113,14 +148,18 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
                             rel="noopener noreferrer"
                             className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md transition-all mb-5 group"
                         >
-                            <div className={articles[0].image ? "grid md:grid-cols-2" : "block"}>
-                                {articles[0].image && (
+                            <div className="grid md:grid-cols-2">
+                                {articles[0].image ? (
                                     <img
                                         src={articles[0].image}
                                         alt=""
                                         className="w-full h-48 md:h-full object-cover"
                                         loading="lazy"
                                     />
+                                ) : (
+                                    <div className="w-full h-48 md:h-full min-h-[180px] bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center p-6">
+                                        <span className="text-white font-black text-lg text-center drop-shadow line-clamp-3">{articles[0].source}</span>
+                                    </div>
                                 )}
                                 <div className="p-6 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 mb-2">
@@ -146,7 +185,7 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
 
                     {/* Grid of remaining articles */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {articles.slice(1).map(article => (
+                        {articles.slice(1).map((article, i) => (
                             <a
                                 key={article.url}
                                 href={article.url}
@@ -154,13 +193,17 @@ export default function NewsClient({ topics }: { topics: Topic[] }) {
                                 rel="noopener noreferrer"
                                 className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all group block overflow-hidden"
                             >
-                                {article.image && (
+                                {article.image ? (
                                     <img
                                         src={article.image}
                                         alt=""
                                         className="w-full h-36 object-cover"
                                         loading="lazy"
                                     />
+                                ) : (
+                                    <div className={`w-full h-36 bg-gradient-to-br ${PLACEHOLDER_GRADIENTS[i % PLACEHOLDER_GRADIENTS.length]} flex items-center justify-center p-4`}>
+                                        <span className="text-white font-extrabold text-sm text-center drop-shadow line-clamp-3">{article.source}</span>
+                                    </div>
                                 )}
                                 <div className="p-4">
                                     <h3 className="font-bold text-sm text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-2 leading-snug">
