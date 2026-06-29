@@ -250,64 +250,55 @@ export default function CVBuilderPage() {
     const TemplateThumb = ({ t: t2 }: { t: TemplateCfg }) => {
         const c = colorMap[t2.color];
         const isActive = t2.id === template;
-        const isLight = t2.style === 'centered' || t2.style === 'bordered';
-        const hdrText = t2.style === 'dark-header' || t2.style === 'sidebar' || t2.style === 'split' ? 'text-white' : 'text-slate-800';
-        const hdrBg = t2.style === 'centered' || t2.style === 'bordered' ? 'bg-white border-b border-slate-200' : c.bg;
-        const nameW = t2.style === 'sidebar' || t2.style === 'split' ? 'w-2/3' : 'w-1/2';
+        const twoCol = t2.style === 'sidebar' || t2.style === 'split';
+        const darkHeader = t2.style === 'dark-header';
+        const centered = t2.style === 'centered';
+        const bordered = t2.style === 'bordered';
+
+        // Tapered skeleton lines + section headings for a natural, well-spaced preview
+        const para = (n: number, light = false) => (
+            <div className="space-y-1">
+                {Array.from({ length: n }).map((_, i) => (
+                    <div key={i} className={`h-1 rounded ${light ? 'bg-white/20' : 'bg-slate-200'}`} style={{ width: `${94 - i * 15}%` }} />
+                ))}
+            </div>
+        );
+        const heading = (w: string) => <div className={`h-1.5 rounded mb-1.5 bg-slate-300 ${w}`} />;
 
         return (
-            <div className={`bg-white rounded-xl border overflow-hidden cursor-pointer ${isActive ? 'ring-2 ring-emerald-500 shadow-lg' : 'shadow-sm hover:shadow-md'} transition-all group`}>
-                {/* Header */}
-                <div className={`${hdrBg} ${hdrText} p-2.5 ${t2.style === 'sidebar' || t2.style === 'split' ? 'flex' : ''}`}>
-                    {t2.style === 'sidebar' || t2.style === 'split' ? (
-                        <div className={t2.style === 'sidebar' ? 'text-center' : 'flex-1'}>
-                            <div className={`w-5 h-5 rounded-full ${isLight ? 'bg-slate-100' : 'bg-white/20'} mx-auto mb-1`} />
-                            <div className={`h-1.5 rounded ${nameW} ${isLight ? 'bg-slate-300' : 'bg-white/30'} mx-auto mb-0.5`} />
-                            <div className={`h-1 rounded w-3/4 ${isLight ? 'bg-slate-200' : 'bg-white/15'} mx-auto`} />
+            <div className={`relative bg-white rounded-xl border overflow-hidden aspect-[3/4] transition-all duration-300 ${isActive ? 'ring-2 ring-emerald-500 shadow-lg -translate-y-0.5' : 'border-slate-200 shadow-sm group-hover:shadow-lg group-hover:-translate-y-1'}`}>
+                {twoCol ? (
+                    <div className="flex h-full">
+                        <div className={`${c.bg} w-[38%] ${t2.style === 'split' ? 'order-2' : ''} p-3 flex flex-col gap-2.5`}>
+                            {t2.style === 'sidebar' && <div className="w-8 h-8 rounded-full bg-white/25 mx-auto mb-0.5" />}
+                            <div className="h-1.5 rounded bg-white/45 w-full" />
+                            <div className="h-1 rounded bg-white/25 w-3/4" />
+                            <div className="mt-auto">{para(4, true)}</div>
                         </div>
-                    ) : (
-                        <>
-                            <div className={`h-2 rounded ${nameW} ${isLight ? 'bg-slate-300' : 'bg-white/30'} mb-1`} />
-                            <div className={`h-1 rounded w-3/4 ${isLight ? 'bg-slate-200' : 'bg-white/15'}`} />
-                        </>
-                    )}
-                    {t2.style === 'split' && (
-                        <div className="w-[45%] pl-2 space-y-1">
-                            <div className="h-0.5 bg-white/20 rounded w-2/3" />
-                            <div className="h-0.5 bg-white/15 rounded w-1/2" />
-                            <div className="h-0.5 bg-white/15 rounded w-3/4" />
+                        <div className="flex-1 p-3 flex flex-col gap-3">
+                            <div>{heading('w-1/3')}{para(3)}</div>
+                            <div>{heading('w-2/5')}{para(2)}</div>
+                            <div>{heading('w-1/3')}{para(2)}</div>
                         </div>
-                    )}
-                </div>
-                {/* Body */}
-                <div className="p-2.5 space-y-1.5">
-                    {t2.style === 'sidebar' ? (
-                        <div className="flex gap-2">
-                            <div className="w-[35%] space-y-1">
-                                <div className="h-0.5 bg-slate-200 rounded w-1/2" />
-                                <div className="h-0.5 bg-slate-100 rounded w-2/3" />
-                                <div className="h-0.5 bg-slate-100 rounded w-3/4" />
-                            </div>
-                            <div className="w-[65%] space-y-1.5">
-                                <div className="h-1 bg-slate-200 rounded w-1/3 mb-1" />
-                                <div className="h-0.5 bg-slate-100 rounded w-full" />
-                                <div className="h-0.5 bg-slate-100 rounded w-5/6" />
-                                <div className="h-1 bg-slate-200 rounded w-1/3 mt-1" />
-                                <div className="h-0.5 bg-slate-100 rounded w-full" />
+                    </div>
+                ) : (
+                    <div className="h-full flex flex-col">
+                        <div className={`${darkHeader ? c.bg : 'bg-white'} ${bordered ? 'border-b-2 border-slate-800' : darkHeader ? '' : 'border-b border-slate-200'} p-3`}>
+                            <div className={`flex gap-2 ${centered ? 'flex-col items-center text-center' : 'items-center'}`}>
+                                {centered && <div className="w-8 h-8 rounded-full bg-slate-200 mb-1" />}
+                                <div className={centered ? 'w-full' : 'flex-1'}>
+                                    <div className={`h-2 rounded ${darkHeader ? 'bg-white/55' : 'bg-slate-300'} ${centered ? 'w-2/3 mx-auto' : 'w-2/3'}`} />
+                                    <div className={`h-1 rounded mt-1.5 ${darkHeader ? 'bg-white/30' : 'bg-slate-200'} ${centered ? 'w-1/2 mx-auto' : 'w-1/2'}`} />
+                                </div>
                             </div>
                         </div>
-                    ) : (
-                        <>
-                            <div className="h-1 bg-slate-200 rounded w-1/3" />
-                            <div className="h-0.5 bg-slate-100 rounded w-full" />
-                            <div className="h-0.5 bg-slate-100 rounded w-11/12" />
-                            <div className="h-0.5 bg-slate-100 rounded w-3/4" />
-                            <div className="h-1 bg-slate-200 rounded w-1/4 mt-1" />
-                            <div className="h-0.5 bg-slate-100 rounded w-full" />
-                            <div className="h-0.5 bg-slate-100 rounded w-2/3" />
-                        </>
-                    )}
-                </div>
+                        <div className="flex-1 p-3 flex flex-col gap-3">
+                            <div>{heading('w-1/4')}{para(3)}</div>
+                            <div>{heading('w-1/3')}{para(3)}</div>
+                            <div>{heading('w-1/4')}{para(2)}</div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     };
@@ -447,11 +438,11 @@ export default function CVBuilderPage() {
                         <div>
                             <h2 className="text-2xl font-black text-slate-900 text-center mb-2">Choose Your Template</h2>
                             <p className="text-slate-500 text-center mb-8">Select a design that fits your industry — you can switch anytime</p>
-                            <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl mx-auto">
                                 {TEMPLATES.map(t => (
                                     <div key={t.id} className="cursor-pointer group" onClick={() => { setTemplate(t.id); setStep('details'); }}>
                                         <TemplateThumb t={t} />
-                                        <div className="mt-2 text-center">
+                                        <div className="mt-2.5 text-center">
                                             <p className="font-extrabold text-xs text-slate-900 flex items-center justify-center gap-1.5">
                                                 {t.name}
                                                 {t.free && <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Free</span>}
