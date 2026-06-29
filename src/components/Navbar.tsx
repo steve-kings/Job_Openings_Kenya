@@ -9,7 +9,7 @@ import {
     LogOut, LayoutDashboard, Settings, Menu, X, Bookmark,
     ChevronDown, Search, Briefcase, Building2, Zap,
     MessageCircle, TrendingUp, Compass, Newspaper, ExternalLink,
-    CheckCircle2, Sparkles, ArrowRight, MapPin, BookOpen, CloudSun,
+    CheckCircle2, Sparkles, ArrowRight, MapPin, BookOpen, CloudSun, Rss,
 } from 'lucide-react';
 import { useBookmarks } from '@/contexts/BookmarkContext';
 
@@ -118,6 +118,7 @@ export default function Navbar() {
             title: 'Stay Updated',
             links: [
                 { href: '/blog', label: 'Blog', desc: 'Career tips & stories', icon: Newspaper, c: 'violet' },
+                { href: '/news', label: 'News', desc: 'Latest Kenya headlines', icon: Rss, c: 'blue' },
                 { href: '/resources', label: 'Resources', desc: 'CV guides & tools', icon: BookOpen, c: 'amber' },
                 { href: 'https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C', label: 'WhatsApp', desc: 'Instant job alerts', icon: MessageCircle, c: 'green', ext: true },
             ],
@@ -348,7 +349,7 @@ export default function Navbar() {
                             </div>
 
                             {/* Nav links */}
-                            {[...navLinks, { href: '/about', label: 'About' }].map(l => (
+                            {[...navLinks, { href: '/news', label: 'News' }, { href: '/weather', label: 'Weather' }, { href: '/about', label: 'About' }].map(l => (
                                 <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)}
                                     className={`block px-4 py-3 rounded-xl font-semibold text-sm ${isActive(l.href) ? 'bg-emerald-500 text-white' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}`}>
                                     {l.label}
