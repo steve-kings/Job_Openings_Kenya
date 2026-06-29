@@ -76,7 +76,10 @@ export default function ThreadDetailPage() {
             await supabase.from('forum_threads').update({ comment_count: (thread?.comment_count || 0) + 1 }).eq('id', id);
             setThread(t => t ? { ...t, comment_count: t.comment_count + 1 } : null);
             setNewComment('');
-        } catch (err) { console.error('Failed to post comment:', err); }
+        } catch (err) {
+            console.error('Failed to post comment:', err);
+            alert(err instanceof Error ? `Could not post your reply: ${err.message}` : 'Could not post your reply. Please try again.');
+        }
         finally { setSubmittingComment(false); }
     };
 
@@ -137,7 +140,7 @@ export default function ThreadDetailPage() {
                                         <p className="font-extrabold text-sm text-slate-900">{thread.profiles?.full_name || 'Anonymous'}</p>
                                         <span className="text-xs text-slate-400">{timeAgo(thread.created_at)}</span>
                                     </div>
-                                    <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed">{thread.content}</div>
+                                    <div className="text-slate-700 whitespace-pre-wrap text-[15px] sm:text-base leading-7 sm:leading-8 first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-black first-letter:leading-none first-letter:text-emerald-600">{thread.content}</div>
                                 </div>
                             </div>
                         </div>
@@ -176,7 +179,7 @@ export default function ThreadDetailPage() {
                                                 <p className="font-extrabold text-sm text-slate-900">{comment.profiles?.full_name || 'Anonymous'}</p>
                                                 <span className="text-xs text-slate-400">{timeAgo(comment.created_at)}</span>
                                             </div>
-                                            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{comment.content}</p>
+                                            <p className="text-[14px] sm:text-[15px] text-slate-700 whitespace-pre-wrap leading-7">{comment.content}</p>
                                             <button onClick={() => handleVote(comment.id, false, comment.upvotes)}
                                                 disabled={userVotes.has(comment.id)}
                                                 className={`mt-3 flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-all ${
