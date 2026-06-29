@@ -633,8 +633,8 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                             const message = `Hello! I'd like help applying for *${job.title}* at *${job.company}*.`;
                                             window.open(`https://wa.me/254752182132?text=${encodeURIComponent(message)}`, '_blank');
                                         }}
-                                            className="flex items-center justify-center gap-2 w-full py-3 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600 transition-all">
-                                            <PhoneCall size={16} /> Get Help Applying
+                                            className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white rounded-xl font-semibold text-sm hover:bg-[#1FB855] transition-all">
+                                            <WhatsAppIcon /> Get Help Applying
                                         </button>
                                         <div className="grid grid-cols-2 gap-2 pt-1">
                                             <button onClick={() => setCvModalOpen(true)}

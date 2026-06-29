@@ -67,6 +67,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Google Analytics (GA4). Defaults to the site's measurement ID; override via NEXT_PUBLIC_GA_ID.
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-GCVT8CJQPK';
   return (
     <html lang="en" data-theme="jobopeningskenya">
       <head>
@@ -136,12 +138,12 @@ export default function RootLayout({
           />
         )}
         
-        {/* Google Analytics */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
+        {/* Google Analytics (gtag.js) — loads on every page */}
+        {GA_ID && (
           <>
             <Script
               strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
             />
             <Script
               id="google-analytics"
@@ -151,7 +153,7 @@ export default function RootLayout({
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                  gtag('config', '${GA_ID}');
                 `,
               }}
             />

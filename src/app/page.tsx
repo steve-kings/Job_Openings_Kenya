@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
     ArrowRight, BellRing, BookOpen, Briefcase, Building2, Calendar,
-    CheckCircle, Clock, ExternalLink, Eye, Home, Layers,
+    CheckCircle, Clock, Eye, Home, Layers,
     MapPin, MessageCircle, Search, Shield, ShieldCheck, Sparkles,
     TrendingUp, Users, Wallet, X, Zap, Star, Clock3, ArrowUpRight,
 } from 'lucide-react';
@@ -15,6 +15,7 @@ import ListingsView from '@/components/ListingsView';
 import ScrollReveal from '@/components/ScrollReveal';
 import WeatherWidget from '@/components/WeatherWidget';
 import NewsWidget from '@/components/NewsWidget';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { createClient } from '@/lib/supabase/server';
 import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
@@ -355,7 +356,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto">
                                     <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
                                         className="group flex flex-col items-center gap-3 rounded-2xl border-2 border-green-200 bg-green-50 p-6 hover:border-green-400 hover:shadow-lg transition-all">
-                                        <div className="w-14 h-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform"><MessageCircle size={24} /></div>
+                                        <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center text-white shadow-lg shadow-[#25D366]/30 group-hover:scale-105 transition-transform"><WhatsAppIcon size={26} /></div>
                                         <p className="font-extrabold text-green-800 text-sm">WhatsApp Alerts</p>
                                         <p className="text-xs text-green-600">Get jobs on your phone instantly</p>
                                     </a>
@@ -376,12 +377,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                         {/* Weather Widget */}
                         <WeatherWidget />
 
-                        <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 shadow-[0_20px_50px_-12px_rgba(16,185,129,0.3)]">
-                            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4"><MessageCircle size={24} /></div>
+                        <div className="rounded-2xl bg-[#25D366] text-white p-6 shadow-[0_20px_50px_-12px_rgba(37,211,102,0.45)]">
+                            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4"><WhatsAppIcon size={26} /></div>
                             <h3 className="text-lg font-extrabold mb-1">WhatsApp Job Alerts</h3>
-                            <p className="text-sm text-white/75 mb-5 leading-relaxed">Get jobs delivered to your phone. Instant, no spam.</p>
+                            <p className="text-sm text-white/90 mb-5 leading-relaxed">Get jobs delivered to your phone. Instant, no spam.</p>
                             <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
-                                className="block w-full text-center rounded-full bg-white px-5 py-3 text-sm font-extrabold text-emerald-700 hover:bg-gray-50 transition-all">Join Channel →</a>
+                                className="flex items-center justify-center gap-2 w-full rounded-full bg-white px-5 py-3 text-sm font-extrabold text-[#075E54] hover:bg-gray-50 transition-all active:scale-[0.98]"><WhatsAppIcon size={18} /> Join Channel</a>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -655,8 +656,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                             Join thousands of Kenyan youth getting instant job alerts via WhatsApp. Fast and spam-free.
                         </p>
                         <a href="https://whatsapp.com/channel/0029VbC5ZsJ3WHTVFtB0TM3C" target="_blank" rel="noopener noreferrer"
-                            className="mt-8 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-extrabold text-emerald-700 shadow-xl hover:bg-gray-50 hover:shadow-2xl transition-all active:scale-[0.98]">
-                            <MessageCircle size={22} /> Join WhatsApp <ExternalLink size={18} />
+                            className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] px-8 py-4 text-base font-extrabold text-white shadow-xl shadow-[#25D366]/30 hover:bg-[#1FB855] hover:shadow-2xl transition-all active:scale-[0.98]">
+                            <WhatsAppIcon size={22} /> Join WhatsApp Channel
                         </a>
                         <p className="mt-4 text-sm text-white/40">No Spam • Instant Delivery</p>
                     </ScrollReveal>
