@@ -69,6 +69,29 @@ export function fmtDate(d?: string | null) {
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// Convert rich-text HTML (e.g. from the Quill editor) to a clean plain-text snippet:
+// strip tags, decode common HTML entities, and collapse whitespace. Use this anywhere
+// a stored description is shown as plain text (cards, meta descriptions, etc.).
+export function htmlToText(html?: string | null): string {
+    return String(html || '')
+        .replace(/<[^>]*>/g, ' ')                  // strip tags
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&#(\d+);/g, (_, d) => {
+            const n = Number(d);
+            return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : ' ';
+        })
+        .replace(/&#x([0-9a-f]+);/gi, (_, h) => {
+            const n = parseInt(h, 16);
+            return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : ' ';
+        })
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"')
+        .replace(/&amp;/gi, '&')                    // decode last to avoid double-decoding
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 export function cleanSummary(j: JobData) {
-    return j.short_description || String(j.description || '').replace(/<[^>]*>/g, '').slice(0, 180);
+    return htmlToText(j.short_description || j.description).slice(0, 180);
 }
