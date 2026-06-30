@@ -100,7 +100,7 @@ export default async function ForumPage() {
                                         };
                                         const IconEl = iconMap[cat.name] || <MessageSquare size={20} />;
                                         return (
-                                        <Link key={cat.id} href={`/community/category/${cat.id}`}
+                                        <Link key={cat.id} href={`/community/all?category=${cat.id}`}
                                             className="group bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-4">
                                             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
                                                 style={{ backgroundColor: `${(cat as unknown as {color?:string}).color || '#1976D2'}15`, color: (cat as unknown as {color?:string}).color || '#1976D2' }}>
