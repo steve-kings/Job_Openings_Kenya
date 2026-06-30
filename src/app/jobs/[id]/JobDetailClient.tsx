@@ -10,7 +10,7 @@ import {
 import BookmarkButton from '@/components/BookmarkButton';
 import GoogleAd from '@/components/GoogleAd';
 import WeatherWidget from '@/components/WeatherWidget';
-import { typeLabel } from '@/lib/utils/jobs';
+import { typeLabel, htmlToText } from '@/lib/utils/jobs';
 
 interface Job {
     id: string;
@@ -313,7 +313,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         '@context': 'https://schema.org',
                         '@type': 'JobPosting',
                         title: job.title,
-                        description: job.short_description || job.description?.replace(/<[^>]*>/g, '').substring(0, 500) || '',
+                        description: htmlToText(job.short_description || job.description).substring(0, 500),
                         datePosted: new Date().toISOString().split('T')[0],
                         validThrough: job.deadline,
                         url: shareUrl,

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin, Calendar, Briefcase, ExternalLink, ArrowLeft, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { htmlToText } from '@/lib/utils/jobs';
 
 export const revalidate = 3600;
 
@@ -139,7 +140,7 @@ export default async function CompanyProfilePage({ params }: Props) {
                                             <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                         </div>
                                         <p className="mt-2 text-sm text-gray-500 line-clamp-2">
-                                            {job.short_description || job.description?.substring(0, 200)}
+                                            {htmlToText(job.short_description || job.description).substring(0, 200)}
                                         </p>
                                     </div>
                                     <div className="hidden sm:flex items-center gap-1 text-sm font-bold text-emerald-600 shrink-0">

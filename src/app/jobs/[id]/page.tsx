@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 import JobDetailClient from './JobDetailClient';
 import { getBaseUrl } from '@/lib/utils/url';
+import { htmlToText } from '@/lib/utils/jobs';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
@@ -25,10 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     
     return {
         title: `${job.title} - ${job.company} | Job Openings Kenya`,
-        description: job.short_description || job.description.substring(0, 160),
+        description: htmlToText(job.short_description || job.description).substring(0, 160),
         openGraph: {
             title: job.title,
-            description: job.short_description || job.description.substring(0, 160),
+            description: htmlToText(job.short_description || job.description).substring(0, 160),
             url: url,
             siteName: 'Job Openings Kenya - Job Openings Kenya',
             images: [
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         twitter: {
             card: 'summary_large_image',
             title: job.title,
-            description: job.short_description || job.description.substring(0, 160),
+            description: htmlToText(job.short_description || job.description).substring(0, 160),
             images: [dynamicOgImageUrl],
         },
     };
