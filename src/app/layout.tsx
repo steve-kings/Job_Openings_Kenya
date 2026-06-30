@@ -11,6 +11,7 @@ import CookieConsent from "@/components/CookieConsent";
 import CVBanner from "@/components/CVBanner";
 import AuthCodeHandler from "@/components/AuthCodeHandler";
 import { getBaseUrl } from "@/lib/utils/url";
+import { ADSENSE_CLIENT_ID } from "@/lib/adsense";
 import { BookmarkProvider } from "@/contexts/BookmarkContext";
 
 const outfit = Outfit({
@@ -125,18 +126,19 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Job Openings Kenya" />
+        {/* Google AdSense site-ownership verification */}
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
       </head>
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-white text-gray-900 overflow-x-hidden w-full max-w-full`}
       >
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
-        )}
+        <Script
+          id="adsbygoogle-init"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         
         {/* Google Analytics (gtag.js) — loads on every page */}
         {GA_ID && (

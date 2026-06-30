@@ -1,5 +1,6 @@
 'use client';
 import { useEffect } from 'react';
+import { ADSENSE_CLIENT_ID } from '@/lib/adsense';
 
 interface GoogleAdProps {
   adSlot: string;
@@ -8,7 +9,7 @@ interface GoogleAdProps {
 }
 
 export default function GoogleAd({ adSlot, adFormat = 'auto', fullWidthResponsive = true }: GoogleAdProps) {
-  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  const clientId = ADSENSE_CLIENT_ID;
 
   useEffect(() => {
     if (clientId) {
