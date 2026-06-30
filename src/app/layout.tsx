@@ -127,18 +127,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Job Openings Kenya" />
         {/* Google AdSense site-ownership verification */}
         <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
+        {/* Google AdSense — Auto Ads loader in <head>, on every page, so Google can
+            automatically place ads in the best-performing spots across the whole site */}
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={`${outfit.variable} font-sans antialiased min-h-screen flex flex-col bg-white text-gray-900 overflow-x-hidden w-full max-w-full`}
       >
-        <Script
-          id="adsbygoogle-init"
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        
         {/* Google Analytics (gtag.js) — loads on every page */}
         {GA_ID && (
           <>
