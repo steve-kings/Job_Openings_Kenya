@@ -7,14 +7,12 @@ import Link from 'next/link';
 import {
     ArrowLeft, Sparkles, Download, Eye, Check, Loader2,
     Mail, Phone, MapPin, Briefcase, GraduationCap, Award,
-    CreditCard, Shield, Printer, PenTool, AlertCircle,
-    ChevronRight, ChevronLeft, User, Globe, Star,
+    PenTool, ChevronRight, ChevronLeft, User, Globe, Star,
 } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
-
-declare global { interface Window { PaystackPop?: { setup: (o: Record<string,unknown>) => { openIframe: () => void } }; } }
+import GoogleAd from '@/components/GoogleAd';
 
 interface Profile {
     full_name?: string; email?: string; headline?: string; location?: string;
@@ -22,7 +20,9 @@ interface Profile {
     phone?: string; linkedin_url?: string;
 }
 
-const DEFAULT_cvPrice = 50;
+// AdSense ad unit slot for the CV download gate. Create a Display ad unit in your
+// AdSense account and put its slot ID here, or set NEXT_PUBLIC_ADSENSE_CV_SLOT.
+const CV_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_CV_SLOT || 'PLACEHOLDER_SLOT_ID';
 
 type TemplateId = 'classic' | 'modern' | 'minimal' | 'executive' | 'creative' | 'technical' | 'academic' | 'sales' | 'hybrid' | 'bold' | 'simple' | 'timeline';
 
@@ -51,36 +51,14 @@ export default function CVBuilderPage() {
     const [loading, setLoading] = useState(true);
     const [step, setStep] = useState<'template' | 'details' | 'preview'>('template');
     const [template, setTemplate] = useState<TemplateId>('classic');
-    const [paid, setPaid] = useState(false);
-    const [payLoading, setPayLoading] = useState(false);
-    const [payError, setPayError] = useState('');
     const [aiLoading, setAiLoading] = useState(false);
     const [aiPrompt, setAiPrompt] = useState('');
-    const [cvPrice, setCvPrice] = useState(DEFAULT_cvPrice);
-    const [saving, setSaving] = useState(false);
-
-    // Fetch pricing from site settings
-    useEffect(() => {
-        supabase.from('site_settings').select('key,value').then(({ data }) => {
-            if (data) {
-                const price = data.find((s: {key:string;value:string}) => s.key === 'cv_price');
-                if (price) setCvPrice(parseInt(price.value) || DEFAULT_cvPrice);
-            }
-        });
-    }, [supabase]);
 
     const [form, setForm] = useState({
         full_name: '', email: '', phone: '', location: '', headline: '',
         summary: '', skills: '', experience: '', education: '', linkedin: '',
         photo_url: '',
     });
-
-    // Load Paystack
-    useEffect(() => {
-        const s = document.createElement('script'); s.src = 'https://js.paystack.co/v1/inline.js'; s.async = true;
-        document.body.appendChild(s);
-        return () => { s.remove(); };
-    }, []);
 
     // Inject print styles to isolate CV print layout and clean default browser headers/footers
     useEffect(() => {
@@ -176,56 +154,13 @@ export default function CVBuilderPage() {
         finally { setAiLoading(false); }
     };
 
-    const handlePaystack = async () => {
-        const P = window.PaystackPop;
-        if (!P) { setPayError('Payment loading... try again.'); return; }
-        setPayLoading(true); setPayError('');
-
-        // Save CV as 'created' before payment so we don't lose it
-        let cvDocId: string | null = null;
+    // Save the built CV, then open the browser's print/download dialog. Free — no payment.
+    const handleDownload = async () => {
         try {
-            const { data: cvDoc } = await supabase
-                .from('cv_documents')
-                .insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'created' })
-                .select('id')
-                .single();
-            cvDocId = cvDoc?.id || null;
-        } catch { /* proceed — will save after payment if this fails */ }
-
-        P.setup({
-            key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-            email: form.email || user?.email || '',
-            amount: cvPrice * 100,
-            currency: 'KES',
-            ref: `cv_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
-            label: 'CV Builder',
-            metadata: { user_id: user?.id, product: 'cv_builder', cv_document_id: cvDocId },
-            onClose: () => setPayLoading(false),
-            callback: async (r: { reference: string }) => {
-                try {
-                    const v = await fetch('/api/payment/verify', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reference: r.reference, user_id: user?.id, product: 'cv_builder', amount: cvPrice }),
-                    });
-                    const d = await v.json();
-                    if (d.verified) {
-                        setPaid(true);
-                        // Update the existing CV record to 'paid' (or create if pre-save failed)
-                        if (cvDocId) {
-                            await supabase.from('cv_documents').update({ status: 'paid' }).eq('id', cvDocId);
-                        } else {
-                            setSaving(true);
-                            await supabase.from('cv_documents').insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'paid' });
-                            setSaving(false);
-                        }
-                    } else setPayError('Verification failed. Contact support.');
-                } catch { setPayError('Verification error. Contact support.'); }
-                setPayLoading(false);
-            },
-        }).openIframe();
+            await supabase.from('cv_documents').insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'created' });
+        } catch { /* non-blocking — still allow the download */ }
+        window.print();
     };
-
-    const handlePrint = () => window.print();
     const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
     const inputCls = "w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 transition-all bg-white";
     const skillsArr = (form.skills || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -404,7 +339,7 @@ export default function CVBuilderPage() {
                     <Link href="/resources" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white mb-3 text-sm font-medium"><ArrowLeft size={15} /> Resources</Link>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center"><PenTool size={18} /></div>
-                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">12 templates • 4 free • Premium KES {cvPrice}</p></div>
+                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">12 professional templates • 100% free to download</p></div>
                     </div>
                 </div>
             </section>
@@ -445,7 +380,7 @@ export default function CVBuilderPage() {
                                         <div className="mt-2.5 text-center">
                                             <p className="font-extrabold text-xs text-slate-900 flex items-center justify-center gap-1.5">
                                                 {t.name}
-                                                {t.free && <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Free</span>}
+                                                <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Free</span>
                                             </p>
                                             <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">{t.desc}</p>
                                         </div>
@@ -570,54 +505,32 @@ export default function CVBuilderPage() {
                             <div id="cv-print"><CVRender fullWidth printMode /></div>
                         </ScrollReveal>
 
-                        {/* Payment */}
+                        {/* Download — free, ad-supported (no payment) */}
                         <ScrollReveal delay={100}>
                             {tpl.free ? (
-                                /* Free template — no payment */
+                                /* Free template — instant download */
                                 <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-8 text-center">
                                     <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Star size={30} className="text-emerald-600" /></div>
-                                    <h3 className="font-extrabold text-emerald-900 text-xl mb-1">Free Template — Ready to Download!</h3>
-                                    <p className="text-emerald-700 text-sm mb-5">This is a free basic template. Upgrade to premium for KES {cvPrice}.</p>
+                                    <h3 className="font-extrabold text-emerald-900 text-xl mb-1">Ready to Download!</h3>
+                                    <p className="text-emerald-700 text-sm mb-5">This template is completely free — download or print it now.</p>
                                     <div className="flex flex-wrap justify-center gap-3">
-                                        <button onClick={async () => {
-                                            await supabase.from('cv_documents').insert({ user_id: user?.id, template_id: template, cv_data: form, status: 'created' });
-                                            handlePrint();
-                                        }} className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2"><Download size={15} /> Download / Print</button>
+                                        <button onClick={handleDownload} className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2"><Download size={15} /> Download / Print</button>
                                         <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-emerald-300 text-emerald-700 font-extrabold text-sm hover:bg-emerald-100 transition-all">Dashboard</Link>
-                                    </div>
-                                    <p className="text-xs text-emerald-500 mt-3">Want a premium template? Switch to any non-free design above.</p>
-                                </div>
-                            ) : !paid ? (
-                                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6 sm:p-8">
-                                    <div className="flex flex-col sm:flex-row items-start gap-5">
-                                        <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0"><CreditCard size={26} className="text-amber-700" /></div>
-                                        <div className="flex-1">
-                                            <h3 className="font-extrabold text-amber-900 text-lg mb-1">Download Your Professional CV</h3>
-                                            <p className="text-amber-700 text-sm mb-4">One payment of <strong>KES {cvPrice}</strong>. ATS-friendly, print-ready, downloadable anytime.</p>
-                                            {payError && <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-3"><AlertCircle size={12} />{payError}</div>}
-                                            <div className="flex flex-wrap gap-3">
-                                                <button onClick={handlePaystack} disabled={payLoading}
-                                                    className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm disabled:opacity-60 inline-flex items-center gap-2">
-                                                    {payLoading ? <Loader2 size={15} className="animate-spin" /> : <CreditCard size={15} />}
-                                                    Pay KES {cvPrice}
-                                                </button>
-                                                <button onClick={() => { const w = window.open('','_blank','width=800,height=600'); if(w){w.document.write('<html><head><title>Preview</title><script src=https://cdn.tailwindcss.com><\/script><style>@media print{body{-webkit-print-color-adjust:exact}}</style></head><body>'+document.getElementById('cv-print')!.outerHTML+'</body></html>');w.document.close();}}}
-                                                    className="px-6 py-3 rounded-xl border-2 border-amber-300 text-amber-800 font-extrabold text-sm hover:bg-amber-100 transition-all inline-flex items-center gap-2">
-                                                    <Printer size={15} /> Print Preview
-                                                </button>
-                                            </div>
-                                            <p className="text-xs text-amber-500 mt-3 flex items-center gap-1"><Shield size={11} /> Secure payment. Cards, M-Pesa, bank transfer accepted.</p>
-                                        </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-8 text-center">
-                                    <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Check size={30} className="text-emerald-600" /></div>
-                                    <h3 className="font-extrabold text-emerald-900 text-xl mb-1">Payment Successful! 🎉</h3>
-                                    <p className="text-emerald-700 text-sm mb-5">Your CV is ready. Download, print, or come back anytime.</p>
-                                    <div className="flex flex-wrap justify-center gap-3">
-                                        <button onClick={handlePrint} className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2"><Download size={15} /> Download / Print</button>
-                                        <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-emerald-300 text-emerald-700 font-extrabold text-sm hover:bg-emerald-100 transition-all">Dashboard</Link>
+                                /* Premium template — free download, supported by an ad */
+                                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Download size={28} className="text-emerald-600" /></div>
+                                    <h3 className="font-extrabold text-slate-900 text-xl mb-1">Your CV is ready</h3>
+                                    <p className="text-slate-500 text-sm mb-5 max-w-md mx-auto">Download it free below — ads keep this tool free for everyone.</p>
+                                    <GoogleAd adSlot={CV_AD_SLOT} />
+                                    <div className="flex flex-wrap justify-center gap-3 mt-5">
+                                        <button onClick={handleDownload}
+                                            className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2">
+                                            <Download size={15} /> Download My CV — Free
+                                        </button>
+                                        <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-extrabold text-sm hover:bg-slate-50 transition-all">Dashboard</Link>
                                     </div>
                                 </div>
                             )}
