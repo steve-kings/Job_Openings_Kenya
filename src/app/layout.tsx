@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AIChatbot from "@/components/AIChatbot";
 import { Suspense } from "react";
-import CookieConsent from "@/components/CookieConsent";
 import CVBanner from "@/components/CVBanner";
 import AuthCodeHandler from "@/components/AuthCodeHandler";
 import { getBaseUrl } from "@/lib/utils/url";
@@ -154,6 +153,19 @@ export default function RootLayout({
                 __html: `
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
+                  // Google Consent Mode v2: granted by default, but denied in the
+                  // EEA/UK/CH until the AdSense CMP records the visitor's choice.
+                  // Kenya and the rest of the world are unaffected.
+                  gtag('consent', 'default', {
+                    ad_storage: 'granted', ad_user_data: 'granted',
+                    ad_personalization: 'granted', analytics_storage: 'granted',
+                  });
+                  gtag('consent', 'default', {
+                    ad_storage: 'denied', ad_user_data: 'denied',
+                    ad_personalization: 'denied', analytics_storage: 'denied',
+                    wait_for_update: 500,
+                    region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'],
+                  });
                   gtag('js', new Date());
                   gtag('config', '${GA_ID}');
                 `,
@@ -171,7 +183,6 @@ export default function RootLayout({
           <Footer />
           <PWAInstallButton />
           <AIChatbot />
-          <CookieConsent />
           <CVBanner />
         </BookmarkProvider>
       </body>
