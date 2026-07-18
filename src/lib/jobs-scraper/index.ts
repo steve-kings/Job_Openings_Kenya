@@ -7,7 +7,7 @@ import type { SourceRunResult } from './types';
 export async function runJobScraper(options: { dryRun?: boolean; onlySource?: string } = {}) {
     const startedAt = new Date().toISOString();
     const dryRun = options.dryRun === true;
-    const sources = getScraperSources().filter(source => !options.onlySource || source.name === options.onlySource);
+    const sources = selectScraperSources(getScraperSources(), options.onlySource);
     const results: SourceRunResult[] = [];
 
     for (const source of sources) {
@@ -55,4 +55,16 @@ export async function runJobScraper(options: { dryRun?: boolean; onlySource?: st
         }), { pagesVisited: 0, discovered: 0, insertedOrUpdated: 0 }),
         sources: results,
     };
+}
+
+export function selectScraperSources(sources: ReturnType<typeof getScraperSources>, onlySource?: string) {
+    const selected = sources.filter(source => !onlySource || source.name === onlySource);
+    if (selected.length === 0) {
+        throw new Error(
+            onlySource
+                ? `No enabled scraper source named "${onlySource}"`
+                : 'No enabled scraper sources configured',
+        );
+    }
+    return selected;
 }

@@ -4,19 +4,31 @@ import type { ScrapedJob } from './types';
 const BATCH_SIZE = 100;
 
 export async function storeScrapedJobs(jobs: ScrapedJob[], dryRun: boolean, autoPublish: boolean): Promise<number> {
-    if (dryRun || jobs.length === 0) return 0;
+    const uniqueJobs = deduplicateScrapedJobs(jobs);
+    if (dryRun || uniqueJobs.length === 0) return 0;
     const supabase = createAdminClient();
     let stored = 0;
+    const scrapedAt = new Date().toISOString();
 
-    for (let offset = 0; offset < jobs.length; offset += BATCH_SIZE) {
-        const batch = jobs.slice(offset, offset + BATCH_SIZE).map(job => toOpportunity(job, autoPublish));
-        const { error } = await supabase
+    for (let offset = 0; offset < uniqueJobs.length; offset += BATCH_SIZE) {
+        const jobsBatch = uniqueJobs.slice(offset, offset + BATCH_SIZE);
+        const batch = jobsBatch.map(job => toOpportunity(job, autoPublish, scrapedAt));
+        // Existing rows are deliberately ignored so a recurring import cannot
+        // overwrite an administrator's edits, publication status, or closure.
+        const { data: inserted, error: insertError } = await supabase
             .from('opportunities')
-            .upsert(batch, { onConflict: 'source,source_job_id', ignoreDuplicates: false });
-        if (error) throw new Error(`Supabase upsert failed: ${error.message}`);
-        stored += batch.length;
+            .upsert(batch, { onConflict: 'source,source_job_id', ignoreDuplicates: true })
+            .select('source_job_id');
+        if (insertError) throw new Error(`Supabase insert failed: ${insertError.message}`);
+        stored += inserted?.length || 0;
     }
     return stored;
+}
+
+export function deduplicateScrapedJobs(jobs: ScrapedJob[]): ScrapedJob[] {
+    const unique = new Map<string, ScrapedJob>();
+    for (const job of jobs) unique.set(`${job.source}\u0000${job.sourceJobId}`, job);
+    return [...unique.values()];
 }
 
 export async function recordScraperRun(input: {
@@ -37,7 +49,7 @@ export async function recordScraperRun(input: {
     if (error) throw new Error(`Unable to record scraper run: ${error.message}`);
 }
 
-function toOpportunity(job: ScrapedJob, autoPublish: boolean) {
+function toOpportunity(job: ScrapedJob, autoPublish: boolean, scrapedAt: string) {
     const today = new Date().toISOString().slice(0, 10);
     const isExpired = !!job.deadline && job.deadline < today;
     return {
@@ -59,9 +71,9 @@ function toOpportunity(job: ScrapedJob, autoPublish: boolean) {
         source: job.source,
         source_job_id: job.sourceJobId,
         source_url: job.sourceUrl,
-        scraped_at: new Date().toISOString(),
-        last_seen_at: new Date().toISOString(),
+        scraped_at: scrapedAt,
+        last_seen_at: scrapedAt,
         created_at: job.postedAt || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        updated_at: scrapedAt,
     };
 }

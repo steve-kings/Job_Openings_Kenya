@@ -3,7 +3,10 @@ import type { ScraperSource } from './types';
 const MAX_PAGES_PER_SOURCE = 50;
 
 export function getScraperSources(): ScraperSource[] {
-    const raw = process.env.JOB_SCRAPER_SOURCES_JSON;
+    return parseScraperSources(process.env.JOB_SCRAPER_SOURCES_JSON);
+}
+
+export function parseScraperSources(raw: string | undefined): ScraperSource[] {
     if (!raw) return [];
 
     let parsed: unknown;
@@ -42,13 +45,44 @@ function validateSource(value: unknown, index: number): ScraperSource {
         throw new Error(`JSON-LD source "${source.name}" needs at least one startUrl`);
     }
 
+    const location = optionalTrimmedString(source.location, `Scraper source "${source.name}" location`);
+
     return {
         name: source.name.trim(),
         kind: source.kind,
         enabled: source.enabled !== false,
         startUrls,
+        location: source.kind === 'annex' ? location || 'Kenya' : undefined,
         maxPages: Math.min(Math.max(source.maxPages || 20, 1), MAX_PAGES_PER_SOURCE),
+        maxAgeDays: source.kind === 'annex'
+            ? boundedInteger(source.maxAgeDays, 90, 1, 365, `Scraper source "${source.name}" maxAgeDays`)
+            : undefined,
+        minimumDescriptionLength: source.kind === 'annex'
+            ? boundedInteger(
+                source.minimumDescriptionLength,
+                160,
+                80,
+                5000,
+                `Scraper source "${source.name}" minimumDescriptionLength`,
+            )
+            : undefined,
         requestDelayMs: Math.min(Math.max(source.requestDelayMs || 750, 250), 5000),
         autoPublish: source.autoPublish === true,
     };
+}
+
+function optionalTrimmedString(value: unknown, label: string): string | undefined {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'string' || !value.trim()) {
+        throw new Error(`${label} must be a non-empty string`);
+    }
+    return value.trim();
+}
+
+function boundedInteger(value: unknown, fallback: number, minimum: number, maximum: number, label: string): number {
+    if (value === undefined || value === null) return fallback;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+        throw new Error(`${label} must be a number`);
+    }
+    return Math.min(Math.max(Math.floor(value), minimum), maximum);
 }

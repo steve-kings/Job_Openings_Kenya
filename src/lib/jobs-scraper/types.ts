@@ -5,7 +5,10 @@ export interface ScraperSource {
     kind: ScraperSourceKind;
     enabled?: boolean;
     startUrls?: string[];
+    location?: string;
     maxPages?: number;
+    maxAgeDays?: number;
+    minimumDescriptionLength?: number;
     requestDelayMs?: number;
     autoPublish?: boolean;
 }
