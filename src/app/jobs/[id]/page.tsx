@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 import JobDetailClient from './JobDetailClient';
 import { getBaseUrl } from '@/lib/utils/url';
-import { htmlToText } from '@/lib/utils/jobs';
+import { cleanSummaryText } from '@/lib/utils/jobs';
 import { notFound } from 'next/navigation';
 import { hasSubstantiveJobContent } from '@/lib/content-quality';
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const siteUrl = getBaseUrl();
     const url = `${siteUrl}/jobs/${resolvedParams.id}`;
     const dynamicOgImageUrl = `${siteUrl}/api/og/job/${resolvedParams.id}`;
-    const description = htmlToText(job.short_description || job.description).trim().substring(0, 160)
+    const description = cleanSummaryText(job).substring(0, 160)
         || `View the ${job.title} opportunity at ${job.company}, including the role details and application instructions.`;
     
     return {

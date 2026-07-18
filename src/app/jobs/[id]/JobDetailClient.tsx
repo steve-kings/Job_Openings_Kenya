@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
     Calendar, MapPin, Building2, ExternalLink, Lock,
     CheckCircle2, Clock, Eye, Share2, Sparkles, Loader2, X, Copy, CreditCard,
-    Lightbulb, PhoneCall, Wallet, Search, Mail,
+    Lightbulb, PhoneCall, Wallet, Search, Mail, ChevronDown,
 } from 'lucide-react';
 import BookmarkButton from '@/components/BookmarkButton';
 import GoogleAd from '@/components/GoogleAd';
 import WeatherWidget from '@/components/WeatherWidget';
-import { formatDaysRemaining, typeLabel, htmlToText } from '@/lib/utils/jobs';
+import { formatDaysRemaining, typeLabel, htmlToText, cleanJobDescriptionHtml, cleanSummaryText } from '@/lib/utils/jobs';
 
 interface Job {
     id: string;
@@ -81,8 +81,13 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
     const [generatingPrep, setGeneratingPrep] = useState(false);
     const [appStatus, setAppStatus] = useState<'idle' | 'tracking' | 'tracked'>('idle');
     const [appError, setAppError] = useState('');
+    const [descExpanded, setDescExpanded] = useState(false);
 
     const canView = !!user;
+    // Strip scraped SEO scaffolding (repeated title, "Meta Description", Company/Deadline
+    // dumps) — the page header and Quick Info sidebar already show that information.
+    const descHtml = useMemo(() => cleanJobDescriptionHtml(job), [job]);
+    const isLongDesc = descHtml.length > 4000;
     const jobType = job.type || 'Job';
     const colors = typeMeta[jobType] || typeMeta.Job;
     // A null/empty deadline means "Rolling Basis" — never expires. Guard every
@@ -330,7 +335,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         '@context': 'https://schema.org',
                         '@type': 'JobPosting',
                         title: job.title,
-                        description: htmlToText(job.short_description || job.description).substring(0, 500),
+                        description: cleanSummaryText(job).substring(0, 500),
                         datePosted: new Date().toISOString().split('T')[0],
                         validThrough: job.deadline,
                         url: shareUrl,
@@ -527,10 +532,25 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 <span className={`w-1.5 h-6 rounded-full bg-gradient-to-b ${colors.gradient}`} />
                                 About This Opportunity
                             </h2>
-                            <div
-                                className="prose max-w-none text-gray-600 leading-relaxed break-words"
-                                dangerouslySetInnerHTML={{ __html: job.description }}
-                            />
+                            <div className={`relative ${isLongDesc && !descExpanded ? 'max-h-[32rem] overflow-hidden' : ''}`}>
+                                <div
+                                    className="prose max-w-none text-gray-600 leading-relaxed break-words"
+                                    dangerouslySetInnerHTML={{ __html: descHtml }}
+                                />
+                                {isLongDesc && !descExpanded && (
+                                    <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                                )}
+                            </div>
+                            {isLongDesc && (
+                                <button
+                                    type="button"
+                                    onClick={() => setDescExpanded(v => !v)}
+                                    className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 hover:border-emerald-300 hover:text-emerald-700 transition-all"
+                                >
+                                    {descExpanded ? 'Show less' : 'Read full description'}
+                                    <ChevronDown size={15} className={`transition-transform ${descExpanded ? 'rotate-180' : ''}`} />
+                                </button>
+                            )}
                         </div>
 
                         {canView ? (

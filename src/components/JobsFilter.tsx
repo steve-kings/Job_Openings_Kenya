@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Search, MapPin, Briefcase, BookOpen, Layers,
     LocateFixed, Loader2, Wallet, DollarSign, GraduationCap
@@ -31,7 +31,7 @@ export default function JobsFilter() {
     const [detectError, setDetectError] = useState('');
 
     const applyFilters = useCallback(() => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(window.location.search);
         if (type === 'All') params.delete('type');
         else params.set('type', type);
         if (!query.trim()) params.delete('q');
@@ -42,17 +42,25 @@ export default function JobsFilter() {
         else params.set('salary_min', salaryMin);
         if (!salaryMax) params.delete('salary_max');
         else params.set('salary_max', salaryMax);
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    }, [type, query, location, salaryMin, salaryMax, router, pathname, searchParams]);
+        // Only navigate when the query string actually changes — pushing the same URL
+        // retriggers useSearchParams and loops the effects below forever.
+        const next = params.toString();
+        const current = new URLSearchParams(window.location.search).toString();
+        if (next === current) return;
+        router.push(next ? `${pathname}?${next}` : pathname, { scroll: false });
+    }, [type, query, location, salaryMin, salaryMax, router, pathname]);
+
+    const applyFiltersRef = useRef(applyFilters);
+    useEffect(() => { applyFiltersRef.current = applyFilters; });
 
     // Debounce free-text inputs (search query + salary) to avoid a navigation per keystroke
     useEffect(() => {
-        const timer = setTimeout(() => applyFilters(), 400);
+        const timer = setTimeout(() => applyFiltersRef.current(), 400);
         return () => clearTimeout(timer);
-    }, [query, salaryMin, salaryMax, applyFilters]);
+    }, [query, salaryMin, salaryMax]);
 
     // Apply immediately for discrete controls (type pills, location select)
-    useEffect(() => { applyFilters(); }, [type, location, applyFilters]);
+    useEffect(() => { applyFiltersRef.current(); }, [type, location]);
 
     const handleDetectLocation = () => {
         if (!navigator.geolocation) {

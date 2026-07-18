@@ -12,54 +12,59 @@
 @source inline("bg-{red,orange,amber,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,pink,rose}-400/20");
 
 @theme {
-  /* Single source of truth for every green utility used by the product. */
+  /* Brand green: every green family maps onto a light→dark ramp of the brand
+     hue, with the 600 stop = the exact brand color. Shades MUST stay distinct:
+     tint backgrounds (50/100) pair with dark text (700/800) all over the app —
+     collapsing the ramp to one value renders that text invisible. */
   --color-brand: #85bb23;
   --color-primary: #85bb23;
   --color-secondary: #85bb23;
-  --color-green-50: #85bb23;
-  --color-green-100: #85bb23;
-  --color-green-200: #85bb23;
-  --color-green-300: #85bb23;
-  --color-green-400: #85bb23;
-  --color-green-500: #85bb23;
+  --color-green-50: #f7faee;
+  --color-green-100: #ecf4d6;
+  --color-green-200: #d8e9ac;
+  --color-green-300: #bedd7f;
+  --color-green-400: #a3cf53;
+  --color-green-500: #92c433;
   --color-green-600: #85bb23;
-  --color-green-700: #85bb23;
-  --color-green-800: #85bb23;
-  --color-green-900: #85bb23;
-  --color-green-950: #85bb23;
-  --color-emerald-50: #85bb23;
-  --color-emerald-100: #85bb23;
-  --color-emerald-200: #85bb23;
-  --color-emerald-300: #85bb23;
-  --color-emerald-400: #85bb23;
-  --color-emerald-500: #85bb23;
+  --color-green-700: #69941c;
+  --color-green-800: #547516;
+  --color-green-900: #445f12;
+  --color-green-950: #22320a;
+  --color-emerald-50: #f7faee;
+  --color-emerald-100: #ecf4d6;
+  --color-emerald-200: #d8e9ac;
+  --color-emerald-300: #bedd7f;
+  --color-emerald-400: #a3cf53;
+  --color-emerald-500: #92c433;
   --color-emerald-600: #85bb23;
-  --color-emerald-700: #85bb23;
-  --color-emerald-800: #85bb23;
-  --color-emerald-900: #85bb23;
-  --color-emerald-950: #85bb23;
-  --color-lime-50: #85bb23;
-  --color-lime-100: #85bb23;
-  --color-lime-200: #85bb23;
-  --color-lime-300: #85bb23;
-  --color-lime-400: #85bb23;
-  --color-lime-500: #85bb23;
+  --color-emerald-700: #69941c;
+  --color-emerald-800: #547516;
+  --color-emerald-900: #445f12;
+  --color-emerald-950: #22320a;
+  --color-lime-50: #f7faee;
+  --color-lime-100: #ecf4d6;
+  --color-lime-200: #d8e9ac;
+  --color-lime-300: #bedd7f;
+  --color-lime-400: #a3cf53;
+  --color-lime-500: #92c433;
   --color-lime-600: #85bb23;
-  --color-lime-700: #85bb23;
-  --color-lime-800: #85bb23;
-  --color-lime-900: #85bb23;
-  --color-lime-950: #85bb23;
-  --color-teal-50: #85bb23;
-  --color-teal-100: #85bb23;
-  --color-teal-200: #85bb23;
-  --color-teal-300: #85bb23;
-  --color-teal-400: #85bb23;
+  --color-lime-700: #69941c;
+  --color-lime-800: #547516;
+  --color-lime-900: #445f12;
+  --color-lime-950: #22320a;
+  /* Teal rides one stop deeper so `from-emerald-* to-teal-*` gradients keep
+     visible depth instead of flattening into a single color. */
+  --color-teal-50: #ecf4d6;
+  --color-teal-100: #d8e9ac;
+  --color-teal-200: #bedd7f;
+  --color-teal-300: #a3cf53;
+  --color-teal-400: #92c433;
   --color-teal-500: #85bb23;
-  --color-teal-600: #85bb23;
-  --color-teal-700: #85bb23;
-  --color-teal-800: #85bb23;
-  --color-teal-900: #85bb23;
-  --color-teal-950: #85bb23;
+  --color-teal-600: #69941c;
+  --color-teal-700: #547516;
+  --color-teal-800: #445f12;
+  --color-teal-900: #22320a;
+  --color-teal-950: #1a2608;
   --color-accent: #D4A853;
   /* Extra-small breakpoint (~480px) used by the hero heading and other `xs:` utilities */
   --breakpoint-xs: 30rem;
@@ -67,9 +72,9 @@
 
 :root {
   --green-prime: #85bb23;
-  --green-deep: #85bb23;
-  --green-dark: #85bb23;
-  --green-pale: #85bb23;
+  --green-deep: #69941c;
+  --green-dark: #445f12;
+  --green-pale: #ecf4d6;
   --earth-savannah: #D4A853;
   --earth-terracotta: #C86733;
   --cream: #FFF8F0;

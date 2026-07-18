@@ -98,6 +98,83 @@ export function htmlToText(html?: string | null): string {
         .trim();
 }
 
+// Clean a stored job description for on-page display. Scraper-imported jobs embed
+// the source page's SEO scaffolding, which duplicates what the page header and
+// Quick Info sidebar already show:
+//   <h1>{title}</h1><h2>Meta Description</h2><p>blurb…</p>            (variant A)
+//   <h1>{title}</h1><p><strong>Company:</strong> …</p><p><strong>Deadline:</strong> …</p> (variant B)
+// with every word joined by &nbsp;. Strips only the leading scaffolding — real
+// per-section content (e.g. "Location:" under a sub-position) is left intact.
+export function cleanJobDescriptionHtml(job: Pick<JobData, 'title' | 'description'>): string {
+    const original = String(job.description || '');
+    // &nbsp; between every word is a scraper artifact; restore normal spaces so text wraps.
+    let html = original.replace(/&nbsp;|\u00a0/g, ' ');
+
+    const norm = (s: string) => htmlToText(s).toLowerCase().replace(/[^a-z0-9 ]+/g, '').replace(/\s+/g, ' ').trim();
+    const title = norm(job.title || '');
+
+    // Leading heading repeating the job title (already the page's H1).
+    const lead = html.match(/^\s*<h([1-6])[^>]*>([\s\S]*?)<\/h\1>\s*/i);
+    if (lead && title) {
+        const h = norm(lead[2]);
+        if (h && (h.includes(title) || title.includes(h))) html = html.slice(lead[0].length);
+    }
+
+    // "Meta Description" heading plus its blurb paragraph (pure SEO text).
+    html = html.replace(/<h[1-6][^>]*>\s*Meta\s*Description\s*<\/h[1-6]>\s*(?:<p[^>]*>[\s\S]*?<\/p>\s*)?/i, '');
+    html = html.replace(/<p[^>]*>\s*(?:<strong[^>]*>\s*)?Meta\s*Description\s*:?\s*(?:<\/strong>\s*)?<\/p>\s*/i, '');
+
+    // Leading run of "Label: value" lines duplicating the header/Quick Info.
+    const labelP = /^\s*<p[^>]*>\s*(?:<strong[^>]*>\s*)?(?:Company|Deadline|Closing\s*Date|Application\s*Deadline|Salary|Location|Job\s*Type|Job\s*Field|Position|Job\s*Title)\s*:?\s*(?:<\/strong>)?[\s\S]*?<\/p>\s*/i;
+    for (let guard = 0; guard < 10; guard++) {
+        const m = html.match(labelP);
+        if (!m) break;
+        html = html.slice(m[0].length);
+    }
+
+    // The page already has one H1 — demote in-body h1s to h2 (prose styles h2 nicely).
+    html = html.replace(/<(\/?)h1\b/gi, '<$1h2');
+
+    const cleaned = html.trim();
+    return cleaned || original;
+}
+
+// Full cleaned plain-text summary (scraper scaffolding stripped), no length cap.
+// Use for meta descriptions, JSON-LD, and anywhere a caller picks its own length.
+export function cleanSummaryText(j: Pick<JobData, 'title' | 'company' | 'short_description' | 'description'>) {
+    let text = htmlToText(j.short_description || j.description);
+
+    // Scraper-imported pages often embed SEO scaffolding ahead of the real copy:
+    // "<H1 title> Company: X Deadline: Y Salary: Z Meta Description <actual summary>".
+    // Prefer the text after a "Meta Description" label — that's the clean summary.
+    const meta = text.match(/Meta Description\s*[:\-–]?\s*(.+)/i);
+    if (meta) text = meta[1].trim();
+
+    // Strip a leading repeat of the job title (the scraped page's H1).
+    const title = (j.title || '').trim();
+    if (title && text.toLowerCase().startsWith(title.toLowerCase())) {
+        text = text.slice(title.length).replace(/^[\s:\-–—]+/, '');
+    }
+
+    // Strip leading "Label: value" field dumps (conservative, anchored patterns only).
+    for (let guard = 0; guard < 6; guard++) {
+        const before = text;
+        const company = (j.company || '').trim();
+        if (company) {
+            text = text.replace(new RegExp(`^Company\\s*:\\s*${company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'), '');
+        }
+        text = text
+            .replace(/^(?:Job\s+)?Vacanc(?:y|ies)\s*[:\-–]?\s*/i, '')
+            .replace(/^(?:Application\s+)?Deadline\s*:\s*\d{1,2}(?:st|nd|rd|th)?\s+\w+,?\s+\d{4}\s*/i, '')
+            .replace(/^(?:Application\s+)?Deadline\s*:\s*\d{4}-\d{2}-\d{2}\s*/i, '')
+            .replace(/^Salary\s*:\s*(?:KES|KSh|Ksh\.?|USD)?\s*[\d,.]+(?:\s*[–—-]\s*(?:KES|KSh|Ksh\.?|USD)?\s*[\d,.]+)?(?:\s*per\s+\w+)?\s*/i, '')
+            .replace(/^Location\s*:\s*[A-Za-z ,]+?(?=[A-Z][a-z]+ |$)\s*/, '');
+        if (text === before) break;
+    }
+
+    return text.trim();
+}
+
 export function cleanSummary(j: JobData) {
-    return htmlToText(j.short_description || j.description).slice(0, 180);
+    return cleanSummaryText(j).slice(0, 180);
 }
