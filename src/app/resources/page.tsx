@@ -9,6 +9,18 @@ export const metadata: Metadata = {
 
 const resources = [
     {
+        title: 'Kenya Job Application Guide',
+        description: 'A practical, step-by-step guide to vacancy checks, CV tailoring, cover letters, interview preparation, follow-up, and job-scam safety.',
+        icon: FileText,
+        href: '/career-guides',
+        color: 'emerald',
+        articles: [
+            { title: 'Tailor an ATS-friendly CV', href: '/career-guides#cv' },
+            { title: 'Recognize job scam warning signs', href: '/career-guides#safety' },
+            { title: 'Prepare for interviews and follow up', href: '/career-guides#interview' },
+        ],
+    },
+    {
         title: 'CV Builder',
         description: 'Create a professional ATS-friendly CV in minutes. AI-powered, beautiful templates, KES 50 only.',
         icon: PenTool,

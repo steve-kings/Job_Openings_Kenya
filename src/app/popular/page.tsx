@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { FileText, TrendingUp, Briefcase, BookOpen, Eye, Calendar, ArrowRight, Sparkles, Clock, MapPin, Zap } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
+import { formatDaysRemaining, getDaysLeft } from '@/lib/utils/jobs';
 
 export const metadata: Metadata = {
     title: 'Trending | Job Openings Kenya',
@@ -231,8 +232,8 @@ export default async function PopularPage() {
                                                 <MapPin size={10} /> {job.location}
                                             </span>
                                             {job.deadline && (
-                                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold bg-red-50 text-red-500 ml-auto">
-                                                    <Clock size={10} /> {Math.max(0, Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000))}d left
+                                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold bg-[#85bb23] text-slate-950 ml-auto">
+                                                    <Clock size={10} /> {formatDaysRemaining(getDaysLeft(job.deadline) ?? 0)}
                                                 </span>
                                             )}
                                         </div>

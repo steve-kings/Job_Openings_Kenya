@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/scheduled-emails",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/jobs-scraper",
+      "schedule": "15 */6 * * *"
     }
   ]
 }

@@ -435,7 +435,7 @@ export default function ProfileEditorPage() {
                             <h3 className="font-bold text-gray-900 mb-3">Your Public URL</h3>
                             {form.username ? (
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 font-mono text-xs text-gray-700 break-all">
-                                    jobopeningskenya.co.ke/talent/<span className="text-[#5CB800] font-bold">{form.username}</span>
+                                    jobopenings.co.ke/talent/<span className="text-[#5CB800] font-bold">{form.username}</span>
                                 </div>
                             ) : (
                                 <p className="text-gray-400 text-sm">Set a username to generate your link</p>

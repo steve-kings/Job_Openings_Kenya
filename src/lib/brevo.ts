@@ -4,7 +4,7 @@ export async function sendEmail({
     subject,
     htmlContent,
     senderName = 'Job Openings Kenya Team',
-    senderEmail = 'info@jobopeningskenya.co.ke'
+    senderEmail = 'info@jobopenings.co.ke'
 }: {
     to: { email: string; name?: string }[];
     bcc?: { email: string; name?: string }[];

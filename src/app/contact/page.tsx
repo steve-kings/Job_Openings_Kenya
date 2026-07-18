@@ -200,8 +200,8 @@ export default function ContactPage() {
                             <div className="space-y-3">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">General Inquiries</p>
-                                    <a href="mailto:info@Job Openings Kenya.org" className="text-[#5CB800] font-semibold hover:text-[#5CB800] transition-colors">
-                                        info@Job Openings Kenya.org
+                                    <a href="mailto:info@jobopenings.co.ke" className="text-[#5CB800] font-semibold hover:text-[#5CB800] transition-colors">
+                                        info@jobopenings.co.ke
                                     </a>
                                 </div>
                                 <div>

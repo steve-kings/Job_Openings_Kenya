@@ -20,13 +20,13 @@ const config = {
     themes: [
       {
         "jobopeningskenya": {
-          "primary": "#5CB800",
+          "primary": "#85bb23",
           "secondary": "#C8A882",
-          "accent": "#4A9900",
+          "accent": "#85bb23",
           "neutral": "#3E2723",
           "base-100": "#FFFFFF",
           "info": "#3ABFF8",
-          "success": "#5CB800",
+          "success": "#85bb23",
           "warning": "#FBBD23",
           "error": "#F87272",
         },

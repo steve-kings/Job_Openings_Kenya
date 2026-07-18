@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import BookmarkButton from './BookmarkButton';
 import { useViewMode } from './ViewToggle';
-import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
+import { type JobData, type OpportunityType, typeConfig, getDaysLeft, formatDaysRemaining, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 export type { JobData } from '@/lib/utils/jobs';
 
 export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boolean }) {
@@ -69,7 +69,7 @@ export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boole
                                                     <Icon size={11} /> {job.type}
                                                 </span>
                                                 {showNew && <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-50 text-amber-600 flex items-center gap-1"><Star size={10} className="fill-amber-500 text-amber-500" /> New</span>}
-                                                {expiring && <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-50 text-red-600 flex items-center gap-1"><Clock size={10} /> {dl}d left</span>}
+                                                {expiring && <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#85bb23] text-slate-950 flex items-center gap-1"><Clock size={10} /> {formatDaysRemaining(dl)}</span>}
                                                 {postedAgo && !showNew && (
                                                     <span className="text-[10px] font-semibold text-gray-400">{postedAgo}</span>
                                                 )}
@@ -95,7 +95,7 @@ export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boole
                                         <div className="hidden sm:flex flex-col items-end justify-between shrink-0">
                                             <BookmarkButton job={{ id: job.id, title: job.title, company: job.company, type: job.type, location: job.location }}
                                                 className="p-2.5 rounded-xl bg-gray-50 hover:bg-emerald-50 text-gray-400 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100" />
-                                            <span className={`text-xs font-bold ${expiring ? 'text-red-500' : 'text-gray-400'}`}>{dl === null ? 'Ongoing' : dl === 0 ? 'Today' : `${dl}d`}</span>
+                                            <span className={`text-xs font-bold ${expiring ? 'text-slate-700' : 'text-gray-400'}`}>{dl === null ? 'Ongoing' : formatDaysRemaining(dl)}</span>
                                         </div>
                                     </div>
                                     <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between flex-wrap gap-2">
@@ -143,7 +143,7 @@ export default function ListingsView({ jobs }: { jobs: JobData[]; urgent?: boole
                                             <div className="flex items-center gap-1.5 min-w-0 w-full">
                                                 <span className="font-bold text-sm text-gray-900 group-hover/list:text-emerald-700 transition-colors truncate flex-1 min-w-0">{job.title}</span>
                                                 {showNew && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-amber-100 text-amber-700">New</span>}
-                                                {expiring && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-red-100 text-red-600">{dl}d</span>}
+                                                {expiring && <span className="shrink-0 whitespace-nowrap px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-[#85bb23] text-slate-950">{formatDaysRemaining(dl)}</span>}
                                             </div>
                                             <div className="flex items-center gap-2 mt-0.5 sm:hidden">
                                                 <span className="text-xs text-gray-500">{job.company}</span>

@@ -84,7 +84,7 @@ export default function RootLayout({
               logo: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
               image: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
               description: "Kenya's trusted portal for verified job openings, internships, and professional training programs. Updated daily with hand-picked opportunities.",
-              email: 'info@jobopeningskenya.co.ke',
+              email: 'info@jobopenings.co.ke',
               telephone: '+254790855690',
               address: {
                 '@type': 'PostalAddress',

@@ -6,6 +6,7 @@ import {
     ArrowLeft, Briefcase, Calendar, MapPin, ExternalLink,
     Loader2, Trash2, Columns, List
 } from 'lucide-react';
+import { formatDaysRemaining } from '@/lib/utils/jobs';
 
 interface Application {
     id: string;
@@ -19,7 +20,7 @@ interface Application {
         company: string;
         type: string;
         location: string;
-        deadline: string;
+        deadline: string | null;
         apply_url: string;
         salary_min?: number;
         salary_max?: number;
@@ -89,7 +90,10 @@ export default function ApplicationsPage() {
 
     const renderApplicationCard = (app: Application) => {
         const opp = app.opportunity;
-        const daysLeft = Math.ceil((new Date(opp.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        const daysLeft = opp.deadline
+            ? Math.ceil((new Date(opp.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+            : null;
+        const deadlineText = daysLeft === null ? 'Rolling Basis' : daysLeft < 0 ? 'Expired' : formatDaysRemaining(daysLeft);
         const meta = statusMeta[app.status] || statusMeta.applied;
 
         return (
@@ -121,7 +125,7 @@ export default function ApplicationsPage() {
                 <p className="text-xs text-gray-500 mt-1 font-medium">{opp.company}</p>
                 <div className="flex items-center gap-x-2 gap-y-1 mt-2 text-[10px] text-gray-400 flex-wrap">
                     <span className="flex items-center gap-1"><MapPin size={10} />{opp.location}</span>
-                    <span className="flex items-center gap-1"><Calendar size={10} />{daysLeft}d left</span>
+                    <span className={`flex items-center gap-1 ${daysLeft !== null && daysLeft < 0 ? 'text-red-600' : ''}`}><Calendar size={10} />{deadlineText}</span>
                 </div>
                 <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
                     <span className="text-[10px] text-gray-400">Applied {new Date(app.applied_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>

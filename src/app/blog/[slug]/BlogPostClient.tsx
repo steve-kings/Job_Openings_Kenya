@@ -40,8 +40,6 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
         );
     }
 
-    const canRead = !!user;
-
     // Category colors
     const categoryColors: { [key: string]: { bg: string; text: string } } = {
         'Success Stories': { bg: 'bg-[#5CB800]', text: 'text-[#5CB800]' },
@@ -203,32 +201,33 @@ export default function BlogPostClient({ post, user, slug }: BlogPostClientProps
 
                         {/* Content */}
                         <div className="prose prose-lg max-w-none font-sans">
-                            {canRead ? (
-                                <div 
-                                    className="text-gray-700 leading-relaxed" 
-                                    dangerouslySetInnerHTML={{ __html: post.content }} 
-                                />
-                            ) : (
-                                <div className="relative">
-                                    <div className="blur-sm select-none h-60 overflow-hidden opacity-30 pointer-events-none text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm">
-                                        <div className={`w-20 h-20 rounded-full ${colors.bg} bg-opacity-10 flex items-center justify-center mb-4`}>
-                                            <Lock size={40} className={colors.text} />
-                                        </div>
-                                        <h3 className="text-2xl font-bold mb-2 text-gray-900">Login to Read Full Article</h3>
-                                        <p className="text-gray-600 mb-6 text-center max-w-md">
-                                            Join Job Openings Kenya to access full articles and exclusive opportunities.
+                            <div
+                                className="text-gray-700 leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: post.content }}
+                            />
+                        </div>
+
+                        {!user && (
+                            <aside className="mt-10 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 sm:p-6" aria-label="Free member tools">
+                                <div className="flex items-start gap-3">
+                                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-700 shadow-sm">
+                                        <Lock size={18} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-bold text-slate-900">Save jobs and track applications</h2>
+                                        <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                                            Articles are free to read. Create an account only if you want access to personal job-saving and application-tracking tools.
                                         </p>
-                                        <Link 
-                                            href={`/login?redirect=/blog/${slug}`} 
-                                            className={`inline-flex items-center justify-center ${colors.bg} text-white hover:opacity-90 px-10 py-3 text-lg rounded-xl font-bold`}
+                                        <Link
+                                            href={`/login?redirect=/blog/${slug}`}
+                                            className="mt-3 inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-800"
                                         >
-                                            Login / Sign Up
+                                            Login or create an account
                                         </Link>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            </aside>
+                        )}
                     </article>
 
                     {/* Author Card */}

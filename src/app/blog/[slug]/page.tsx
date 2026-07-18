@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import BlogPostClient from './BlogPostClient';
 import { getBaseUrl } from '@/lib/utils/url';
 import { htmlToText } from '@/lib/utils/jobs';
+import { notFound } from 'next/navigation';
+import { hasSubstantiveArticleContent } from '@/lib/content-quality';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
@@ -12,26 +14,34 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         .from('blog_posts')
         .select('*')
         .eq('slug', resolvedParams.slug)
+        .eq('status', 'published')
         .single();
 
     if (!post) {
         return {
-            title: 'Article Not Found | Job Openings Kenya',
+            title: 'Article Not Found',
+            robots: { index: false, follow: false },
         };
     }
 
     const siteUrl = getBaseUrl();
     const url = `${siteUrl}/blog/${resolvedParams.slug}`;
     const dynamicOgImageUrl = `${siteUrl}/api/og/blog/${resolvedParams.slug}`;
+    const description = htmlToText(post.excerpt || post.content).trim().substring(0, 160)
+        || `Read ${post.title} from the Job Openings Kenya editorial team.`;
     
     return {
-        title: `${post.title} | Job Openings Kenya Blog`,
-        description: htmlToText(post.excerpt || post.content).substring(0, 160),
+        title: post.title,
+        description,
+        alternates: { canonical: url },
+        robots: hasSubstantiveArticleContent(post.content)
+            ? { index: true, follow: true }
+            : { index: false, follow: true },
         openGraph: {
             title: post.title,
-            description: htmlToText(post.excerpt || post.content).substring(0, 160),
+            description,
             url: url,
-            siteName: 'Job Openings Kenya - Job Openings Kenya',
+            siteName: 'Job Openings Kenya',
             images: [
                 {
                     url: dynamicOgImageUrl,
@@ -48,7 +58,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         twitter: {
             card: 'summary_large_image',
             title: post.title,
-            description: htmlToText(post.excerpt || post.content).substring(0, 160),
+            description,
             images: [dynamicOgImageUrl],
         },
     };
@@ -62,7 +72,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         .from('blog_posts')
         .select('*')
         .eq('slug', resolvedParams.slug)
+        .eq('status', 'published')
         .single();
+
+    if (!post) notFound();
 
     const { data: { user } } = await supabase.auth.getUser();
 

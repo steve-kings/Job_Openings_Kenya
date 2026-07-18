@@ -17,7 +17,7 @@ import WeatherWidget from '@/components/WeatherWidget';
 import NewsWidget from '@/components/NewsWidget';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { createClient } from '@/lib/supabase/server';
-import { type JobData, type OpportunityType, typeConfig, getDaysLeft, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
+import { type JobData, type OpportunityType, typeConfig, getDaysLeft, formatDaysRemaining, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
 export const metadata: Metadata = {
     title: 'Job Openings Kenya | Verified Jobs & Training in Kenya',
@@ -235,8 +235,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-red-600 mb-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Closing Soon
+                                <span className="inline-flex items-center gap-2 rounded-full border border-[#85bb23] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-700 mb-3">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#85bb23]" /> Up to 3 Days Remaining
                                 </span>
                                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Urgent Opportunities</h2>
                             </div>
@@ -248,13 +248,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                             {featuredUrgent.map((job: JobData) => {
                                 const dl = getDaysLeft(job.deadline);
                                 return (
-                                    <Link key={job.id} href={`/jobs/${job.id}`} className="group block bg-white rounded-2xl border border-gray-100 hover:border-red-200 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                                    <Link key={job.id} href={`/jobs/${job.id}`} className="group block bg-white rounded-2xl border border-gray-100 hover:border-[#85bb23] hover:shadow-xl transition-all duration-300 overflow-hidden">
                                         <div className="p-5">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
                                                     {job.company.charAt(0).toUpperCase()}
                                                 </div>
-                                                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-red-100 text-red-600">{dl} days left</span>
+                                                {dl !== null && (
+                                                    <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-[#85bb23] text-slate-950">{formatDaysRemaining(dl)}</span>
+                                                )}
                                             </div>
                                             <h3 className="font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-2">{job.title}</h3>
                                             <p className="text-sm text-gray-500 line-clamp-2 mb-4">{cleanSummary(job)}</p>
@@ -289,7 +291,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 <>
                                     <span>/</span>
                                     <span className="text-emerald-600">
-                                        {urgent ? '⚡ Closing Soon' : ft !== 'All' ? ft + 's' : timeframe !== 'any' ? timeframeLinks.find(t => t.value === timeframe)?.label : 'Search'}
+                                        {urgent ? 'Up to 3 Days Remaining' : ft !== 'All' ? ft + 's' : timeframe !== 'any' ? timeframeLinks.find(t => t.value === timeframe)?.label : 'Search'}
                                     </span>
                                 </>
                             )}
@@ -301,14 +303,14 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 <div className="w-1 h-5 rounded-full bg-emerald-500" />
                                 <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-600">{ft === 'All' ? 'All Opportunities' : ft + 's'}</span>
                             </div>
-                            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{urgent ? '⚡ Closing Soon' : 'Latest Listings'}</h2>
+                            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{urgent ? 'Jobs With Up to 3 Days Remaining' : 'Latest Listings'}</h2>
                             <p className="mt-1 text-sm text-gray-500">{jobs.length} {jobs.length === 1 ? 'opportunity' : 'opportunities'}{fq ? ` for "${fq}"` : ''}{timeframe !== 'any' ? ` (${timeframeLinks.find(t => t.value === timeframe)?.label})` : ''}</p>
                         </div>
 
                         {/* Active Filters (Chips) */}
                         {(ft !== 'All' || fq || fl || urgent || fmin || fmax) && (
                             <div className="mb-4 flex flex-wrap gap-2">
-                                {urgent && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, q: fq || undefined, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-red-50 text-red-600 border-red-100 hover:bg-red-100">Closing Soon <X size={11} /></Link>}
+                                {urgent && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, q: fq || undefined, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip border-[#85bb23] bg-white text-slate-700 hover:bg-slate-50">Up to 3 Days Remaining <X size={11} /></Link>}
                                 {ft !== 'All' && <Link href={buildUrl({ q: fq || undefined, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100">{ft} <X size={11} /></Link>}
                                 {fq && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, location: fl || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100">&ldquo;{fq}&rdquo; <X size={11} /></Link>}
                                 {fl && <Link href={buildUrl({ type: ft === 'All' ? undefined : ft, q: fq || undefined, timeframe: timeframe !== 'any' ? timeframe : undefined })} className="chip bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100"><MapPin size={11} /> {fl} <X size={11} /></Link>}
@@ -401,15 +403,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                         </div>
 
                         {urgentJobs.length > 0 && (
-                            <div className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
-                                <h3 className="flex items-center gap-2 text-sm font-extrabold text-red-700 mb-4">
-                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Closing Soon
+                            <div className="rounded-2xl border border-[#85bb23] bg-white p-5 shadow-sm">
+                                <h3 className="flex items-center gap-2 text-sm font-extrabold text-slate-800 mb-4">
+                                    <span className="w-2 h-2 rounded-full bg-[#85bb23]" /> Days Remaining
                                 </h3>
                                 <div className="space-y-3">
                                     {urgentJobs.slice(0, 4).map(j => (
-                                        <Link key={j.id} href={`/jobs/${j.id}`} className="block pb-3 border-b border-red-50 last:border-0 last:pb-0 group">
+                                        <Link key={j.id} href={`/jobs/${j.id}`} className="block pb-3 border-b border-slate-100 last:border-0 last:pb-0 group">
                                             <p className="font-bold text-sm text-gray-900 group-hover:text-emerald-700 line-clamp-2">{j.title}</p>
-                                            <p className="mt-1 text-xs font-semibold text-red-500">{getDaysLeft(j.deadline)} days left</p>
+                                            <p className="mt-1 text-xs font-semibold text-slate-700">{formatDaysRemaining(getDaysLeft(j.deadline) ?? 0)}</p>
                                         </Link>
                                     ))}
                                 </div>
@@ -501,7 +503,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                                         </div>
                                                         <div className="flex items-center gap-1.5">
                                                             {showNew && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-100 text-amber-700">New</span>}
-                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-600">{dl}d left</span>}
+                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-[#85bb23] text-slate-950">{formatDaysRemaining(dl)}</span>}
                                                         </div>
                                                     </div>
                                                     <h4 className="font-extrabold text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2 text-sm leading-snug mb-2">{job.title}</h4>
@@ -554,7 +556,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                                         </div>
                                                         <div className="flex items-center gap-1.5">
                                                             {showNew && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-100 text-amber-700">New</span>}
-                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-red-100 text-red-600">{dl}d left</span>}
+                                                            {dl !== null && dl <= 3 && dl > 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-[#85bb23] text-slate-950">{formatDaysRemaining(dl)}</span>}
                                                         </div>
                                                     </div>
                                                     <h4 className="font-extrabold text-gray-900 group-hover:text-violet-700 transition-colors line-clamp-2 text-sm leading-snug mb-2">{job.title}</h4>

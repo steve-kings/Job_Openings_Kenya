@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     description: 'Latest news about jobs, careers, business, and technology in Kenya. Stay informed with curated news for Kenyan professionals.',
     keywords: 'Kenya news, jobs news Kenya, business news Kenya, career news, Kenyan economy, technology news Kenya, hiring news',
     alternates: { canonical: '/news' },
+    // This page is a convenient feed of third-party headlines. Keep it useful
+    // for visitors without presenting syndicated summaries as original content.
+    robots: { index: false, follow: true },
     openGraph: {
         title: 'Kenya News — Jobs, Careers & Business',
         description: 'Latest jobs, career, business & tech news for Kenyan professionals, updated regularly.',

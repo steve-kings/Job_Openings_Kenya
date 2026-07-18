@@ -12,18 +12,64 @@
 @source inline("bg-{red,orange,amber,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,pink,rose}-400/20");
 
 @theme {
-  --color-primary: #5CB800;
-  --color-secondary: #3D7A00;
+  /* Single source of truth for every green utility used by the product. */
+  --color-brand: #85bb23;
+  --color-primary: #85bb23;
+  --color-secondary: #85bb23;
+  --color-green-50: #85bb23;
+  --color-green-100: #85bb23;
+  --color-green-200: #85bb23;
+  --color-green-300: #85bb23;
+  --color-green-400: #85bb23;
+  --color-green-500: #85bb23;
+  --color-green-600: #85bb23;
+  --color-green-700: #85bb23;
+  --color-green-800: #85bb23;
+  --color-green-900: #85bb23;
+  --color-green-950: #85bb23;
+  --color-emerald-50: #85bb23;
+  --color-emerald-100: #85bb23;
+  --color-emerald-200: #85bb23;
+  --color-emerald-300: #85bb23;
+  --color-emerald-400: #85bb23;
+  --color-emerald-500: #85bb23;
+  --color-emerald-600: #85bb23;
+  --color-emerald-700: #85bb23;
+  --color-emerald-800: #85bb23;
+  --color-emerald-900: #85bb23;
+  --color-emerald-950: #85bb23;
+  --color-lime-50: #85bb23;
+  --color-lime-100: #85bb23;
+  --color-lime-200: #85bb23;
+  --color-lime-300: #85bb23;
+  --color-lime-400: #85bb23;
+  --color-lime-500: #85bb23;
+  --color-lime-600: #85bb23;
+  --color-lime-700: #85bb23;
+  --color-lime-800: #85bb23;
+  --color-lime-900: #85bb23;
+  --color-lime-950: #85bb23;
+  --color-teal-50: #85bb23;
+  --color-teal-100: #85bb23;
+  --color-teal-200: #85bb23;
+  --color-teal-300: #85bb23;
+  --color-teal-400: #85bb23;
+  --color-teal-500: #85bb23;
+  --color-teal-600: #85bb23;
+  --color-teal-700: #85bb23;
+  --color-teal-800: #85bb23;
+  --color-teal-900: #85bb23;
+  --color-teal-950: #85bb23;
   --color-accent: #D4A853;
   /* Extra-small breakpoint (~480px) used by the hero heading and other `xs:` utilities */
   --breakpoint-xs: 30rem;
 }
 
 :root {
-  --green-prime: #5CB800;
-  --green-deep: #3D7A00;
-  --green-dark: #1F4D00;
-  --green-pale: #EAFCD6;
+  --green-prime: #85bb23;
+  --green-deep: #85bb23;
+  --green-dark: #85bb23;
+  --green-pale: #85bb23;
   --earth-savannah: #D4A853;
   --earth-terracotta: #C86733;
   --cream: #FFF8F0;
@@ -113,20 +159,20 @@ html { font-family: var(--font-outfit), system-ui, sans-serif; }
 .prose h3 { font-size: 1.2rem; }
 .prose h4 { font-size: 1.05rem; }
 .prose h2, .prose h3 { display: flex; align-items: center; gap: 0.6rem; }
-.prose h2::before { content: ""; width: 0.3rem; height: 1.1em; border-radius: 9999px; background: linear-gradient(180deg, #5CB800, #3D7A00); flex: none; }
+.prose h2::before { content: ""; width: 0.3rem; height: 1.1em; border-radius: 9999px; background: #85bb23; flex: none; }
 .prose ul, .prose ol { margin: 1.1em 0; padding: 0; }
 .prose ul { list-style: none; }
 .prose ul > li { position: relative; padding-left: 1.65rem; margin: 0.55em 0; }
-.prose ul > li::before { content: ""; position: absolute; left: 0.15rem; top: 0.62em; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: linear-gradient(135deg, #5CB800, #3D7A00); }
+.prose ul > li::before { content: ""; position: absolute; left: 0.15rem; top: 0.62em; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #85bb23; }
 .prose ol { list-style: none; counter-reset: item; }
 .prose ol > li { position: relative; padding-left: 2.1rem; margin: 0.6em 0; counter-increment: item; }
-.prose ol > li::before { content: counter(item); position: absolute; left: 0; top: 0.05em; width: 1.4rem; height: 1.4rem; border-radius: 9999px; background: #EAFCD6; color: #3D7A00; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.prose ol > li::before { content: counter(item); position: absolute; left: 0; top: 0.05em; width: 1.4rem; height: 1.4rem; border-radius: 9999px; background: #85bb23; color: white; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 .prose li > ul, .prose li > ol { margin: 0.4em 0; }
-.prose a { color: #2f8f00; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; word-break: break-word; transition: color .15s; }
-.prose a:hover { color: #3D7A00; }
+.prose a { color: #85bb23; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; word-break: break-word; transition: color .15s; }
+.prose a:hover { color: #85bb23; }
 .prose strong, .prose b { color: #0f172a; font-weight: 700; }
 .prose em { font-style: italic; }
-.prose blockquote { border-left: 3px solid #5CB800; background: #f8fafc; padding: 0.75em 1.1em; margin: 1.3em 0; border-radius: 0 0.6rem 0.6rem 0; color: #475569; font-style: italic; }
+.prose blockquote { border-left: 3px solid #85bb23; background: #f8fafc; padding: 0.75em 1.1em; margin: 1.3em 0; border-radius: 0 0.6rem 0.6rem 0; color: #475569; font-style: italic; }
 .prose blockquote p { margin: 0; }
 .prose hr { border: 0; border-top: 1px solid #e5e7eb; margin: 1.8em 0; }
 .prose img { border-radius: 0.85rem; margin: 1.2em 0; max-width: 100%; height: auto; }
@@ -144,5 +190,5 @@ html { font-family: var(--font-outfit), system-ui, sans-serif; }
 
 /* ── DaisyUI overrides ── */
 .btn { font-weight: 700; border-radius: 12px; }
-.btn-primary { background-color: #5CB800; border-color: #5CB800; }
-.btn-primary:hover { background-color: #3D7A00; border-color: #3D7A00; }
+.btn-primary { background-color: #85bb23; border-color: #85bb23; }
+.btn-primary:hover { background-color: #85bb23; border-color: #85bb23; filter: brightness(0.9); }

@@ -9,6 +9,7 @@ import { Lightbulb, Users, Handshake, Trophy, Rocket, ShieldCheck, BookOpen, Sea
 
 export const metadata: Metadata = {
     title: 'About Us | Job Openings Kenya',
+    alternates: { canonical: '/about' },
     description: 'Learn about Job Openings Kenya — your trusted portal for verified job openings and professional training programs across Kenya.',
     openGraph: { title: 'About Job Openings Kenya', description: 'Your trusted portal for the latest job openings in Kenya.', images: ['/images/right-talent-desktop.png'], type: 'website' },
     twitter: { card: 'summary_large_image', title: 'About Job Openings Kenya', description: 'Your trusted portal for the latest job openings in Kenya.', images: ['/images/right-talent-desktop.png'] },
@@ -226,7 +227,7 @@ export default async function About() {
                         <p className="text-gray-400 mb-8 max-w-xl mx-auto">Browse the latest verified job openings or partner with us to reach thousands of qualified candidates.</p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Link href="/" className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-500 transition-colors">Browse Job Openings <ArrowRight size={14} /></Link>
-                            <a href="mailto:info@jobopeningskenya.co.ke" className="inline-flex items-center justify-center gap-2 px-8 py-3 border-2 border-white/20 text-white rounded-xl text-sm font-bold hover:bg-white hover:text-slate-900 transition-colors">Partner With Us</a>
+                            <a href="mailto:info@jobopenings.co.ke" className="inline-flex items-center justify-center gap-2 px-8 py-3 border-2 border-white/20 text-white rounded-xl text-sm font-bold hover:bg-white hover:text-slate-900 transition-colors">Partner With Us</a>
                         </div>
                     </ScrollReveal>
                 </div>

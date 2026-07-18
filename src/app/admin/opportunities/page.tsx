@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Plus, Search, Edit, Trash2, TrendingUp, AlertCircle, CheckCircle, Clock, X, Building2, MapPin, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { formatDaysRemaining } from '@/lib/utils/jobs';
 
 interface Opp { id: string; title: string; type: string; company: string; location: string; deadline: string; status: string; views?: number; displayStatus?: string; }
 
@@ -138,7 +139,7 @@ export default function AdminOpportunitiesPage() {
                                     <div className="flex items-center gap-3 text-xs text-gray-500">
                                         <span className="flex items-center gap-1">
                                             <Clock size={12} /> {o.deadline ? new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : <span className="italic text-gray-400">Rolling</span>}
-                                            {status === 'Active' && days !== null && days <= 7 && days >= 0 && <span className="font-bold text-red-500"> · {days}d</span>}
+                                            {status === 'Active' && days !== null && days <= 7 && days >= 0 && <span className="font-bold text-slate-700"> · {formatDaysRemaining(days)}</span>}
                                         </span>
                                         <span className="flex items-center gap-1"><Eye size={12} /> {o.views || 0}</span>
                                     </div>
@@ -177,7 +178,7 @@ export default function AdminOpportunitiesPage() {
                                             <div className="text-sm text-gray-600">
                                                 {o.deadline ? new Date(o.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : <span className="text-gray-400 italic">Rolling</span>}
                                             </div>
-                                            {status === 'Active' && o.deadline && days <= 7 && days >= 0 && <div className="text-[10px] font-bold text-red-500">{days}d left</div>}
+                                            {status === 'Active' && o.deadline && days <= 7 && days >= 0 && <div className="text-[10px] font-bold text-slate-700">{formatDaysRemaining(days)}</div>}
                                         </td>
                                         <td className="px-5 py-3.5">
                                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${status === 'Active' ? 'bg-emerald-50 text-emerald-700' : status === 'Expired' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'}`}>{status}</span>

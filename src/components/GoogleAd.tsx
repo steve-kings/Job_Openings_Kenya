@@ -10,9 +10,12 @@ interface GoogleAdProps {
 
 export default function GoogleAd({ adSlot, adFormat = 'auto', fullWidthResponsive = true }: GoogleAdProps) {
   const clientId = ADSENSE_CLIENT_ID;
+  const hasValidClient = /^ca-pub-\d+$/.test(clientId);
+  const hasValidSlot = /^\d+$/.test(adSlot.trim());
+  const isConfigured = hasValidClient && hasValidSlot;
 
   useEffect(() => {
-    if (clientId) {
+    if (isConfigured) {
       try {
         // @ts-expect-error AdSense not in window type
         (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -20,18 +23,20 @@ export default function GoogleAd({ adSlot, adFormat = 'auto', fullWidthResponsiv
         console.error('Google AdSense error', err);
       }
     }
-  }, [clientId]);
+  }, [isConfigured]);
 
-  if (!clientId) {
+  // Never send placeholder or malformed ad-unit IDs to AdSense. Auto Ads can
+  // still run from the global loader while manual units wait for a real slot.
+  if (!isConfigured) {
     if (process.env.NODE_ENV === 'development') {
       return (
         <div className="w-full bg-gray-100 border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 rounded-lg my-4">
-          Google Ad Banner Placeholder<br/>
-          <span className="text-xs mt-2 block">(Configure NEXT_PUBLIC_ADSENSE_CLIENT_ID in .env.local to see live ads)</span>
+          Google Ad Unit Placeholder<br/>
+          <span className="text-xs mt-2 block">Configure a numeric AdSense slot ID before enabling this manual unit.</span>
         </div>
       );
     }
-    return null; // Fail silently in production if no ID is set
+    return null;
   }
 
   return (

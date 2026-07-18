@@ -24,9 +24,9 @@ export default function Footer() {
                             Your trusted portal for the latest job openings, internships, and professional training opportunities across Kenya.
                         </p>
                         <div className="space-y-2.5 text-sm text-gray-400">
-                            <a href="mailto:info@jobopeningskenya.co.ke" className="flex items-center gap-2 hover:text-white transition-colors">
+                            <a href="mailto:info@jobopenings.co.ke" className="flex items-center gap-2 hover:text-white transition-colors">
                                 <Mail size={14} className="text-emerald-500" />
-                                info@jobopeningskenya.co.ke
+                                info@jobopenings.co.ke
                             </a>
                             <a href="tel:+254790855690" className="flex items-center gap-2 hover:text-white transition-colors">
                                 <Phone size={14} className="text-emerald-500" />
@@ -49,6 +49,7 @@ export default function Footer() {
                                 { href: '/jobs', label: 'Browse Jobs' },
                                 { href: '/blog', label: 'Blog & Stories' },
                                 { href: '/contact', label: 'Contact' },
+                                { href: '/editorial-policy', label: 'Editorial Policy' },
                             ].map((link) => (
                                 <li key={link.href}>
                                     <Link href={link.href} className="text-sm text-gray-400 hover:text-emerald-400 transition-colors">

@@ -3,35 +3,47 @@ import { Metadata } from 'next';
 import JobDetailClient from './JobDetailClient';
 import { getBaseUrl } from '@/lib/utils/url';
 import { htmlToText } from '@/lib/utils/jobs';
+import { notFound } from 'next/navigation';
+import { hasSubstantiveJobContent } from '@/lib/content-quality';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
     const supabase = await createClient();
+    const today = new Date().toISOString().split('T')[0];
     
     const { data: job } = await supabase
         .from('opportunities')
         .select('*')
         .eq('id', resolvedParams.id)
+        .eq('status', 'active')
+        .or(`deadline.gte.${today},deadline.is.null`)
         .single();
 
     if (!job) {
         return {
-            title: 'Opportunity Not Found | Job Openings Kenya',
+            title: 'Opportunity Not Found',
+            robots: { index: false, follow: false },
         };
     }
 
     const siteUrl = getBaseUrl();
     const url = `${siteUrl}/jobs/${resolvedParams.id}`;
     const dynamicOgImageUrl = `${siteUrl}/api/og/job/${resolvedParams.id}`;
+    const description = htmlToText(job.short_description || job.description).trim().substring(0, 160)
+        || `View the ${job.title} opportunity at ${job.company}, including the role details and application instructions.`;
     
     return {
-        title: `${job.title} - ${job.company} | Job Openings Kenya`,
-        description: htmlToText(job.short_description || job.description).substring(0, 160),
+        title: `${job.title} at ${job.company}`,
+        description,
+        alternates: { canonical: url },
+        robots: hasSubstantiveJobContent(job)
+            ? { index: true, follow: true }
+            : { index: false, follow: true },
         openGraph: {
             title: job.title,
-            description: htmlToText(job.short_description || job.description).substring(0, 160),
+            description,
             url: url,
-            siteName: 'Job Openings Kenya - Job Openings Kenya',
+            siteName: 'Job Openings Kenya',
             images: [
                 {
                     url: dynamicOgImageUrl,
@@ -46,7 +58,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         twitter: {
             card: 'summary_large_image',
             title: job.title,
-            description: htmlToText(job.short_description || job.description).substring(0, 160),
+            description,
             images: [dynamicOgImageUrl],
         },
     };
@@ -55,19 +67,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
     const supabase = await createClient();
+    const today = new Date().toISOString().split('T')[0];
     
     const { data: job } = await supabase
         .from('opportunities')
         .select('*')
         .eq('id', resolvedParams.id)
+        .eq('status', 'active')
+        .or(`deadline.gte.${today},deadline.is.null`)
         .single();
+
+    if (!job) notFound();
 
     const { data: { user } } = await supabase.auth.getUser();
 
     // Increment views
-    if (job) {
-        await supabase.rpc('increment_opportunity_views', { row_id: resolvedParams.id });
-    }
+    await supabase.rpc('increment_opportunity_views', { row_id: resolvedParams.id });
 
     interface SimilarJob {
         id: string;
@@ -81,20 +96,17 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
     // Fetch similar opportunities (exclude expired; a null deadline = rolling basis)
     let similarJobs: SimilarJob[] = [];
-    if (job) {
-        const today = new Date().toISOString().split('T')[0];
-        const { data: similar } = await supabase
-            .from('opportunities')
-            .select('id, title, company, type, location, thumbnail_url, deadline')
-            .eq('type', job.type)
-            .eq('status', 'active')
-            .neq('id', job.id)
-            .or(`deadline.gte.${today},deadline.is.null`)
-            .order('created_at', { ascending: false })
-            .limit(4);
+    const { data: similar } = await supabase
+        .from('opportunities')
+        .select('id, title, company, type, location, thumbnail_url, deadline')
+        .eq('type', job.type)
+        .eq('status', 'active')
+        .neq('id', job.id)
+        .or(`deadline.gte.${today},deadline.is.null`)
+        .order('created_at', { ascending: false })
+        .limit(4);
 
-        similarJobs = similar || [];
-    }
+    similarJobs = similar || [];
 
     // Fetch cover letter price from site settings
     let coverLetterPrice = 20; // default fallback

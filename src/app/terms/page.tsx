@@ -6,6 +6,7 @@ import { FileText, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'Terms of Service | Job Openings Kenya',
+    alternates: { canonical: '/terms' },
     description: 'Terms of Service for Job Openings Kenya — rules, guidelines, and conditions for using our platform.',
 };
 
@@ -111,7 +112,7 @@ export default function TermsPage() {
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">12. Contact</h2>
                             <p>For questions about these Terms of Service, contact us:</p>
                             <ul className="list-disc pl-6 space-y-1.5 mt-2">
-                                <li>Email: <a href="mailto:info@jobopeningskenya.co.ke" className="text-emerald-600 font-bold hover:underline">info@jobopeningskenya.co.ke</a></li>
+                                <li>Email: <a href="mailto:info@jobopenings.co.ke" className="text-emerald-600 font-bold hover:underline">info@jobopenings.co.ke</a></li>
                                 <li>Website: <Link href="/contact" className="text-emerald-600 font-bold hover:underline">Contact Page</Link></li>
                             </ul>
                         </section>

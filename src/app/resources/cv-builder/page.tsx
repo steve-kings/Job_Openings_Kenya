@@ -13,6 +13,8 @@ import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
 import GoogleAd from '@/components/GoogleAd';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
+import { getManualCvRevampWhatsAppUrl } from '@/lib/whatsapp';
 
 interface Profile {
     full_name?: string; email?: string; headline?: string; location?: string;
@@ -162,6 +164,7 @@ export default function CVBuilderPage() {
         window.print();
     };
     const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+    const manualCvRevampUrl = getManualCvRevampWhatsAppUrl(form.full_name);
     const inputCls = "w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-50 transition-all bg-white";
     const skillsArr = (form.skills || '').split(',').map(s => s.trim()).filter(Boolean);
 
@@ -345,6 +348,26 @@ export default function CVBuilderPage() {
             </section>
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <ScrollReveal>
+                    <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-[#85bb23]/35 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#85bb23]/15 text-[#85bb23]">
+                            <PenTool size={22} />
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="font-extrabold text-slate-900">Prefer a manual CV revamp?</h2>
+                            <p className="mt-1 text-sm text-slate-600">Chat directly with our CV expert for a human-written, professionally formatted CV. You can still use the free builder below.</p>
+                        </div>
+                        <a
+                            href={manualCvRevampUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#85bb23] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition-all hover:brightness-95 active:scale-[0.98]"
+                        >
+                            <WhatsAppIcon size={17} /> Revamp My CV
+                        </a>
+                    </div>
+                </ScrollReveal>
+
                 {/* Step progress */}
                 <ScrollReveal>
                     <div className="flex items-center gap-2 mb-10">
@@ -536,17 +559,21 @@ export default function CVBuilderPage() {
                             )}
                         </ScrollReveal>
 
-                        {/* Pro Design Service */}
+                        {/* Manual CV revamp service */}
                         <ScrollReveal delay={150}>
-                            <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl border border-violet-200 p-6">
+                            <div className="rounded-2xl border border-[#85bb23]/35 bg-[#85bb23]/10 p-6">
                                 <div className="flex flex-col sm:flex-row items-start gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center shrink-0"><PenTool size={22} className="text-violet-700" /></div>
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#85bb23]/20"><PenTool size={22} className="text-[#85bb23]" /></div>
                                     <div className="flex-1">
-                                        <h3 className="font-extrabold text-violet-900 mb-1">Want a Pro Designer to Polish It?</h3>
-                                        <p className="text-sm text-violet-700 mb-4">Our CV expert will design and format your CV perfectly for your industry. <strong>KES 200</strong> — 24hr turnaround.</p>
-                                        <a href={`mailto:info@jobopenings.co.ke?subject=CV%20Design%20Request&body=Hi, I'd like a professional CV design. My name is ${encodeURIComponent(form.full_name)}.`}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 text-white font-extrabold text-sm hover:bg-violet-700 transition-all shadow-sm">
-                                            <Mail size={14} /> Request Pro Design
+                                        <h3 className="mb-1 font-extrabold text-slate-900">Want an Expert to Revamp It Manually?</h3>
+                                        <p className="mb-4 text-sm text-slate-600">Send us a WhatsApp message and our CV expert will explain the requirements, price, and next steps.</p>
+                                        <a
+                                            href={manualCvRevampUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-[#85bb23] px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition-all hover:brightness-95"
+                                        >
+                                            <WhatsAppIcon size={16} /> Request Manual CV Revamp
                                         </a>
                                     </div>
                                 </div>

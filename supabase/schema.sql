@@ -169,6 +169,11 @@ CREATE TABLE IF NOT EXISTS opportunities (
     contact_email   TEXT,
     contact_phone   TEXT,
     thumbnail_url   TEXT,
+    source          TEXT,
+    source_job_id   TEXT,
+    source_url      TEXT,
+    scraped_at      TIMESTAMPTZ,
+    last_seen_at    TIMESTAMPTZ,
     created_by      UUID REFERENCES auth.users(id) ON DELETE SET NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -178,6 +183,8 @@ CREATE INDEX IF NOT EXISTS idx_opportunities_status ON opportunities(status);
 CREATE INDEX IF NOT EXISTS idx_opportunities_deadline ON opportunities(deadline);
 CREATE INDEX IF NOT EXISTS idx_opportunities_created_at ON opportunities(created_at);
 CREATE INDEX IF NOT EXISTS idx_opportunities_type ON opportunities(type);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_opportunities_source_job ON opportunities(source, source_job_id);
+CREATE INDEX IF NOT EXISTS idx_opportunities_last_seen ON opportunities(last_seen_at DESC) WHERE source IS NOT NULL;
 
 DROP TRIGGER IF EXISTS update_opportunities_updated_at ON opportunities;
 CREATE TRIGGER update_opportunities_updated_at

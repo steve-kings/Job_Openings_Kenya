@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin, Calendar, Briefcase, ExternalLink, ArrowLeft, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { htmlToText } from '@/lib/utils/jobs';
+import { formatDaysRemaining, getDaysLeft, htmlToText } from '@/lib/utils/jobs';
 
 export const revalidate = 3600;
 
@@ -18,10 +18,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${companyName} — Jobs & Opportunities | Job Openings Kenya`,
         description: `Explore open positions at ${companyName}. View all active job listings, learn about the company, and apply directly.`,
     };
-}
-
-function getDaysLeft(deadline: string) {
-    return Math.max(0, Math.ceil((new Date(deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
 }
 
 export default async function CompanyProfilePage({ params }: Props) {
@@ -113,9 +109,9 @@ export default async function CompanyProfilePage({ params }: Props) {
                 <h2 className="text-xl font-extrabold text-gray-900 mb-6">Open Positions ({jobCount})</h2>
 
                 <div className="space-y-4">
-                    {companyJobs.map((job: { id: string; title: string; type: string; location: string; deadline: string; short_description?: string; description?: string; salary_min?: number; salary_max?: number; salary_currency?: string }) => {
+                    {companyJobs.map((job: { id: string; title: string; type: string; location: string; deadline: string | null; short_description?: string; description?: string; salary_min?: number; salary_max?: number; salary_currency?: string }) => {
                         const daysLeft = getDaysLeft(job.deadline);
-                        const isExpiring = daysLeft <= 3;
+                        const isExpiring = daysLeft !== null && daysLeft <= 3;
                         return (
                             <Link
                                 key={job.id}
@@ -129,15 +125,15 @@ export default async function CompanyProfilePage({ params }: Props) {
                                                 {job.type}
                                             </span>
                                             {isExpiring && (
-                                                <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-red-50 text-red-600 flex items-center gap-1">
-                                                    <Clock size={10} /> {daysLeft}d left
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-[#85bb23] text-slate-950 flex items-center gap-1">
+                                                    <Clock size={10} /> {formatDaysRemaining(daysLeft)}
                                                 </span>
                                             )}
                                         </div>
                                         <h3 className="text-lg font-extrabold text-gray-900 group-hover:text-emerald-700 transition-colors">{job.title}</h3>
                                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-gray-500">
                                             <span className="flex items-center gap-1.5"><MapPin size={14} /> {job.location}</span>
-                                            <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                            <span className="flex items-center gap-1.5"><Calendar size={14} /> {job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Rolling Basis'}</span>
                                         </div>
                                         <p className="mt-2 text-sm text-gray-500 line-clamp-2">
                                             {htmlToText(job.short_description || job.description).substring(0, 200)}

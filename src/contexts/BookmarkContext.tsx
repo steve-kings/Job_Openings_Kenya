@@ -134,28 +134,28 @@ export function BookmarkProvider({ children }: { children: React.ReactNode }) {
             {/* Bookmark Drawer & Alerts — only rendered client-side */}
             {mounted && (
                 <>
-                    {/* Closing Soon Alert */}
+                    {/* Saved-job deadline reminder */}
                     {showAlert && closingJobs.length > 0 && (
                         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] w-full sm:w-auto px-4 mt-16 sm:mt-0">
-                            <div className="bg-orange-50 border-l-4 border-orange-500 shadow-2xl rounded-xl p-4 relative pr-12 flex flex-row items-center gap-4 max-w-lg">
-                                <AlertCircle className="text-orange-500 flex-shrink-0" size={28} />
+                            <div className="bg-white border-l-4 border-[#85bb23] shadow-2xl rounded-xl p-4 relative pr-12 flex flex-row items-center gap-4 max-w-lg">
+                                <AlertCircle className="text-[#85bb23] flex-shrink-0" size={28} />
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-orange-900 text-lg">Action Required</h3>
-                                    <div className="text-sm text-orange-800 font-medium">
-                                        {closingJobs.length} {closingJobs.length === 1 ? 'job' : 'jobs'} you saved {closingJobs.length === 1 ? 'is' : 'are'} closing within 48 hours!
+                                    <h3 className="font-bold text-slate-900 text-lg">Deadline reminder</h3>
+                                    <div className="text-sm text-slate-700 font-medium">
+                                        {closingJobs.length} saved {closingJobs.length === 1 ? 'job has' : 'jobs have'} up to 2 days remaining.
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
                                     <button
                                         onClick={() => { setShowAlert(false); setDrawerOpen(true); }}
-                                        className="inline-flex items-center px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-colors"
+                                        className="inline-flex items-center px-3 py-1.5 rounded-lg bg-[#85bb23] text-slate-950 text-sm font-bold transition-all hover:brightness-90"
                                     >
                                         View
                                     </button>
                                 </div>
                                 <button
                                     onClick={() => setShowAlert(false)}
-                                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-orange-800 hover:bg-orange-200 transition-colors"
+                                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
                                 >
                                     <X size={14} />
                                 </button>

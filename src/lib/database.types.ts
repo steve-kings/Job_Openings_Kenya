@@ -45,7 +45,7 @@ export type OpportunityType = 'Job' | 'Training';
 /**
  * Opportunity status.
  */
-export type OpportunityStatus = 'active' | 'inactive' | 'closed' | 'draft';
+export type OpportunityStatus = 'active' | 'inactive' | 'closed' | 'draft' | 'expired';
 
 /**
  * Opportunity record — a job listing or training program.
@@ -68,6 +68,12 @@ export interface Opportunity {
     salary_min: number | null;
     salary_max: number | null;
     salary_currency: string | null;
+    thumbnail_url: string | null;
+    source: string | null;
+    source_job_id: string | null;
+    source_url: string | null;
+    scraped_at: string | null;
+    last_seen_at: string | null;
     created_by: string | null;
     created_at: string;
     updated_at: string;

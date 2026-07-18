@@ -5,8 +5,9 @@ import { Calendar, User, ArrowRight, BookOpen, ChevronDown, Home } from 'lucide-
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Blog - Job Openings Kenya | Stories, Insights & Career Tips',
+    title: 'Career Advice, Insights & Success Stories',
     description: 'Read success stories from Kenyan job seekers, get career tips, and stay updated with the latest opportunities and community news.',
+    alternates: { canonical: '/blog' },
     openGraph: {
         title: 'Job Openings Kenya Blog',
         description: 'Read success stories from Kenyan job seekers and get career tips.',

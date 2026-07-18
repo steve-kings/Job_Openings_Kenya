@@ -10,7 +10,7 @@ import {
 import BookmarkButton from '@/components/BookmarkButton';
 import GoogleAd from '@/components/GoogleAd';
 import WeatherWidget from '@/components/WeatherWidget';
-import { typeLabel, htmlToText } from '@/lib/utils/jobs';
+import { formatDaysRemaining, typeLabel, htmlToText } from '@/lib/utils/jobs';
 
 interface Job {
     id: string;
@@ -18,7 +18,7 @@ interface Job {
     company: string;
     type: string;
     location: string;
-    deadline: string;
+    deadline: string | null;
     apply_url: string;
     description: string;
     requirements?: string[];
@@ -39,7 +39,7 @@ interface SimilarJob {
     type: string;
     location: string;
     thumbnail_url?: string;
-    deadline: string;
+    deadline: string | null;
 }
 
 interface AuthUser {
@@ -84,10 +84,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
     // A null/empty deadline means "Rolling Basis" — never expires. Guard every
     // deadline calculation against it so rolling listings don't read as Jan 1 1970 / Expired.
     const hasDeadline = !!job.deadline;
-    const daysLeft = hasDeadline
+    const daysLeft = job.deadline
         ? Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
         : null;
-    const deadlineLabel = hasDeadline
+    const deadlineLabel = job.deadline
         ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : 'Rolling Basis';
 
@@ -402,12 +402,12 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                         <Clock size={10} /> Rolling Basis
                                     </span>
                                 )}
-                                {daysLeft !== null && daysLeft <= 3 && daysLeft > 0 && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-red-50 text-red-600 border border-red-100">
-                                        <Clock size={10} /> {daysLeft}d left
+                                {daysLeft !== null && daysLeft <= 3 && daysLeft >= 0 && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold tracking-wide bg-[#85bb23] text-slate-950 border border-[#85bb23]">
+                                        <Clock size={10} /> {formatDaysRemaining(daysLeft)}
                                     </span>
                                 )}
-                                {daysLeft !== null && daysLeft <= 0 && (
+                                {daysLeft !== null && daysLeft < 0 && (
                                     <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-gray-100 text-gray-500 border border-gray-200">Expired</span>
                                 )}
                             </div>
@@ -588,7 +588,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                         { label: 'Company', value: job.company },
                                         { label: 'Location', value: job.location },
                                         ...(job.salary_min || job.salary_max ? [{ label: 'Salary', value: `${job.salary_currency || 'KES'} ${job.salary_min?.toLocaleString() || '?'} – ${job.salary_max?.toLocaleString() || '?'}`, highlight: true }] : []),
-                                        { label: 'Deadline', value: deadlineLabel, extra: !hasDeadline ? 'Open until filled' : (daysLeft !== null && daysLeft > 0 ? `${daysLeft} days remaining` : 'Expired') },
+                                        { label: 'Deadline', value: deadlineLabel, extra: !hasDeadline ? 'Open until filled' : (daysLeft !== null && daysLeft >= 0 ? formatDaysRemaining(daysLeft) : 'Expired') },
                                     ].map(({ label, value, badge, highlight, extra }) => (
                                         <div key={label}>
                                             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
@@ -598,7 +598,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                 <p className={`font-semibold text-sm ${highlight ? 'text-emerald-700' : 'text-gray-900'}`}>{value}</p>
                                             )}
                                             {extra && (
-                                                <p className={`text-xs font-semibold mt-0.5 ${!hasDeadline || (daysLeft !== null && daysLeft > 0) ? 'text-emerald-600' : 'text-red-500'}`}>{extra}</p>
+                                                <p className={`text-xs font-semibold mt-0.5 ${!hasDeadline || (daysLeft !== null && daysLeft >= 0) ? 'text-slate-700' : 'text-red-500'}`}>{extra}</p>
                                             )}
                                         </div>
                                     ))}
@@ -716,7 +716,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         </div>
                         <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
                             {similarJobs.map((simJob) => {
-                                const simDaysLeft = Math.max(0, Math.ceil((new Date(simJob.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+                                const simDaysLeft = simJob.deadline
+                                    ? Math.ceil((new Date(simJob.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                                    : null;
+                                const simExpired = simDaysLeft !== null && simDaysLeft < 0;
                                 const simColors = typeMeta[simJob.type] || typeMeta.Job;
                                 return (
                                     <Link key={simJob.id} href={`/jobs/${simJob.id}`}
@@ -726,9 +729,9 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${simColors.gradient} flex items-center justify-center text-white font-extrabold text-lg shadow-sm`}>
                                                     {simJob.company.charAt(0).toUpperCase()}
                                                 </div>
-                                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${simDaysLeft === 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-700'} flex items-center gap-1`}>
+                                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${simExpired ? 'bg-red-50 text-red-600' : simDaysLeft === null ? 'bg-slate-100 text-slate-600' : 'bg-[#85bb23] text-slate-950'} flex items-center gap-1`}>
                                                     <Clock size={11} />
-                                                    {simDaysLeft === 0 ? 'Expired' : `${simDaysLeft}d left`}
+                                                    {simExpired ? 'Expired' : simDaysLeft === null ? 'Rolling Basis' : formatDaysRemaining(simDaysLeft)}
                                                 </span>
                                             </div>
                                             <h3 className="font-extrabold text-gray-900 mb-1 group-hover:text-emerald-700 transition-colors line-clamp-2 text-sm leading-snug">{simJob.title}</h3>

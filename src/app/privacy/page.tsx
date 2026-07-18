@@ -6,6 +6,7 @@ import { Shield, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'Privacy Policy | Job Openings Kenya',
+    alternates: { canonical: '/privacy' },
     description: 'Privacy Policy for Job Openings Kenya — how we collect, use, and protect your personal information.',
 };
 
@@ -36,7 +37,7 @@ export default function PrivacyPage() {
                     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-10 space-y-8 text-slate-700 leading-relaxed">
                         <section>
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">1. Introduction</h2>
-                            <p>Job Openings Kenya (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>jobopeningskenya.co.ke</strong> (the &ldquo;Platform&rdquo;). Please read this policy carefully. By using the Platform, you agree to the collection and use of information in accordance with this policy.</p>
+                            <p>Job Openings Kenya (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website <strong>jobopenings.co.ke</strong> (the &ldquo;Platform&rdquo;). Please read this policy carefully. By using the Platform, you agree to the collection and use of information in accordance with this policy.</p>
                         </section>
 
                         <section>
@@ -92,12 +93,12 @@ export default function PrivacyPage() {
                                 <li>Withdraw consent at any time.</li>
                                 <li>Object to processing of your personal data.</li>
                             </ul>
-                            <p className="mt-2">To exercise any of these rights, contact us at <a href="mailto:privacy@jobopeningskenya.co.ke" className="text-emerald-600 font-bold hover:underline">privacy@jobopeningskenya.co.ke</a>.</p>
+                            <p className="mt-2">To exercise any of these rights, contact us at <a href="mailto:privacy@jobopenings.co.ke" className="text-emerald-600 font-bold hover:underline">privacy@jobopenings.co.ke</a>.</p>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">8. Cookies Policy</h2>
-                            <p>We use essential cookies for authentication and security. We also use analytics cookies (Google Analytics) to understand how visitors use our Platform. You can control cookie preferences through your browser settings.</p>
+                            <p>We use essential cookies for authentication and security. We also use Google Analytics to understand how visitors use our Platform and Google AdSense to serve advertisements. Google and its advertising partners may use cookies or similar technologies to serve and measure personalized or non-personalized ads, subject to applicable consent requirements. You can control cookies through your browser and Google advertising settings.</p>
                         </section>
 
                         <section>
@@ -109,7 +110,7 @@ export default function PrivacyPage() {
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">10. Contact Us</h2>
                             <p>If you have questions about this Privacy Policy, please contact us:</p>
                             <ul className="list-disc pl-6 space-y-1.5 mt-2">
-                                <li>Email: <a href="mailto:info@jobopeningskenya.co.ke" className="text-emerald-600 font-bold hover:underline">info@jobopeningskenya.co.ke</a></li>
+                                <li>Email: <a href="mailto:info@jobopenings.co.ke" className="text-emerald-600 font-bold hover:underline">info@jobopenings.co.ke</a></li>
                                 <li>Website: <Link href="/contact" className="text-emerald-600 font-bold hover:underline">Contact Page</Link></li>
                             </ul>
                         </section>

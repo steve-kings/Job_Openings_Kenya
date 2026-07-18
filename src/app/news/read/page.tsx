@@ -7,23 +7,17 @@ import NewsPromoBanner from '@/components/NewsPromoBanner';
 
 type SP = { [key: string]: string | string[] | undefined };
 const str = (v: string | string[] | undefined, fb = '') => (typeof v === 'string' ? v : fb);
-const buildQuery = (sp: SP) => {
-    const qs = new URLSearchParams();
-    for (const k of ['u', 't', 's', 'i', 'd', 'dt']) { const val = str(sp[k]); if (val) qs.set(k, val); }
-    return qs.toString();
-};
-
 export async function generateMetadata({ searchParams }: { searchParams: Promise<SP> }): Promise<Metadata> {
     const sp = await searchParams;
     const title = str(sp.t, 'Kenya News');
     const description = (str(sp.d) || 'Read the latest Kenya jobs, careers & business news on Job Openings Kenya.').slice(0, 200);
     const image = str(sp.i) || '/job_openings_kenya_logo.jpeg';
-    const canonical = `/news/read?${buildQuery(sp)}`;
     return {
         title: `${title} | Job Openings Kenya`,
         description,
-        alternates: { canonical },
-        openGraph: { title, description, url: canonical, siteName: 'Job Openings Kenya', type: 'article', images: [image] },
+        robots: { index: false, follow: true },
+        alternates: { canonical: '/news' },
+        openGraph: { title, description, url: '/news', siteName: 'Job Openings Kenya', type: 'article', images: [image] },
         twitter: { card: 'summary_large_image', title, description, images: [image] },
     };
 }

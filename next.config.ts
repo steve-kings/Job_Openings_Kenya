@@ -5,6 +5,39 @@ import withPWA from "next-pwa";
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.jobopenings.co.ke' }],
+        destination: 'https://jobopenings.co.ke/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    const privateRouteHeaders = [
+      { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+    ];
+    const utilityRouteHeaders = [
+      { key: 'X-Robots-Tag', value: 'noindex, follow, noarchive' },
+    ];
+
+    return [
+      { source: '/admin/:path*', headers: privateRouteHeaders },
+      { source: '/api/:path*', headers: privateRouteHeaders },
+      { source: '/auth/:path*', headers: privateRouteHeaders },
+      { source: '/dashboard/:path*', headers: privateRouteHeaders },
+      { source: '/employer/dashboard/:path*', headers: privateRouteHeaders },
+      { source: '/login', headers: utilityRouteHeaders },
+      { source: '/forgot-password', headers: utilityRouteHeaders },
+      { source: '/reset-password', headers: utilityRouteHeaders },
+      { source: '/employer/post', headers: utilityRouteHeaders },
+      { source: '/community/new', headers: utilityRouteHeaders },
+      { source: '/community/:id/edit', headers: utilityRouteHeaders },
+      { source: '/news/read', headers: utilityRouteHeaders },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MapPin, Briefcase, BookOpen, Search, X, ExternalLink, Clock, Layers, ArrowRight, ChevronRight } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import ScrollReveal from '@/components/ScrollReveal';
+import { formatDaysRemaining } from '@/lib/utils/jobs';
 
 interface Opportunity {
     id: string;
@@ -330,7 +331,7 @@ export default function MapViewClient({ opportunities }: { opportunities: Opport
                                                     <div className="text-right shrink-0">
                                                         {salary && <p className="text-xs font-extrabold text-slate-700">{salary}</p>}
                                                         <p className="text-[10px] text-slate-400 flex items-center gap-1 justify-end mt-0.5">
-                                                            <Clock size={9} /> {getDaysLeft(job.deadline)}d left
+                                                            <Clock size={9} /> {formatDaysRemaining(getDaysLeft(job.deadline))}
                                                         </p>
                                                     </div>
                                                     <ArrowRight size={14} className="text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all shrink-0" />

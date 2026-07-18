@@ -45,6 +45,12 @@ export function getDaysLeft(d?: string | null) {
     return Math.max(0, Math.ceil((new Date(d).getTime() - Date.now()) / 86400000));
 }
 
+export function formatDaysRemaining(days: number) {
+    const remaining = Math.max(0, Math.ceil(days));
+    if (remaining === 0) return 'Deadline today';
+    return `${remaining} ${remaining === 1 ? 'day' : 'days'} remaining`;
+}
+
 export function getPostedDaysAgo(createdAt?: string) {
     if (!createdAt) return null;
     const diffMs = Date.now() - new Date(createdAt).getTime();
