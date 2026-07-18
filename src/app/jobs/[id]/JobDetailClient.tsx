@@ -547,7 +547,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                     <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                                                         <CheckCircle2 size={13} className="text-emerald-600" />
                                                     </div>
-                                                    <span className="text-gray-600 text-sm">{req}</span>
+                                                    <span className="text-gray-800 text-[15px]">{htmlToText(req)}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -565,7 +565,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                     <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                                                         <CheckCircle2 size={13} className="text-emerald-600" />
                                                     </div>
-                                                    <span className="text-gray-600 text-sm">{res}</span>
+                                                    <span className="text-gray-800 text-[15px]">{htmlToText(res)}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -583,7 +583,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                                     <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                                                         <CheckCircle2 size={13} className="text-emerald-600" />
                                                     </div>
-                                                    <span className="text-gray-600 text-sm">{ben}</span>
+                                                    <span className="text-gray-800 text-[15px]">{htmlToText(ben)}</span>
                                                 </li>
                                             ))}
                                         </ul>
