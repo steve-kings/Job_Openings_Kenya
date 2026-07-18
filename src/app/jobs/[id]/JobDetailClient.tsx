@@ -83,7 +83,8 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
     const [appError, setAppError] = useState('');
 
     const canView = !!user;
-    const colors = typeMeta[job.type] || typeMeta.Job;
+    const jobType = job.type || 'Job';
+    const colors = typeMeta[jobType] || typeMeta.Job;
     // A null/empty deadline means "Rolling Basis" — never expires. Guard every
     // deadline calculation against it so rolling listings don't read as Jan 1 1970 / Expired.
     const hasDeadline = !!job.deadline;
@@ -113,7 +114,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
     }, []);
 
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-    const shareText = `Check out this ${job.type.toLowerCase()}: ${job.title} at ${job.company}`;
+    const shareText = `Check out this ${jobType.toLowerCase()}: ${job.title} at ${job.company}`;
 
     const getFormattedApplyUrl = (url: string | null | undefined): string => {
         if (!url) return '';
@@ -339,7 +340,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                             value: job.id,
                         },
                         image: job.thumbnail_url || `${shareUrl.split('/jobs/')[0]}/job_openings_kenya_logo.jpeg`,
-                        employmentType: job.type === 'Job' ? 'FULL_TIME' : 'INTERN',
+                        employmentType: jobType === 'Job' ? 'FULL_TIME' : 'INTERN',
                         directApply: !!job.apply_url,
                         hiringOrganization: {
                             '@type': 'Organization',
@@ -374,7 +375,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         jobBenefits: job.benefits?.join(', ') || 'Apply to learn more',
                         qualifications: job.requirements?.join(', ') || 'See full description',
                         responsibilities: job.responsibilities?.join(', ') || 'See full description',
-                        industry: job.type === 'Job' ? 'Employment' : 'Training & Education',
+                        industry: jobType === 'Job' ? 'Employment' : 'Training & Education',
                         workHours: 'Full-time / Part-time / Contract',
                         }),
                     }}
@@ -388,8 +389,8 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                             Home
                         </Link>
                         <span>/</span>
-                        <Link href={`/?type=${job.type}`} className="hover:text-emerald-600 transition-colors">
-                            {typeLabel[job.type] || job.type}
+                        <Link href={`/?type=${jobType}`} className="hover:text-emerald-600 transition-colors">
+                            {typeLabel[jobType] || jobType}
                         </Link>
                         <span>/</span>
                         <span className="text-gray-900 truncate max-w-[300px] sm:max-w-md">{job.title}</span>
@@ -412,7 +413,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-3">
                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide ${colors.softBg} ${colors.text} border ${colors.border}`}>
-                                    {job.type}
+                                    {jobType}
                                 </span>
                                 {!hasDeadline && (
                                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -468,7 +469,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                     </a>
                                     <div className="flex gap-2">
                                         <BookmarkButton
-                                            job={{ id: job.id, title: job.title, company: job.company, type: job.type, location: job.location }}
+                                            job={{ id: job.id, title: job.title, company: job.company, type: jobType, location: job.location }}
                                             className="inline-flex items-center justify-center gap-1.5 flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 hover:border-gray-300 transition-all"
                                             showText={false}
                                         />
@@ -627,7 +628,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-5">Quick Info</h3>
                                 <div className="space-y-4">
                                     {[
-                                        { label: 'Type', value: job.type, badge: true },
+                                        { label: 'Type', value: jobType, badge: true },
                                         { label: 'Company', value: job.company },
                                         { label: 'Location', value: job.location },
                                         ...(job.salary_min || job.salary_max ? [{ label: 'Salary', value: `${job.salary_currency || 'KES'} ${job.salary_min?.toLocaleString() || '?'} – ${job.salary_max?.toLocaleString() || '?'}`, highlight: true }] : []),

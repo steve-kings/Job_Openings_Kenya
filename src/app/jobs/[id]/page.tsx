@@ -79,7 +79,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         .or(`deadline.gte.${today},deadline.is.null`)
         .single();
 
-    if (!job) notFound();
+    if (!job || !job.type) notFound();
 
     const { data: { user } } = await supabase.auth.getUser();
 
