@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     default: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
     template: "%s | Job Openings Kenya"
   },
-  description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs and professional training programs updated daily.",
+  description: "Find current Kenya-focused jobs and professional training programs with clear application details and source links.",
   keywords: "Job Openings Kenya, Jobs in Kenya, Kenya Jobs 2025, Kenyan Jobs Portal, Training Kenya",
   authors: [{ name: "Job Openings Kenya Team" }],
   icons: {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Job Openings Kenya - Your Portal for the latest Job Openings in Kenya",
-    description: "Your Portal for the latest Job Openings in Kenya. Find verified jobs and professional training programs updated daily.",
+    description: "Find current Kenya-focused jobs and professional training programs with clear application details and source links.",
     images: [
       {
         url: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
@@ -83,7 +83,7 @@ export default function RootLayout({
               url: getBaseUrl(),
               logo: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
               image: `${getBaseUrl()}/job_openings_kenya_logo.jpeg`,
-              description: "Kenya's trusted portal for verified job openings, internships, and professional training programs. Updated daily with hand-picked opportunities.",
+              description: "A Kenya-focused portal for current jobs, internships, professional training, and practical career resources.",
               email: 'info@jobopenings.co.ke',
               telephone: '+254790855690',
               address: {
@@ -120,7 +120,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/job_openings_kenya_logo.jpeg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/job_openings_kenya_logo.jpeg" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#5CB800" />
+        <meta name="theme-color" content="#85bb23" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

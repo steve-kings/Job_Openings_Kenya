@@ -20,7 +20,13 @@ export function parseScraperSources(raw: string | undefined): ScraperSource[] {
         throw new Error('JOB_SCRAPER_SOURCES_JSON must contain an array');
     }
 
-    return parsed.map((item, index) => validateSource(item, index)).filter(source => source.enabled !== false);
+    const sources = parsed.map((item, index) => validateSource(item, index));
+    const names = new Set<string>();
+    for (const source of sources) {
+        if (names.has(source.name)) throw new Error(`Duplicate scraper source name: "${source.name}"`);
+        names.add(source.name);
+    }
+    return sources.filter(source => source.enabled !== false);
 }
 
 function validateSource(value: unknown, index: number): ScraperSource {

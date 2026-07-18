@@ -4,30 +4,69 @@ import type { ScrapedJob, ScraperSource } from './types';
 const ANNEX_API = 'https://api.careers.annex-technologies.com/api/jobs';
 
 interface AnnexPage {
-    jobs?: Array<Record<string, unknown>>;
-    pages?: number;
+    jobs: Array<Record<string, unknown>>;
+    pages: number;
 }
-export async function crawlAnnex(source: ScraperSource): Promise<{ jobs: ScrapedJob[]; pagesVisited: number }> {
+
+export interface AnnexCrawlResult {
+    jobs: ScrapedJob[];
+    pagesVisited: number;
+    totalPages: number;
+    complete: boolean;
+}
+
+export async function crawlAnnex(source: ScraperSource): Promise<AnnexCrawlResult> {
     const jobs = new Map<string, ScrapedJob>();
-    const limit = Math.min(source.maxPages || 5, 10);
+    const limit = source.maxPages || 5;
     let pagesVisited = 0;
+    let reportedTotalPages: number | null = null;
+    let pageCountStable = true;
+    let reachedFinalPage = false;
 
     for (let page = 1; page <= limit; page += 1) {
         const url = buildAnnexPageUrl(source, page);
 
         const response = await safeFetch(url.toString(), { headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`Annex returned HTTP ${response.status}`);
-        const data = JSON.parse(await readLimitedText(response)) as AnnexPage;
+        const data = parseAnnexPage(await readLimitedText(response));
         pagesVisited += 1;
 
-        for (const item of data.jobs || []) {
+        if (reportedTotalPages === null) reportedTotalPages = data.pages;
+        else if (reportedTotalPages !== data.pages) pageCountStable = false;
+
+        const pageJobs = data.jobs;
+        for (const item of pageJobs) {
             const job = normalizeAnnexJob(item, source);
             if (job) jobs.set(job.sourceJobId, job);
         }
-        if (!data.jobs?.length || page >= (data.pages || 1)) break;
+        if (pageJobs.length === 0 && page < data.pages) break;
+        if (isLastAnnexPage(page, data.pages)) {
+            reachedFinalPage = true;
+            break;
+        }
     }
 
-    return { jobs: [...jobs.values()], pagesVisited };
+    return {
+        jobs: [...jobs.values()],
+        pagesVisited,
+        totalPages: reportedTotalPages || 1,
+        complete: reachedFinalPage && pageCountStable,
+    };
+}
+
+export function parseAnnexPage(raw: string): AnnexPage {
+    const value = JSON.parse(raw) as unknown;
+    if (!value || typeof value !== 'object') throw new Error('Annex returned an invalid JSON object');
+    const page = value as { jobs?: unknown; pages?: unknown };
+    if (!Array.isArray(page.jobs)) throw new Error('Annex response is missing a jobs array');
+    if (!Number.isInteger(page.pages) || Number(page.pages) < 1) {
+        throw new Error('Annex response has an invalid page count');
+    }
+    return { jobs: page.jobs as Array<Record<string, unknown>>, pages: Number(page.pages) };
+}
+
+export function isLastAnnexPage(page: number, reportedPages: number): boolean {
+    return page >= reportedPages;
 }
 
 export function buildAnnexPageUrl(source: ScraperSource, page: number): URL {

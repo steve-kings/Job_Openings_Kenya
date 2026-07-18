@@ -20,7 +20,7 @@ const steps = [
 const benefits = [
     { icon: Users, title: '10,000+ Job Seekers', desc: 'Active, motivated Kenyan talent browsing daily.' },
     { icon: Clock, title: '24hr Review', desc: 'Fast turnaround — your job goes live quickly.' },
-    { icon: Shield, title: 'Verified Platform', desc: 'Trusted by top employers across Kenya.' },
+    { icon: Shield, title: 'Clear Process', desc: 'Listings show practical application details.' },
     { icon: Zap, title: 'Simple Process', desc: 'One form, submit, done. No hassle.' },
 ];
 

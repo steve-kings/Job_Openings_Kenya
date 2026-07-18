@@ -185,6 +185,8 @@ CREATE INDEX IF NOT EXISTS idx_opportunities_created_at ON opportunities(created
 CREATE INDEX IF NOT EXISTS idx_opportunities_type ON opportunities(type);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_opportunities_source_job ON opportunities(source, source_job_id);
 CREATE INDEX IF NOT EXISTS idx_opportunities_last_seen ON opportunities(last_seen_at DESC) WHERE source IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_opportunities_source_active_last_seen ON opportunities(source, last_seen_at)
+    WHERE status = 'active' AND source IS NOT NULL;
 
 DROP TRIGGER IF EXISTS update_opportunities_updated_at ON opportunities;
 CREATE TRIGGER update_opportunities_updated_at

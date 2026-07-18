@@ -77,7 +77,7 @@ export async function GET(request: Request) {
                 <div class="header">
                     <img src="${logoUrl}" alt="Job Openings Kenya">
                     <h1>🔥 Your Weekly Top 5</h1>
-                    <p>Hand-picked opportunities just for you</p>
+                    <p>Recent opportunities selected for you</p>
                     <span class="week">Week of ${weekStr}</span>
                 </div>
                 <div class="content">

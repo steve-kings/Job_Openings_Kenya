@@ -37,8 +37,13 @@ export interface ScrapedJob {
 export interface SourceRunResult {
     source: string;
     pagesVisited: number;
+    totalPages: number | null;
+    complete: boolean;
     discovered: number;
     insertedOrUpdated: number;
+    refreshed: number;
+    published: number;
+    deactivated: number;
     skipped: number;
     errors: string[];
 }

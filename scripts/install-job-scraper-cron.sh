@@ -31,7 +31,9 @@ if (!source) throw new Error('An enabled Annex source named "annex" is required'
 if (String(source.location || 'Kenya').trim().toLowerCase() !== 'kenya') {
     throw new Error('The Annex source location must be Kenya');
 }
-if (source.autoPublish === true) throw new Error('Keep Annex autoPublish=false for moderated imports');
+if (source.autoPublish === true) {
+    console.error('NOTICE: Annex automatic publishing is enabled for new eligible jobs.');
+}
 process.stdout.write(env.CRON_SECRET);
 NODE
 )"
@@ -80,4 +82,4 @@ crontab -l | grep -F "$MARKER"
 if command -v systemctl >/dev/null 2>&1 && ! systemctl is-active --quiet cron; then
     echo 'WARNING: cron is not active. Run: sudo systemctl enable --now cron' >&2
 fi
-echo 'Authenticated dry run passed; the scheduler is ready for draft imports.'
+echo 'Authenticated dry run passed; the scheduler is ready for the configured publication mode.'

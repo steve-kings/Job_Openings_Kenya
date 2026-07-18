@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildAnnexPageUrl, normalizeAnnexJob } from './annex';
+import { buildAnnexPageUrl, isLastAnnexPage, normalizeAnnexJob, parseAnnexPage } from './annex';
 import { parseScraperSources } from './config';
 
 test('Annex sources default to Kenya and remain drafts', () => {
@@ -29,6 +29,27 @@ test('rejects an invalid Annex location', () => {
             { name: 'annex', kind: 'annex', location: '   ' },
         ])),
         /location must be a non-empty string/,
+    );
+});
+
+test('marks an Annex crawl complete only after the reported final page', () => {
+    assert.equal(isLastAnnexPage(1, 3), false);
+    assert.equal(isLastAnnexPage(3, 3), true);
+});
+
+test('rejects malformed Annex pagination responses', () => {
+    assert.throws(() => parseAnnexPage('{"pages":1}'), /jobs array/);
+    assert.throws(() => parseAnnexPage('{"jobs":[],"pages":0}'), /page count/);
+    assert.deepEqual(parseAnnexPage('{"jobs":[],"pages":1}'), { jobs: [], pages: 1 });
+});
+
+test('rejects duplicate source names because reconciliation is source-scoped', () => {
+    assert.throws(
+        () => parseScraperSources(JSON.stringify([
+            { name: 'annex', kind: 'annex' },
+            { name: 'annex', kind: 'jsonld', startUrls: ['https://example.org/jobs'] },
+        ])),
+        /Duplicate scraper source name/,
     );
 });
 

@@ -24,7 +24,7 @@ const defaultSlides: Slide[] = [
         id: 1,
         title: "Discover Your Next",
         highlight: "Big Opportunity",
-        description: "Access verified jobs and professional training programs across Kenya. All opportunities are hand-picked and verified by our team.",
+        description: "Explore Kenya-focused jobs and professional training. Listings are checked for freshness and useful application details, with external sources clearly linked.",
         image: "/images/seeker-hero.png",
         cta1: "Browse Opportunities",
         cta2: "Join WhatsApp"
@@ -33,7 +33,7 @@ const defaultSlides: Slide[] = [
         id: 2,
         title: "Land Your Dream",
         highlight: "Career Today",
-        description: "From entry-level positions to executive roles, find verified job opportunities that match your skills and aspirations across the continent.",
+        description: "From entry-level positions to executive roles, find current opportunities that match your skills and career goals.",
         image: "/images/right-talent-desktop.png",
         cta1: "View Jobs",
         cta2: "Get Alerts"
@@ -42,7 +42,7 @@ const defaultSlides: Slide[] = [
         id: 3,
         title: "Upskill With",
         highlight: "Professional Training",
-        description: "Access verified training programs and certifications to boost your career and stay competitive in the job market.",
+        description: "Explore training programs and certifications to build your skills. Confirm the provider and course details before enrolling.",
         image: "/images/advance-your-career.png",
         cta1: "Browse Training",
         cta2: "Learn More"

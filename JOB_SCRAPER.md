@@ -13,7 +13,7 @@ JSON-LD sources use HTTPS only, reject private network addresses, respect `robot
 
 ## Setup
 
-1. Apply `supabase/migrations/20260718_job_scraper.sql` in Supabase.
+1. Apply `supabase/migrations/20260718_job_scraper.sql` and `supabase/migrations/20260718_job_scraper_lifecycle.sql` in Supabase, in that order.
 2. Set `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, and `JOB_SCRAPER_SOURCES_JSON` in Vercel.
 3. Confirm that each website permits automated crawling and republication before adding it.
 
@@ -94,7 +94,30 @@ crontab -l | grep -Fc '# jobopenings-jobs-scraper'
 journalctl -t jobopenings-scraper -n 50 --no-pager
 ```
 
-The marker count must be `1`. Keep Annex `autoPublish: false`: it is an aggregated feed, and draft mode prevents stale, thin, or incorrectly attributed external listings from appearing publicly without editorial review. Recurring runs preserve an administrator's existing publication status instead of demoting or reactivating a reviewed listing.
+The marker count must be `1`. Draft mode prevents external listings from appearing publicly without editorial review. Recurring runs preserve an administrator's existing publication status instead of demoting or reactivating a reviewed listing.
+
+## Automatic publication
+
+Automatic publication is an explicit opt-in. Change only the Annex source in `.env.local` to:
+
+```env
+JOB_SCRAPER_SOURCES_JSON=[{"name":"annex","kind":"annex","location":"Kenya","maxPages":3,"maxAgeDays":90,"minimumDescriptionLength":160,"autoPublish":true,"enabled":true}]
+```
+
+Restart the app and reinstall the protected scheduler configuration:
+
+```bash
+pm2 restart jobopenings --update-env
+bash scripts/install-job-scraper-cron.sh
+```
+
+New eligible jobs are then inserted with `active` status. Existing imported drafts are not silently promoted during normal cron runs, so a later editorial decision remains intact. To publish only the existing drafts that are still present in the current eligible Kenya feed, run this one-time authenticated action:
+
+```bash
+bash scripts/run-job-scraper.sh --publish-existing
+```
+
+Each successful run refreshes `last_seen_at` for eligible imported records. Only after a complete Annex crawl, an active automated listing that has remained unseen for at least 12 hours is marked expired. The grace period protects against temporary pagination changes or a single incomplete source response. Draft, closed, inactive, expired, and manually created records are not reactivated by normal scheduled runs.
 
 ## Operating rules
 

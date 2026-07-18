@@ -42,7 +42,7 @@ export default function TermsPage() {
 
                         <section>
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">2. Description of Service</h2>
-                            <p>Job Openings Kenya is an online job board that connects job seekers with employers across Kenya. The Platform lists verified job openings, training programs, internships, and career resources. We also provide tools for application tracking, saved searches, and community discussions.</p>
+                            <p>Job Openings Kenya is an online job board that helps job seekers discover opportunities across Kenya. The Platform lists job openings, training programs, internships, and career resources. We also provide tools for application tracking, saved searches, and community discussions.</p>
                         </section>
 
                         <section>
@@ -58,7 +58,8 @@ export default function TermsPage() {
                         <section>
                             <h2 className="text-xl font-extrabold text-slate-900 mb-3">4. Job Listings & Content</h2>
                             <ul className="list-disc pl-6 space-y-1.5">
-                                <li>We manually review all job submissions before publication.</li>
+                                <li>Employer submissions may be reviewed editorially; approved external feeds may be screened and published automatically.</li>
+                                <li>Automated external listings are identified and should be confirmed on their linked source page.</li>
                                 <li>Employers are responsible for the accuracy of their job postings.</li>
                                 <li>We do not guarantee that listed opportunities are still available at the time of application.</li>
                                 <li>We reserve the right to remove any listing or content at our discretion.</li>

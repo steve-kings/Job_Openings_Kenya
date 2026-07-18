@@ -44,11 +44,11 @@ interface FAQItem {
 const faqs: FAQItem[] = [
     {
         q: 'How do I find the latest job openings in Kenya?',
-        a: 'Visit our homepage and browse the latest verified listings. You can filter by job type, location, and even set up email alerts to get notified when matching jobs are posted.',
+        a: 'Visit our homepage and browse the latest listings. You can filter by job type and location, then set up email alerts for matching jobs.',
     },
     {
-        q: 'Are the job listings on Job Openings Kenya verified?',
-        a: 'Yes. Every listing is reviewed before publication to ensure it is legitimate, scam-free, and genuinely available. We partner with trusted employers across Kenya.',
+        q: 'How are job listings checked?',
+        a: 'Employer submissions may receive editorial review. Approved external feeds are automatically screened for Kenya relevance, freshness, useful details, and valid application links. External listings are labelled, and you should always confirm the employer and application destination at the original source.',
     },
     {
         q: 'Can I apply for jobs directly through the platform?',

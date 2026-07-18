@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { selectScraperSources } from './index';
+import { runJobScraper, selectScraperSources } from './index';
 import type { ScraperSource } from './types';
 
 const annexSource: ScraperSource = { name: 'annex', kind: 'annex', location: 'Kenya' };
@@ -18,4 +18,11 @@ test('fails loudly when a requested source name is unknown', () => {
 
 test('selects the requested configured source', () => {
     assert.deepEqual(selectScraperSources([annexSource], 'annex'), [annexSource]);
+});
+
+test('does not allow publishing existing jobs during a dry run', async () => {
+    await assert.rejects(
+        () => runJobScraper({ dryRun: true, publishExisting: true }),
+        /publishExisting cannot be combined with dryRun/,
+    );
 });

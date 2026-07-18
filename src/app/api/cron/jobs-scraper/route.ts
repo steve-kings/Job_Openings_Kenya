@@ -22,6 +22,7 @@ async function handleScrape(request: Request) {
         const result = await runJobScraper({
             dryRun: url.searchParams.get('dryRun') === 'true',
             onlySource: url.searchParams.get('source') || undefined,
+            publishExisting: url.searchParams.get('publishExisting') === 'true',
         });
         return NextResponse.json(result, { status: result.success ? 200 : 502 });
     } catch (error) {

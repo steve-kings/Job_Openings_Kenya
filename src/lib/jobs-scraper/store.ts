@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import type { ScrapedJob } from './types';
 
 const BATCH_SIZE = 100;
+export const STALE_LISTING_GRACE_HOURS = 12;
 
 export async function storeScrapedJobs(jobs: ScrapedJob[], dryRun: boolean, autoPublish: boolean): Promise<number> {
     const uniqueJobs = deduplicateScrapedJobs(jobs);
@@ -23,6 +24,74 @@ export async function storeScrapedJobs(jobs: ScrapedJob[], dryRun: boolean, auto
         stored += inserted?.length || 0;
     }
     return stored;
+}
+
+export async function publishExistingScrapedJobs(source: string, sourceJobIds: string[]): Promise<number> {
+    const uniqueIds = [...new Set(sourceJobIds)];
+    if (uniqueIds.length === 0) return 0;
+    const supabase = createAdminClient();
+    let published = 0;
+
+    for (let offset = 0; offset < uniqueIds.length; offset += BATCH_SIZE) {
+        const { data, error } = await supabase
+            .from('opportunities')
+            .update({ status: 'active' })
+            .eq('source', source)
+            .eq('status', 'draft')
+            .is('created_by', null)
+            .in('source_job_id', uniqueIds.slice(offset, offset + BATCH_SIZE))
+            .select('id');
+        if (error) throw new Error(`Unable to publish existing scraped jobs: ${error.message}`);
+        published += data?.length || 0;
+    }
+
+    return published;
+}
+
+export async function refreshSeenScrapedJobs(
+    source: string,
+    sourceJobIds: string[],
+    seenAt: string = new Date().toISOString(),
+): Promise<number> {
+    const uniqueIds = [...new Set(sourceJobIds)];
+    if (uniqueIds.length === 0) return 0;
+    const supabase = createAdminClient();
+    let refreshed = 0;
+
+    for (let offset = 0; offset < uniqueIds.length; offset += BATCH_SIZE) {
+        const { data, error } = await supabase
+            .from('opportunities')
+            .update({ last_seen_at: seenAt })
+            .eq('source', source)
+            .is('created_by', null)
+            .in('source_job_id', uniqueIds.slice(offset, offset + BATCH_SIZE))
+            .select('id');
+        if (error) throw new Error(`Unable to refresh scraped jobs: ${error.message}`);
+        refreshed += data?.length || 0;
+    }
+
+    return refreshed;
+}
+
+export async function deactivateStaleAutoPublishedJobs(
+    source: string,
+    staleBefore: string = staleListingCutoff(),
+): Promise<number> {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+        .from('opportunities')
+        .update({ status: 'expired' })
+        .eq('source', source)
+        .eq('status', 'active')
+        .is('created_by', null)
+        .lt('last_seen_at', staleBefore)
+        .select('id');
+    if (error) throw new Error(`Unable to expire stale auto-published jobs: ${error.message}`);
+    return data?.length || 0;
+}
+
+export function staleListingCutoff(now: Date = new Date()): string {
+    return new Date(now.getTime() - STALE_LISTING_GRACE_HOURS * 60 * 60 * 1000).toISOString();
 }
 
 export function deduplicateScrapedJobs(jobs: ScrapedJob[]): ScrapedJob[] {
@@ -51,7 +120,6 @@ export async function recordScraperRun(input: {
 
 function toOpportunity(job: ScrapedJob, autoPublish: boolean, scrapedAt: string) {
     const today = new Date().toISOString().slice(0, 10);
-    const isExpired = !!job.deadline && job.deadline < today;
     return {
         title: job.title,
         type: 'Job',
@@ -63,7 +131,7 @@ function toOpportunity(job: ScrapedJob, autoPublish: boolean, scrapedAt: string)
         responsibilities: job.responsibilities,
         deadline: job.deadline,
         apply_url: job.applyUrl,
-        status: isExpired ? 'expired' : autoPublish ? 'active' : 'draft',
+        status: initialOpportunityStatus(job.deadline, autoPublish, today),
         salary_min: job.salaryMin,
         salary_max: job.salaryMax,
         salary_currency: job.salaryCurrency || 'KES',
@@ -76,4 +144,13 @@ function toOpportunity(job: ScrapedJob, autoPublish: boolean, scrapedAt: string)
         created_at: job.postedAt || new Date().toISOString(),
         updated_at: scrapedAt,
     };
+}
+
+export function initialOpportunityStatus(
+    deadline: string | null,
+    autoPublish: boolean,
+    today: string = new Date().toISOString().slice(0, 10),
+): 'active' | 'draft' | 'expired' {
+    if (deadline && deadline < today) return 'expired';
+    return autoPublish ? 'active' : 'draft';
 }

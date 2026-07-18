@@ -30,6 +30,9 @@ interface Job {
     salary_min?: number;
     salary_max?: number;
     salary_currency?: string;
+    source?: string | null;
+    source_url?: string | null;
+    created_at?: string | null;
 }
 
 interface SimilarJob {
@@ -132,6 +135,18 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
     const formattedApplyUrl = getFormattedApplyUrl(job.apply_url);
     const isExternalApply = formattedApplyUrl ? formattedApplyUrl.startsWith('http') : false;
     const applyHref = formattedApplyUrl || '#about-opportunity';
+    const safeSourceUrl = (() => {
+        if (!job.source_url) return null;
+
+        try {
+            const parsedUrl = new URL(job.source_url);
+            return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:'
+                ? parsedUrl.toString()
+                : null;
+        } catch {
+            return null;
+        }
+    })();
 
     const getApplyButtonDetails = () => {
         if (!formattedApplyUrl) {
@@ -305,11 +320,12 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            {/* Google for Jobs + Rich Results Structured Data */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
+            {/* Google for Jobs + Rich Results Structured Data (editor-reviewed listings only) */}
+            {!job.source && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
                         '@context': 'https://schema.org',
                         '@type': 'JobPosting',
                         title: job.title,
@@ -360,9 +376,10 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                         responsibilities: job.responsibilities?.join(', ') || 'See full description',
                         industry: job.type === 'Job' ? 'Employment' : 'Training & Education',
                         workHours: 'Full-time / Part-time / Contract',
-                    }),
-                }}
-            />
+                        }),
+                    }}
+                />
+            )}
             {/* ── Breadcrumb ── */}
             <div className="bg-white border-b border-gray-100">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -477,6 +494,32 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Column */}
                     <div className="lg:col-span-2 space-y-8 min-w-0">
+                        {job.source && (
+                            <aside className="rounded-2xl border border-[#85bb23] bg-[#85bb23]/10 p-5 sm:p-6" aria-labelledby="automated-listing-heading">
+                                <h2 id="automated-listing-heading" className="text-base font-extrabold text-[#85bb23]">
+                                    Automated external listing
+                                </h2>
+                                <p className="mt-2 text-sm leading-relaxed text-gray-700">
+                                    Imported automatically from Annex Careers and not individually verified by Job Openings Kenya. Confirm the employer, deadline, and application destination on the source page. Never pay to apply.
+                                </p>
+                                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-bold">
+                                    {safeSourceUrl && (
+                                        <a
+                                            href={safeSourceUrl}
+                                            target="_blank"
+                                            rel="nofollow noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 text-[#85bb23] hover:underline"
+                                        >
+                                            View source page <ExternalLink size={14} />
+                                        </a>
+                                    )}
+                                    <Link href="/contact" className="text-gray-700 hover:text-[#85bb23] hover:underline">
+                                        Report this listing
+                                    </Link>
+                                </div>
+                            </aside>
+                        )}
+
                         {/* Description */}
                         <div id="about-opportunity" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                             <h2 className="text-lg font-extrabold text-gray-900 mb-5 flex items-center gap-2.5">
@@ -698,7 +741,7 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 </div>
                             )}
 
-                            <GoogleAd adSlot="PLACEHOLDER_SLOT_ID" />
+                            {!job.source && <GoogleAd adSlot="PLACEHOLDER_SLOT_ID" />}
                         </div>
                     </div>
                 </div>

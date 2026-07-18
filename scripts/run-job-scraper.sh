@@ -20,7 +20,8 @@ query="source=${SOURCE}"
 case "${1:-}" in
     '') ;;
     --dry-run) query="${query}&dryRun=true" ;;
-    *) echo "Usage: $0 [--dry-run]" >&2; exit 2 ;;
+    --publish-existing) query="${query}&publishExisting=true" ;;
+    *) echo "Usage: $0 [--dry-run|--publish-existing]" >&2; exit 2 ;;
 esac
 
 readonly endpoint="${BASE_URL%/}/api/cron/jobs-scraper?${query}"

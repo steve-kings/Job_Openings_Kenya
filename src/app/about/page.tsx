@@ -10,15 +10,15 @@ import { Lightbulb, Users, Handshake, Trophy, Rocket, ShieldCheck, BookOpen, Sea
 export const metadata: Metadata = {
     title: 'About Us | Job Openings Kenya',
     alternates: { canonical: '/about' },
-    description: 'Learn about Job Openings Kenya — your trusted portal for verified job openings and professional training programs across Kenya.',
-    openGraph: { title: 'About Job Openings Kenya', description: 'Your trusted portal for the latest job openings in Kenya.', images: ['/images/right-talent-desktop.png'], type: 'website' },
-    twitter: { card: 'summary_large_image', title: 'About Job Openings Kenya', description: 'Your trusted portal for the latest job openings in Kenya.', images: ['/images/right-talent-desktop.png'] },
+    description: 'Learn how Job Openings Kenya publishes current, Kenya-focused opportunities using automated quality checks, editorial review, and source transparency.',
+    openGraph: { title: 'About Job Openings Kenya', description: 'A Kenya-focused portal for current job openings and career resources.', images: ['/images/right-talent-desktop.png'], type: 'website' },
+    twitter: { card: 'summary_large_image', title: 'About Job Openings Kenya', description: 'A Kenya-focused portal for current job openings and career resources.', images: ['/images/right-talent-desktop.png'] },
 };
 
 export const revalidate = 3600;
 
 const goals = [
-    { icon: Lightbulb, title: 'Inform', sub: 'Verified listings daily' },
+    { icon: Lightbulb, title: 'Inform', sub: 'Screened listings daily' },
     { icon: Users, title: 'Connect', sub: 'Seekers with employers' },
     { icon: Handshake, title: 'Partner', sub: 'With top organisations' },
     { icon: Trophy, title: 'Empower', sub: 'Careers across Kenya' },
@@ -26,14 +26,14 @@ const goals = [
 ];
 
 const features = [
-    { title: 'Verified Job Listings', desc: 'Every job is hand-reviewed before publication to ensure legitimacy and protect job seekers from scams.', icon: ShieldCheck },
+    { title: 'Listing Quality Checks', desc: 'Employer submissions may receive editorial review, while approved external feeds pass automated Kenya, freshness, content, and application-link checks.', icon: ShieldCheck },
     { title: 'Career Resources', desc: 'Access CV templates, interview tips, and expert articles to help you land your dream role.', icon: BookOpen },
     { title: 'Advanced Search', desc: 'Filter jobs by type, location, and salary range to find opportunities that match your skills.', icon: Search },
 ];
 
 const steps = [
     { num: '01', title: 'Create Your Profile', desc: 'Sign up and set up your job seeker profile to get personalized recommendations.' },
-    { num: '02', title: 'Browse & Apply', desc: 'Explore verified listings, save favourites, and apply directly through employer portals.' },
+    { num: '02', title: 'Browse & Apply', desc: 'Explore current listings, check the employer or external source, save favourites, and apply through the listed channel.' },
     { num: '03', title: 'Track Applications', desc: 'Use our built-in tracker to monitor your applications from submission to offer.' },
     { num: '04', title: 'Get Hired', desc: 'Prepare with AI tools and land your next opportunity with confidence.' },
 ];
@@ -42,9 +42,9 @@ const sectors = ['Technology & IT','Finance & Banking','Healthcare & Medicine','
 
 const faqs = [
     { q: 'Is Job Openings Kenya free to use?', a: 'Yes, absolutely. Browsing jobs, applying, and using our career tools are completely free for all job seekers.' },
-    { q: 'How do you verify job listings?', a: 'Our team reviews every submission manually. We cross-check employer details and only publish verified, legitimate opportunities.' },
+    { q: 'How do you screen job listings?', a: 'Employer-submitted listings may be reviewed editorially. Approved external feeds use automated checks for Kenya relevance, freshness, useful content, and valid application links; these listings are labelled and link to their source. No screening can guarantee an employer or job, so always verify before applying.' },
     { q: 'Can employers post jobs for free?', a: 'Yes, employers can submit job postings at no cost. Premium placement options are available for wider visibility.' },
-    { q: 'Do you offer training programs?', a: 'We list verified training, internships, and attachment opportunities alongside full-time roles. Filter by "Training" to find them.' },
+    { q: 'Do you offer training programs?', a: 'We list training, internships, and attachment opportunities alongside full-time roles. Filter by "Training" to find them and confirm the provider details before enrolling.' },
     { q: 'How can I track my applications?', a: 'Log in and use the Application Tracker dashboard to save job statuses, notes, and deadlines all in one place.' },
 ];
 
@@ -58,7 +58,7 @@ export default async function About() {
 
     const stats = [
         { value: userCount || 0, label: 'Job Seekers', sub: 'Registered across Kenya' },
-        { value: opportunityCount || 0, label: 'Opportunities', sub: 'Verified & scam-free' },
+        { value: opportunityCount || 0, label: 'Opportunities', sub: 'Kenya-focused listings' },
         { value: partnerCount || 0, label: 'Partners', sub: 'Employers & organisations' },
     ];
 
@@ -74,7 +74,7 @@ export default async function About() {
                         <div className="max-w-2xl">
                             <span className="inline-block text-[11px] font-black uppercase tracking-widest text-emerald-300 mb-4">About Us</span>
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6">Who We Are</h1>
-                            <p className="text-lg sm:text-xl text-white/80 leading-relaxed max-w-xl">Job Openings Kenya is your trusted portal connecting talent with verified opportunities across the country.</p>
+                            <p className="text-lg sm:text-xl text-white/80 leading-relaxed max-w-xl">Job Openings Kenya connects talent with current, Kenya-focused opportunities and clear application sources.</p>
                         </div>
                     </ScrollReveal>
                 </div>
@@ -88,8 +88,8 @@ export default async function About() {
                         <ScrollReveal>
                             <div>
                                 <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-6">Connecting Talent with Opportunity in Kenya</h2>
-                                <p className="text-gray-600 leading-relaxed mb-6">We started as a simple initiative to share genuine job listings and have grown into a comprehensive platform trusted by thousands of job seekers and employers nationwide.</p>
-                                <p className="text-gray-600 leading-relaxed mb-8">Our mission is to eliminate barriers to employment by providing a single, reliable source for verified job openings, professional training, and career resources for Kenyan youth.</p>
+                                <p className="text-gray-600 leading-relaxed mb-6">We started as a simple initiative to share useful job listings and have grown into a comprehensive platform serving job seekers and employers nationwide.</p>
+                                <p className="text-gray-600 leading-relaxed mb-8">Our mission is to reduce barriers to employment by bringing together current job openings, professional training, and practical career resources for Kenyan youth.</p>
                                 <div className="flex flex-wrap gap-3">
                                     <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors">Browse Jobs <ArrowRight size={14} /></Link>
                                     <Link href="/employer" className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-gray-200 text-gray-700 rounded-lg text-sm font-bold hover:border-emerald-500 hover:text-emerald-700 transition-colors">For Employers</Link>
@@ -110,7 +110,7 @@ export default async function About() {
                         <ScrollReveal>
                             <div>
                                 <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-6">Reliable, Innovative Career Solutions</h2>
-                                <p className="text-gray-300 leading-relaxed mb-8">We combine technology with human verification to deliver a platform you can trust. From AI-powered cover letter generation to application tracking, we give you the tools to succeed.</p>
+                                <p className="text-gray-300 leading-relaxed mb-8">We combine automated listing checks with editorial review where appropriate. External listings are identified and link to their source, while our career tools help you prepare and track applications.</p>
                                 <div className="space-y-5">
                                     {features.map((f) => (
                                         <div key={f.title} className="flex gap-4">
@@ -224,7 +224,7 @@ export default async function About() {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <ScrollReveal>
                         <h2 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight">Ready to Find Your Next Opportunity?</h2>
-                        <p className="text-gray-400 mb-8 max-w-xl mx-auto">Browse the latest verified job openings or partner with us to reach thousands of qualified candidates.</p>
+                        <p className="text-gray-400 mb-8 max-w-xl mx-auto">Browse the latest Kenya-focused job openings or partner with us to reach qualified candidates.</p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Link href="/" className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-500 transition-colors">Browse Job Openings <ArrowRight size={14} /></Link>
                             <a href="mailto:info@jobopenings.co.ke" className="inline-flex items-center justify-center gap-2 px-8 py-3 border-2 border-white/20 text-white rounded-xl text-sm font-bold hover:bg-white hover:text-slate-900 transition-colors">Partner With Us</a>

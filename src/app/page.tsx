@@ -20,8 +20,8 @@ import { createClient } from '@/lib/supabase/server';
 import { type JobData, type OpportunityType, typeConfig, getDaysLeft, formatDaysRemaining, getPostedDaysAgo, isNew, fmtDate, cleanSummary } from '@/lib/utils/jobs';
 
 export const metadata: Metadata = {
-    title: 'Job Openings Kenya | Verified Jobs & Training in Kenya',
-    description: 'Kenya\'s trusted portal for verified job openings, internships, and professional training. Every listing hand-picked and scam-free.',
+    title: 'Job Openings Kenya | Quality-Screened Jobs & Training',
+    description: 'Find Kenya-focused jobs, internships, and training screened for freshness, useful details, and valid application links. Always verify before applying.',
 };
 
 export const revalidate = 3600;
@@ -113,7 +113,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 in Kenya
                             </h1>
                             <p className="mt-3 text-sm sm:text-lg text-white/75 max-w-md leading-relaxed">
-                                Browse verified jobs and training programs — hand-picked and scam-free.
+                                Browse Kenya-focused jobs and training screened for freshness and useful application details.
                             </p>
 
                             {/* Search bar */}
@@ -135,7 +135,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 {[
                                     { number: (totalCount || 0).toLocaleString(), label: 'Live Jobs' },
                                     { number: (compCount ?? 10) + '+', label: 'Companies' },
-                                    { number: '100%', label: 'Verified' },
+                                    { number: 'Daily', label: 'Screened' },
                                 ].map(s => (
                                     <div key={s.label} className="text-center">
                                         <p className="text-xl sm:text-2xl font-black text-white">{s.number}</p>
@@ -183,9 +183,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-white">
                         {[
-                            { value: (totalCount || 0).toLocaleString(), label: 'Active Jobs', sub: 'Hand-verified' },
+                            { value: (totalCount || 0).toLocaleString(), label: 'Active Jobs', sub: 'Current listings' },
                             { value: (compCount ?? 10) + '+', label: 'Top Employers', sub: 'Hiring now' },
-                            { value: 'Trusted', label: 'Verified Platform', sub: 'Manual screening' },
+                            { value: 'Quality', label: 'Listing Checks', sub: 'Automated + editorial' },
                             { value: 'Daily', label: 'Fresh Updates', sub: 'New listings' },
                         ].map((s) => (
                             <div key={s.label} className="text-left sm:text-center">
@@ -422,10 +422,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                             <h3 className="flex items-center gap-2 text-sm font-extrabold text-gray-900 mb-4"><ShieldCheck size={16} className="text-emerald-500" /> Why Choose Us?</h3>
                             <div className="space-y-3.5">
                                 {[
-                                    { i: Shield, t: 'Every listing manually verified', c: 'text-emerald-500' },
+                                    { i: Shield, t: 'Kenya, freshness and content checks', c: 'text-emerald-500' },
                                     { i: Zap, t: 'Updated daily — fresh opportunities', c: 'text-amber-500' },
-                                    { i: CheckCircle, t: 'No fees for job seekers', c: 'text-green-500' },
-                                    { i: Eye, t: 'Scam-free guarantee', c: 'text-blue-500' },
+                                    { i: CheckCircle, t: 'Never pay merely to apply', c: 'text-green-500' },
+                                    { i: Eye, t: 'External listings link to their source', c: 'text-blue-500' },
                                 ].map(({ i: Ic, t, c }) => (
                                     <div key={t} className="flex items-start gap-3">
                                         <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0`}><Ic size={14} className={c} /></div>
@@ -584,12 +584,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                                 <Star size={13} /> Why Job Seekers Love Us
                             </div>
                             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">Everything you need to land your next role</h2>
-                            <p className="mt-3 text-gray-500 max-w-2xl mx-auto">We make finding jobs in Kenya simple and safe.</p>
+                            <p className="mt-3 text-gray-500 max-w-2xl mx-auto">We make finding jobs in Kenya simple and transparent.</p>
                         </div>
                     </ScrollReveal>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { i: Shield, t: 'Verified Listings', d: 'Every job is manually reviewed before being published. No scams, no ghost jobs.', c: 'emerald' },
+                            { i: Shield, t: 'Quality-Screened Listings', d: 'Listings pass Kenya, freshness, content, and application-link checks. External listings are clearly sourced.', c: 'emerald' },
                             { i: BellRing, t: 'Instant Alerts', d: 'Get notified on WhatsApp and email the moment new jobs matching your criteria are posted.', c: 'amber' },
                             { i: Eye, t: 'Track Applications', d: 'Save jobs, track your applications with a visual kanban board, and never miss a deadline.', c: 'blue' },
                             { i: Zap, t: 'Daily Updates', d: 'New opportunities added every single day. Fresh listings from companies across Kenya.', c: 'violet' },

@@ -168,7 +168,7 @@ function LoginForm() {
                         {/* Trust badges */}
                         <div className="flex items-center gap-6 pt-4">
                             {[
-                                { icon: ShieldCheck, label: 'Verified listings' },
+                                { icon: ShieldCheck, label: 'Screened listings' },
                                 { icon: Sparkles, label: 'New jobs daily' },
                             ].map(({ icon: Icon, label }) => (
                                 <div key={label} className="flex items-center gap-2 text-white/50">
@@ -182,7 +182,7 @@ function LoginForm() {
                     {/* Bottom quote */}
                     <blockquote className="border-l-2 border-emerald-500/30 pl-4">
                         <p className="text-white/40 text-sm italic leading-relaxed">
-                            &ldquo;The best place to find verified jobs in Kenya. I landed my dream role in under 2 weeks.&rdquo;
+                            &ldquo;A simple place to discover jobs in Kenya. I landed my dream role in under 2 weeks.&rdquo;
                         </p>
                         <p className="text-white/30 text-xs font-semibold mt-2">— Sarah W., Nairobi</p>
                     </blockquote>

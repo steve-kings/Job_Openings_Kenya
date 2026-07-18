@@ -36,9 +36,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         title: `${job.title} at ${job.company}`,
         description,
         alternates: { canonical: url },
-        robots: hasSubstantiveJobContent(job)
-            ? { index: true, follow: true }
-            : { index: false, follow: true },
+        robots: job.source
+            ? { index: false, follow: true }
+            : hasSubstantiveJobContent(job)
+                ? { index: true, follow: true }
+                : { index: false, follow: true },
         openGraph: {
             title: job.title,
             description,
