@@ -60,6 +60,12 @@ escaped_secret="${escaped_secret//\"/\\\"}"
 chmod 600 "$CURL_CONFIG" "$ENV_FILE"
 unset scraper_secret escaped_secret
 
+echo 'Running an authenticated dry run before installing cron...'
+if ! bash "$RUNNER" --dry-run; then
+    echo 'Dry run failed; cron was not installed.' >&2
+    exit 1
+fi
+
 cron_tmp="$(mktemp)"
 trap 'rm -f "$cron_tmp"' EXIT
 (crontab -l 2>/dev/null || true) | grep -Fv "$MARKER" > "$cron_tmp" || true
@@ -74,4 +80,4 @@ crontab -l | grep -F "$MARKER"
 if command -v systemctl >/dev/null 2>&1 && ! systemctl is-active --quiet cron; then
     echo 'WARNING: cron is not active. Run: sudo systemctl enable --now cron' >&2
 fi
-echo "Run a safe test with: bash ${RUNNER} --dry-run"
+echo 'Authenticated dry run passed; the scheduler is ready for draft imports.'

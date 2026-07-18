@@ -71,7 +71,7 @@ cd /home/kings/jobopenings
 bash scripts/install-job-scraper-cron.sh
 ```
 
-The installer reads `.env.local` without exposing the bearer secret in `crontab` or process arguments. It also uses a lock so overlapping runs cannot occur. If it reports that cron is inactive, run the command it prints.
+The installer reads `.env.local` without exposing the bearer secret in `crontab` or process arguments. It runs an authenticated dry run first and installs cron only if that succeeds. It also uses a lock so overlapping runs cannot occur. If it reports that cron is inactive, run the command it prints.
 
 Test the Kenya source without writing to Supabase:
 
@@ -79,7 +79,7 @@ Test the Kenya source without writing to Supabase:
 bash scripts/run-job-scraper.sh --dry-run
 ```
 
-Require `success: true`, `configuredSources: 1`, no source errors, and preferably `discovered` greater than zero. `insertedOrUpdated: 0` is expected for a dry run. A dry run does not test Supabase writes or prove that the migration was applied.
+Require `success: true`, `configuredSources: 1`, no source errors, and preferably `discovered` greater than zero. `insertedOrUpdated: 0` is expected for a dry run. A dry run does not test Supabase writes or prove that the migration was applied. The installer already performs this test; the command is also available for later diagnostics.
 
 After the migration is applied, perform one live draft import and inspect its result:
 
