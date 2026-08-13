@@ -32,7 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .from('opportunities')
         .select('id, company, updated_at, thumbnail_url, description, short_description, requirements, responsibilities, benefits')
         .eq('status', 'active')
-        .is('source', null)
         .or(`deadline.gte.${today},deadline.is.null`);
 
     const { data: blogs } = await supabase

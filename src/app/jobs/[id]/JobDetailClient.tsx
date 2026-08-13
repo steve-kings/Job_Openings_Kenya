@@ -635,6 +635,29 @@ export default function JobDetailClient({ job, user, opportunityId, similarJobs,
                                 </div>
                             </div>
                         )}
+
+                        {/* First-Party Value-Add: Application Guidance & Safety Checklist */}
+                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 sm:p-8 shadow-md">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <Lightbulb size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-extrabold text-lg text-white">Application & Safety Advice</h3>
+                                    <p className="text-xs text-slate-400">Key tips for applying to {job.company}</p>
+                                </div>
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-4 text-xs text-slate-300">
+                                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
+                                    <strong className="text-emerald-400 block mb-1">1. Zero Fee Policy</strong>
+                                    Job Openings Kenya and legitimate employers never ask for application or medical fees. Report any suspicious requests immediately.
+                                </div>
+                                <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
+                                    <strong className="text-emerald-400 block mb-1">2. Tailored Application</strong>
+                                    Customize your CV to highlight relevant skills for this specific role at {job.company} before submitting.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* ── Sidebar ── */}
