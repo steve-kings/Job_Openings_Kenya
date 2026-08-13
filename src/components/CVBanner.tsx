@@ -34,7 +34,7 @@ export default function CVBanner() {
                 <PenTool size={14} className="shrink-0" />
                 <Link href="/resources/cv-builder" onClick={close}
                     className="text-[11px] font-bold hover:underline whitespace-nowrap">
-                    Build CV free
+                    Build Your CV
                 </Link>
                 <span className="h-4 w-px bg-white/30" aria-hidden="true" />
                 <a

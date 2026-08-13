@@ -29,7 +29,7 @@ const resources = [
         articles: [
             { title: 'Build Your Professional CV Now', href: '/resources/cv-builder' },
             { title: 'AI-Powered Cover Letter Generator', href: '/resources/cv-builder' },
-            { title: 'Download Free CV Templates', href: '/resources/cv-builder' },
+            { title: 'Download Professional CV Templates', href: '/resources/cv-builder' },
         ],
     },
     {

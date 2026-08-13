@@ -342,7 +342,7 @@ export default function CVBuilderPage() {
                     <Link href="/resources" className="inline-flex items-center gap-1.5 text-white/60 hover:text-white mb-3 text-sm font-medium"><ArrowLeft size={15} /> Resources</Link>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center"><PenTool size={18} /></div>
-                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">12 professional templates • 100% free to download</p></div>
+                        <div><h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-lg">CV Builder</h1><p className="text-sm text-white/60">12 professional templates • ATS Ready</p></div>
                     </div>
                 </div>
             </section>
@@ -355,7 +355,7 @@ export default function CVBuilderPage() {
                         </div>
                         <div className="flex-1">
                             <h2 className="font-extrabold text-slate-900">Prefer a manual CV revamp?</h2>
-                            <p className="mt-1 text-sm text-slate-600">Chat directly with our CV expert for a human-written, professionally formatted CV. You can still use the free builder below.</p>
+                            <p className="mt-1 text-sm text-slate-600">Chat directly with our CV expert for a human-written, professionally formatted CV. You can still use the builder below.</p>
                         </div>
                         <a
                             href={manualCvRevampUrl}
@@ -535,7 +535,7 @@ export default function CVBuilderPage() {
                                 <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-8 text-center">
                                     <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Star size={30} className="text-emerald-600" /></div>
                                     <h3 className="font-extrabold text-emerald-900 text-xl mb-1">Ready to Download!</h3>
-                                    <p className="text-emerald-700 text-sm mb-5">This template is completely free — download or print it now.</p>
+                                    <p className="text-emerald-700 text-sm mb-5">Download or print your completed CV now.</p>
                                     <div className="flex flex-wrap justify-center gap-3">
                                         <button onClick={handleDownload} className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2"><Download size={15} /> Download / Print</button>
                                         <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-emerald-300 text-emerald-700 font-extrabold text-sm hover:bg-emerald-100 transition-all">Dashboard</Link>
@@ -546,12 +546,12 @@ export default function CVBuilderPage() {
                                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 text-center">
                                     <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"><Download size={28} className="text-emerald-600" /></div>
                                     <h3 className="font-extrabold text-slate-900 text-xl mb-1">Your CV is ready</h3>
-                                    <p className="text-slate-500 text-sm mb-5 max-w-md mx-auto">Download it free below — ads keep this tool free for everyone.</p>
+                                    <p className="text-slate-500 text-sm mb-5 max-w-md mx-auto">Download your completed CV below.</p>
                                     <GoogleAd adSlot={CV_AD_SLOT} />
                                     <div className="flex flex-wrap justify-center gap-3 mt-5">
                                         <button onClick={handleDownload}
                                             className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-700 transition-all shadow-sm inline-flex items-center gap-2">
-                                            <Download size={15} /> Download My CV — Free
+                                            <Download size={15} /> Download My CV
                                         </button>
                                         <Link href="/dashboard" className="px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-extrabold text-sm hover:bg-slate-50 transition-all">Dashboard</Link>
                                     </div>
