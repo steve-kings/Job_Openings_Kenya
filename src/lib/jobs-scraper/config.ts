@@ -6,8 +6,20 @@ export function getScraperSources(): ScraperSource[] {
     return parseScraperSources(process.env.JOB_SCRAPER_SOURCES_JSON);
 }
 
+const DEFAULT_ANNEX_SOURCE: ScraperSource = {
+    name: 'annex',
+    kind: 'annex',
+    location: 'Kenya',
+    maxPages: 5,
+    maxAgeDays: 90,
+    minimumDescriptionLength: 160,
+    requestDelayMs: 750,
+    autoPublish: true,
+    enabled: true,
+};
+
 export function parseScraperSources(raw: string | undefined): ScraperSource[] {
-    if (!raw) return [];
+    if (!raw || !raw.trim()) return [DEFAULT_ANNEX_SOURCE];
 
     let parsed: unknown;
     try {
