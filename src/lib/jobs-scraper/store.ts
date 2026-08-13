@@ -38,7 +38,6 @@ export async function publishExistingScrapedJobs(source: string, sourceJobIds: s
             .update({ status: 'active' })
             .eq('source', source)
             .eq('status', 'draft')
-            .is('created_by', null)
             .in('source_job_id', uniqueIds.slice(offset, offset + BATCH_SIZE))
             .select('id');
         if (error) throw new Error(`Unable to publish existing scraped jobs: ${error.message}`);
@@ -63,7 +62,6 @@ export async function refreshSeenScrapedJobs(
             .from('opportunities')
             .update({ last_seen_at: seenAt })
             .eq('source', source)
-            .is('created_by', null)
             .in('source_job_id', uniqueIds.slice(offset, offset + BATCH_SIZE))
             .select('id');
         if (error) throw new Error(`Unable to refresh scraped jobs: ${error.message}`);
@@ -83,7 +81,6 @@ export async function deactivateStaleAutoPublishedJobs(
         .update({ status: 'expired' })
         .eq('source', source)
         .eq('status', 'active')
-        .is('created_by', null)
         .lt('last_seen_at', staleBefore)
         .select('id');
     if (error) throw new Error(`Unable to expire stale auto-published jobs: ${error.message}`);
