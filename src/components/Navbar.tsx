@@ -97,10 +97,12 @@ export default function Navbar() {
     // Mega dropdown columns
     const navColumns = [
         {
-            title: 'By Type',
+            title: 'By Category',
             links: [
-                { href: '/?type=Job', label: 'Jobs', desc: 'Full-time & contract', icon: Briefcase, c: 'emerald' },
-                { href: 'https://kingslearn.co.ke', label: 'Training', desc: 'Courses & internships', icon: BookOpen, c: 'violet', ext: true },
+                { href: '/?type=Job', label: 'Jobs', desc: 'Full-time, remote & contract', icon: Briefcase, c: 'emerald' },
+                { href: '/?type=Scholarship', label: 'Scholarships', desc: 'Higher ed & international awards', icon: Sparkles, c: 'violet' },
+                { href: '/?type=Grant', label: 'Grants & Funding', desc: 'Business & research grants', icon: Zap, c: 'amber' },
+                { href: '/?type=Training', label: 'Training & Internships', desc: 'Courses, skills & attachments', icon: BookOpen, c: 'blue' },
             ],
         },
         {
@@ -332,8 +334,10 @@ export default function Navbar() {
                                 {mobileSubOpen && (
                                     <div className="p-2 space-y-1 bg-gray-50">
                                         {[
-                                            { href: '/', label: 'Latest Jobs', icon: Zap },
-                                            { href: '/jobs', label: 'Browse All', icon: Search },
+                                            { href: '/?type=Job', label: 'Jobs', icon: Briefcase },
+                                            { href: '/?type=Scholarship', label: 'Scholarships', icon: Sparkles },
+                                            { href: '/?type=Grant', label: 'Grants & Funding', icon: Zap },
+                                            { href: '/?type=Training', label: 'Training & Internships', icon: BookOpen },
                                             { href: '/companies', label: 'Companies', icon: Building2 },
                                             { href: '/map', label: 'Job Map', icon: MapPin },
                                             { href: '/popular', label: 'Popular', icon: TrendingUp },
